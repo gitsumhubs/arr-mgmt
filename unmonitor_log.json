@@ -1,0 +1,54 @@
+[
+  {
+    "id": "fb07cfcc",
+    "timestamp": "2026-02-15T01:13:27.975876+00:00",
+    "service": "radarr",
+    "action": "unmonitor",
+    "movie_ids": [
+      2349,
+      2352
+    ]
+  },
+  {
+    "id": "7aaec0f5",
+    "timestamp": "2026-02-15T01:17:01.630788+00:00",
+    "service": "radarr",
+    "action": "remonitor",
+    "status_change": "unmonitored -> monitored",
+    "movies": [
+      {
+        "id": 2349,
+        "title": "Unknown"
+      },
+      {
+        "id": 2352,
+        "title": "Unknown"
+      }
+    ],
+    "movie_ids": [
+      2349,
+      2352
+    ]
+  },
+  {
+    "id": "439461f8",
+    "timestamp": "2026-02-15T01:17:04.573643+00:00",
+    "service": "radarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "movies": [
+      {
+        "id": 2349,
+        "title": "Two Weeks Notice"
+      },
+      {
+        "id": 2352,
+        "title": "The Pirates! In an Adventure with Scientists!"
+      }
+    ],
+    "movie_ids": [
+      2349,
+      2352
+    ]
+  }
+]

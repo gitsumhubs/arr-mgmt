@@ -1,0 +1,13 @@
+[Unit]
+Description=Arr Management Web UI
+After=network.target
+
+[Service]
+Type=simple
+User=josh
+WorkingDirectory=/home/josh/Projects/arr-mgmt
+ExecStart=/home/josh/Projects/arr-mgmt/venv/bin/python /home/josh/Projects/arr-mgmt/app.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

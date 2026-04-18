@@ -1,0 +1,8 @@
+{
+  "sonarr_url": "http://192.168.1.4:8989",
+  "sonarr_api_key": "dd2cf7bd8bf14843b5f3ea1ad1c68ad5",
+  "radarr_url": "http://192.168.1.4:7878",
+  "radarr_api_key": "7436ebfeffdc442592776acd19a22be2",
+  "sonarr_container": "sonarr",
+  "radarr_container": "radarr"
+}
