@@ -38,6 +38,100 @@
     const unmonitorLogEntries = document.getElementById('unmonitor-log-entries');
     let unmonitorLogService = 'sonarr';
 
+    const autoSearchSonarrEnabled = document.getElementById('auto-search-sonarr-enabled');
+    const autoSearchSonarrInterval = document.getElementById('auto-search-sonarr-interval');
+    const autoSearchSonarrNext = document.getElementById('auto-search-sonarr-next');
+    const autoSearchRadarrEnabled = document.getElementById('auto-search-radarr-enabled');
+    const autoSearchRadarrInterval = document.getElementById('auto-search-radarr-interval');
+    const autoSearchRadarrNext = document.getElementById('auto-search-radarr-next');
+    const saveAutoSearchBtn = document.getElementById('save-auto-search');
+    const autoSearchFeedback = document.getElementById('auto-search-feedback');
+
+    const INTERVAL_LABELS = {
+        30: '30 minutes',
+        60: '1 hour',
+        180: '3 hours',
+        360: '6 hours',
+        720: '12 hours',
+        1440: '24 hours',
+        2880: '48 hours',
+        10080: '1 week',
+    };
+
+    function populateIntervalSelect(select) {
+        Object.entries(INTERVAL_LABELS).forEach(([value, label]) => {
+            const opt = document.createElement('option');
+            opt.value = value;
+            opt.textContent = label;
+            select.appendChild(opt);
+        });
+    }
+    populateIntervalSelect(autoSearchSonarrInterval);
+    populateIntervalSelect(autoSearchRadarrInterval);
+
+    function formatNextRun(lastRunIso, intervalMinutes, enabled) {
+        if (!enabled) return 'disabled';
+        if (!lastRunIso) return 'runs within ~1 min';
+        const next = new Date(lastRunIso).getTime() + intervalMinutes * 60000;
+        const diffMs = next - Date.now();
+        if (diffMs <= 0) return 'due now';
+        const mins = Math.round(diffMs / 60000);
+        if (mins < 60) return `next in ${mins}m`;
+        const hours = Math.floor(mins / 60);
+        const rem = mins % 60;
+        return rem ? `next in ${hours}h ${rem}m` : `next in ${hours}h`;
+    }
+
+    async function fetchAutoSearch() {
+        try {
+            const resp = await fetch('/api/auto-search');
+            const data = await resp.json();
+            autoSearchSonarrEnabled.checked = data.sonarr.enabled;
+            autoSearchSonarrInterval.value = data.sonarr.interval_minutes;
+            autoSearchSonarrNext.textContent = formatNextRun(
+                data.sonarr.last_run, data.sonarr.interval_minutes, data.sonarr.enabled);
+            autoSearchRadarrEnabled.checked = data.radarr.enabled;
+            autoSearchRadarrInterval.value = data.radarr.interval_minutes;
+            autoSearchRadarrNext.textContent = formatNextRun(
+                data.radarr.last_run, data.radarr.interval_minutes, data.radarr.enabled);
+        } catch (e) {
+            console.error('Failed to load auto-search:', e);
+        }
+    }
+
+    async function saveAutoSearch() {
+        saveAutoSearchBtn.disabled = true;
+        saveAutoSearchBtn.textContent = 'Saving...';
+        try {
+            const resp = await fetch('/api/auto-search', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    sonarr: {
+                        enabled: autoSearchSonarrEnabled.checked,
+                        interval_minutes: parseInt(autoSearchSonarrInterval.value, 10),
+                    },
+                    radarr: {
+                        enabled: autoSearchRadarrEnabled.checked,
+                        interval_minutes: parseInt(autoSearchRadarrInterval.value, 10),
+                    },
+                }),
+            });
+            const data = await resp.json();
+            if (data.success) {
+                showFeedback(autoSearchFeedback, 'Schedule saved', 'success');
+                fetchAutoSearch();
+            } else {
+                showFeedback(autoSearchFeedback, data.error || 'Failed to save', 'error');
+            }
+        } catch (e) {
+            showFeedback(autoSearchFeedback, `Failed to save: ${e.message}`, 'error');
+        } finally {
+            saveAutoSearchBtn.disabled = false;
+            saveAutoSearchBtn.textContent = 'Save Schedule';
+        }
+    }
+
     const sonarrUrlInput = document.getElementById('sonarr-url');
     const sonarrKeyInput = document.getElementById('sonarr-key');
     const radarrUrlInput = document.getElementById('radarr-url');
@@ -626,6 +720,7 @@
         if (e.target.open) fetchUnmonitorLog();
     });
     saveConfigBtn.addEventListener('click', saveConfig);
+    saveAutoSearchBtn.addEventListener('click', saveAutoSearch);
     logRefreshBtn.addEventListener('click', fetchLogs);
     logFollowBtn.addEventListener('click', () => {
         if (followTimer) {
@@ -637,6 +732,7 @@
 
     // Initial load
     fetchConfig();
+    fetchAutoSearch();
     fetchStatus();
     fetchQueue();
     fetchLogs();
@@ -658,5 +754,6 @@
         fetchStatus();
         fetchQueue();
         fetchQueueItems();
+        fetchAutoSearch();
     }, 30000);
 })();

@@ -44,6 +44,28 @@
                 <button id="search-radarr" class="btn btn-primary">Search Missing Movies</button>
             </div>
             <div id="search-feedback" class="feedback"></div>
+
+            <div class="auto-search">
+                <h3>Automated Search</h3>
+                <div class="auto-search-row">
+                    <label class="auto-search-toggle">
+                        <input type="checkbox" id="auto-search-sonarr-enabled">
+                        Sonarr every
+                    </label>
+                    <select id="auto-search-sonarr-interval"></select>
+                    <span id="auto-search-sonarr-next" class="auto-search-next"></span>
+                </div>
+                <div class="auto-search-row">
+                    <label class="auto-search-toggle">
+                        <input type="checkbox" id="auto-search-radarr-enabled">
+                        Radarr every
+                    </label>
+                    <select id="auto-search-radarr-interval"></select>
+                    <span id="auto-search-radarr-next" class="auto-search-next"></span>
+                </div>
+                <button id="save-auto-search" class="btn btn-success">Save Schedule</button>
+                <span id="auto-search-feedback" class="feedback"></span>
+            </div>
         </section>
 
         <section class="panel">
@@ -150,7 +172,7 @@
             <div class="settings-grid">
                 <div class="input-group">
                     <label for="sonarr-url">Sonarr URL</label>
-                    <input type="text" id="sonarr-url" placeholder="http://192.168.1.44:8989">
+                    <input type="text" id="sonarr-url" placeholder="http://192.168.1.4:8989">
                 </div>
                 <div class="input-group">
                     <label for="sonarr-key">Sonarr API Key</label>
@@ -158,7 +180,7 @@
                 </div>
                 <div class="input-group">
                     <label for="radarr-url">Radarr URL</label>
-                    <input type="text" id="radarr-url" placeholder="http://192.168.1.44:7878">
+                    <input type="text" id="radarr-url" placeholder="http://192.168.1.4:7878">
                 </div>
                 <div class="input-group">
                     <label for="radarr-key">Radarr API Key</label>

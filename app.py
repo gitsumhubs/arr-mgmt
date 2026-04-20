@@ -7,6 +7,8 @@ Flask backend for managing Sonarr and Radarr
 import json
 import os
 import subprocess
+import threading
+import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -26,7 +28,17 @@ DEFAULT_CONFIG = {
     "radarr_api_key": "",
     "sonarr_container": "sonarr",
     "radarr_container": "radarr",
+    "auto_search_sonarr_enabled": False,
+    "auto_search_sonarr_interval_minutes": 360,
+    "auto_search_sonarr_last_run": None,
+    "auto_search_radarr_enabled": False,
+    "auto_search_radarr_interval_minutes": 360,
+    "auto_search_radarr_last_run": None,
 }
+
+AUTO_SEARCH_INTERVALS = [30, 60, 180, 360, 720, 1440, 2880, 10080]
+
+config_lock = threading.Lock()
 
 
 def load_config():
@@ -575,6 +587,105 @@ def undo_log_entry(entry_id):
     return jsonify({"success": False, "error": "Unknown service"}), 400
 
 
+def trigger_search(service, config):
+    command = "MissingEpisodeSearch" if service == "sonarr" else "MissingMoviesSearch"
+    return api_request(
+        config[f"{service}_url"],
+        config[f"{service}_api_key"],
+        "command",
+        method="POST",
+        data={"name": command},
+    )
+
+
+def check_and_run_auto_searches():
+    with config_lock:
+        config = load_config()
+    now = datetime.now(timezone.utc)
+    dirty = False
+    for service in ("sonarr", "radarr"):
+        if not config.get(f"auto_search_{service}_enabled"):
+            continue
+        interval = int(config.get(f"auto_search_{service}_interval_minutes") or 360)
+        last_run = config.get(f"auto_search_{service}_last_run")
+        if last_run:
+            try:
+                last = datetime.fromisoformat(last_run)
+            except ValueError:
+                last = None
+        else:
+            last = None
+        if last and (now - last).total_seconds() < interval * 60:
+            continue
+        result = trigger_search(service, config)
+        if result.get("success"):
+            config[f"auto_search_{service}_last_run"] = now.isoformat()
+            dirty = True
+    if dirty:
+        with config_lock:
+            current = load_config()
+            for service in ("sonarr", "radarr"):
+                key = f"auto_search_{service}_last_run"
+                if key in config:
+                    current[key] = config[key]
+            save_config(current)
+
+
+def auto_search_worker():
+    while True:
+        try:
+            check_and_run_auto_searches()
+        except Exception:
+            pass
+        time.sleep(60)
+
+
+@app.route("/api/auto-search", methods=["GET"])
+def get_auto_search():
+    config = load_config()
+    return jsonify({
+        "intervals": AUTO_SEARCH_INTERVALS,
+        "sonarr": {
+            "enabled": bool(config.get("auto_search_sonarr_enabled")),
+            "interval_minutes": int(config.get("auto_search_sonarr_interval_minutes") or 360),
+            "last_run": config.get("auto_search_sonarr_last_run"),
+        },
+        "radarr": {
+            "enabled": bool(config.get("auto_search_radarr_enabled")),
+            "interval_minutes": int(config.get("auto_search_radarr_interval_minutes") or 360),
+            "last_run": config.get("auto_search_radarr_last_run"),
+        },
+    })
+
+
+@app.route("/api/auto-search", methods=["POST"])
+def update_auto_search():
+    data = request.get_json(silent=True)
+    if data is None:
+        return jsonify({"success": False, "error": "Invalid JSON payload"}), 400
+
+    with config_lock:
+        config = load_config()
+        for service in ("sonarr", "radarr"):
+            section = data.get(service) or {}
+            if "enabled" in section:
+                config[f"auto_search_{service}_enabled"] = bool(section["enabled"])
+            if "interval_minutes" in section:
+                try:
+                    minutes = int(section["interval_minutes"])
+                except (TypeError, ValueError):
+                    return jsonify({"success": False, "error": f"Invalid interval for {service}"}), 400
+                if minutes not in AUTO_SEARCH_INTERVALS:
+                    return jsonify({"success": False, "error": f"Unsupported interval for {service}"}), 400
+                config[f"auto_search_{service}_interval_minutes"] = minutes
+        try:
+            save_config(config)
+        except Exception as e:
+            return jsonify({"success": False, "error": str(e)}), 500
+
+    return jsonify({"success": True})
+
+
 @app.route("/api/config", methods=["GET"])
 def get_config():
     """Get current config with masked API keys."""
@@ -618,4 +729,5 @@ def update_config():
 
 
 if __name__ == "__main__":
+    threading.Thread(target=auto_search_worker, daemon=True).start()
     app.run(host="0.0.0.0", port=7664, debug=False)

@@ -4,5 +4,11 @@
   "radarr_url": "http://192.168.1.4:7878",
   "radarr_api_key": "7436ebfeffdc442592776acd19a22be2",
   "sonarr_container": "sonarr",
-  "radarr_container": "radarr"
+  "radarr_container": "radarr",
+  "auto_search_sonarr_enabled": true,
+  "auto_search_sonarr_interval_minutes": 60,
+  "auto_search_sonarr_last_run": "2026-04-20T15:23:41.728999+00:00",
+  "auto_search_radarr_enabled": false,
+  "auto_search_radarr_interval_minutes": 360,
+  "auto_search_radarr_last_run": null
 }
