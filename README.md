@@ -45,11 +45,11 @@ services:
     volumes:
       # Persistent config + action history
       - ./data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
       # Needed so the app can restart the Sonarr/Radarr containers and tail their logs.
       # SECURITY: mounting the docker socket gives this container root-equivalent
       # access to the host. Remove this line if you don't need the restart/log-viewer
       # features — everything else (status, queue, search, unmonitor) still works.
-      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - ARR_MGMT_DATA_DIR=/data
       - TZ=Etc/UTC
