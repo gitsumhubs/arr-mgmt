@@ -1,0 +1,14 @@
+{
+  "sonarr_url": "http://localhost:8989",
+  "sonarr_api_key": "",
+  "radarr_url": "http://localhost:7878",
+  "radarr_api_key": "",
+  "sonarr_container": "sonarr",
+  "radarr_container": "radarr",
+  "auto_search_sonarr_enabled": false,
+  "auto_search_sonarr_interval_minutes": 360,
+  "auto_search_sonarr_last_run": null,
+  "auto_search_radarr_enabled": false,
+  "auto_search_radarr_interval_minutes": 360,
+  "auto_search_radarr_last_run": null
+}

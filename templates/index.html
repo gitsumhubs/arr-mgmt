@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arr Management</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Arr Management</h1>
+
+        <section class="panel">
+            <div class="panel-header">
+                <h2>Service Status</h2>
+                <span id="status-clock" class="panel-clock">--:--</span>
+            </div>
+            <div class="status-grid">
+                <div class="status-item">
+                    <span class="label">Sonarr:</span>
+                    <span id="sonarr-status" class="status">Checking...</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Radarr:</span>
+                    <span id="radarr-status" class="status">Checking...</span>
+                </div>
+            </div>
+            <button id="refresh-status" class="btn btn-secondary">Refresh Status</button>
+        </section>
+
+        <section class="panel">
+            <h2>Restart Services</h2>
+            <div class="button-group">
+                <button id="restart-sonarr" class="btn btn-warning">Restart Sonarr</button>
+                <button id="restart-radarr" class="btn btn-warning">Restart Radarr</button>
+            </div>
+            <div id="restart-feedback" class="feedback"></div>
+        </section>
+
+        <section class="panel">
+            <h2>Search Missing</h2>
+            <div class="button-group">
+                <button id="search-sonarr" class="btn btn-primary">Search Missing Episodes</button>
+                <button id="search-radarr" class="btn btn-primary">Search Missing Movies</button>
+            </div>
+            <div id="search-feedback" class="feedback"></div>
+
+            <div class="auto-search">
+                <h3>Automated Search</h3>
+                <div class="auto-search-row">
+                    <label class="auto-search-toggle">
+                        <input type="checkbox" id="auto-search-sonarr-enabled">
+                        Sonarr every
+                    </label>
+                    <select id="auto-search-sonarr-interval"></select>
+                    <span id="auto-search-sonarr-next" class="auto-search-next"></span>
+                </div>
+                <div class="auto-search-row">
+                    <label class="auto-search-toggle">
+                        <input type="checkbox" id="auto-search-radarr-enabled">
+                        Radarr every
+                    </label>
+                    <select id="auto-search-radarr-interval"></select>
+                    <span id="auto-search-radarr-next" class="auto-search-next"></span>
+                </div>
+                <button id="save-auto-search" class="btn btn-success">Save Schedule</button>
+                <span id="auto-search-feedback" class="feedback"></span>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Unmonitor Downloaded</h2>
+            <p class="panel-desc">Set all downloaded items to unmonitored status.</p>
+            <div class="button-group">
+                <button id="unmonitor-sonarr" class="btn btn-unmonitor">Unmonitor Sonarr Episodes</button>
+                <button id="undo-sonarr" class="btn btn-secondary" style="display:none">Undo Sonarr</button>
+                <button id="unmonitor-radarr" class="btn btn-unmonitor">Unmonitor Radarr Movies</button>
+                <button id="undo-radarr" class="btn btn-secondary" style="display:none">Undo Radarr</button>
+            </div>
+            <div id="unmonitor-feedback" class="feedback"></div>
+
+            <details id="unmonitor-log-details" class="unmonitor-log-section">
+                <summary>Action History</summary>
+                <div class="unmonitor-log-controls">
+                    <button id="unmonitor-log-sonarr" class="btn btn-sm btn-toggle active">Sonarr</button>
+                    <button id="unmonitor-log-radarr" class="btn btn-sm btn-toggle">Radarr</button>
+                    <button id="unmonitor-log-refresh" class="btn btn-sm btn-secondary">Refresh</button>
+                </div>
+                <div id="unmonitor-log-entries" class="unmonitor-log-entries">
+                    <p class="empty">No entries</p>
+                </div>
+            </details>
+        </section>
+
+        <section class="panel">
+            <h2>Download Queue</h2>
+            <div class="status-grid">
+                <div class="status-item">
+                    <span class="label">Sonarr:</span>
+                    <span id="sonarr-queue">-</span> items
+                </div>
+                <div class="status-item">
+                    <span class="label">Radarr:</span>
+                    <span id="radarr-queue">-</span> items
+                </div>
+            </div>
+            <div class="queue-items">
+                <div class="queue-list">
+                    <h3>Sonarr Queue</h3>
+                    <table class="queue-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Status</th>
+                                <th>Quality</th>
+                                <th>Progress</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sonarr-queue-items">
+                            <tr><td colspan="4">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="queue-list">
+                    <h3>Radarr Queue</h3>
+                    <table class="queue-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Status</th>
+                                <th>Quality</th>
+                                <th>Progress</th>
+                            </tr>
+                        </thead>
+                        <tbody id="radarr-queue-items">
+                            <tr><td colspan="4">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Service Logs</h2>
+            <div class="log-controls">
+                <div class="input-group">
+                    <label for="log-service">Service</label>
+                    <select id="log-service">
+                        <option value="sonarr">Sonarr</option>
+                        <option value="radarr">Radarr</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="log-lines">Lines</label>
+                    <input type="number" id="log-lines" min="10" max="1000" value="200">
+                </div>
+                <div class="input-group log-filter-group">
+                    <label for="log-filter">Filter (regex, optional)</label>
+                    <input type="text" id="log-filter" placeholder="search|command|missing|release|grab|import">
+                </div>
+                <div class="button-group log-buttons">
+                    <button id="log-refresh" class="btn btn-secondary">Refresh Logs</button>
+                    <button id="log-follow" class="btn btn-primary">Follow Logs</button>
+                </div>
+            </div>
+            <pre id="log-output" class="log-output"></pre>
+            <div id="log-feedback" class="feedback"></div>
+        </section>
+
+        <section class="panel">
+            <h2>Settings</h2>
+            <div class="settings-grid">
+                <div class="input-group">
+                    <label for="sonarr-url">Sonarr URL</label>
+                    <input type="text" id="sonarr-url" placeholder="http://localhost:8989">
+                </div>
+                <div class="input-group">
+                    <label for="sonarr-key">Sonarr API Key</label>
+                    <input type="password" id="sonarr-key" placeholder="API Key">
+                </div>
+                <div class="input-group">
+                    <label for="radarr-url">Radarr URL</label>
+                    <input type="text" id="radarr-url" placeholder="http://localhost:7878">
+                </div>
+                <div class="input-group">
+                    <label for="radarr-key">Radarr API Key</label>
+                    <input type="password" id="radarr-key" placeholder="API Key">
+                </div>
+                <div class="input-group">
+                    <label for="sonarr-container">Sonarr Container Name</label>
+                    <input type="text" id="sonarr-container" placeholder="sonarr">
+                </div>
+                <div class="input-group">
+                    <label for="radarr-container">Radarr Container Name</label>
+                    <input type="text" id="radarr-container" placeholder="radarr">
+                </div>
+            </div>
+            <button id="save-config" class="btn btn-success">Save Settings</button>
+            <span id="config-feedback" class="feedback"></span>
+        </section>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

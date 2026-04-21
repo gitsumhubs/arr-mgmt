@@ -1,0 +1,17 @@
+.git
+.github
+.gitignore
+.claude
+venv
+__pycache__
+*.pyc
+*.pyo
+.env
+*.log
+config.json
+unmonitor_log.json
+docker-compose.yml
+arr-mgmt.service
+RECREATE.md
+README.md
+LICENSE
