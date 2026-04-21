@@ -32,6 +32,31 @@ One small dashboard that sits in front of your Sonarr + Radarr and gives you the
 
 Prebuilt multi-arch images (`amd64` + `arm64`) are published to GitHub Container Registry on every push to `main` and on version tags.
 
+### Example `docker-compose.yml`
+
+```yaml
+services:
+  arr-mgmt:
+    image: ghcr.io/gitsumhubs/arr-mgmt:latest
+    container_name: arr-mgmt
+    restart: unless-stopped
+    ports:
+      - "7664:7664"
+    volumes:
+      # Persistent config + action history
+      - ./data:/data
+      # Needed so the app can restart the Sonarr/Radarr containers and tail their logs.
+      # SECURITY: mounting the docker socket gives this container root-equivalent
+      # access to the host. Remove this line if you don't need the restart/log-viewer
+      # features — everything else (status, queue, search, unmonitor) still works.
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - ARR_MGMT_DATA_DIR=/data
+      - TZ=Etc/UTC
+```
+
+### Quick start
+
 ```bash
 mkdir arr-mgmt && cd arr-mgmt
 curl -O https://raw.githubusercontent.com/gitsumhubs/arr-mgmt/main/docker-compose.yml
