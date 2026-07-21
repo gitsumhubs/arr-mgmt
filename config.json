@@ -7,8 +7,8 @@
   "radarr_container": "radarr",
   "auto_search_sonarr_enabled": true,
   "auto_search_sonarr_interval_minutes": 60,
-  "auto_search_sonarr_last_run": "2026-04-20T15:23:41.728999+00:00",
-  "auto_search_radarr_enabled": false,
-  "auto_search_radarr_interval_minutes": 360,
-  "auto_search_radarr_last_run": null
+  "auto_search_sonarr_last_run": "2026-07-21T14:25:20.356652+00:00",
+  "auto_search_radarr_enabled": true,
+  "auto_search_radarr_interval_minutes": 180,
+  "auto_search_radarr_last_run": "2026-07-21T11:34:20.223584+00:00"
 }
