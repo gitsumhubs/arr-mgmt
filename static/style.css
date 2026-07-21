@@ -285,6 +285,16 @@ h3 {
     color: #fff;
 }
 
+.unmonitor-log-entry-source {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.8em;
+    background: #1f2d4d;
+    color: #9aa3b2;
+    border: 1px solid #2a3a5c;
+}
+
 .unmonitor-log-entry-items {
     margin-top: 6px;
     padding-left: 4px;
@@ -452,13 +462,13 @@ h3 {
     color: #17a2b8;
 }
 
-.auto-search {
+.auto-schedule {
     margin-top: 15px;
     padding-top: 15px;
     border-top: 1px solid #2a3a5c;
 }
 
-.auto-search-row {
+.auto-schedule-row {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -466,7 +476,7 @@ h3 {
     flex-wrap: wrap;
 }
 
-.auto-search-toggle {
+.auto-schedule-toggle {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -474,7 +484,7 @@ h3 {
     min-width: 140px;
 }
 
-.auto-search-row select {
+.auto-schedule-row select {
     background: #0f1a33;
     color: #eee;
     border: 1px solid #2a3a5c;
@@ -482,7 +492,7 @@ h3 {
     padding: 4px 6px;
 }
 
-.auto-search-next {
+.auto-schedule-next {
     font-size: 0.85em;
     color: #9aa3b2;
     font-variant-numeric: tabular-nums;

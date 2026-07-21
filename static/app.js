@@ -38,15 +38,6 @@
     const unmonitorLogEntries = document.getElementById('unmonitor-log-entries');
     let unmonitorLogService = 'sonarr';
 
-    const autoSearchSonarrEnabled = document.getElementById('auto-search-sonarr-enabled');
-    const autoSearchSonarrInterval = document.getElementById('auto-search-sonarr-interval');
-    const autoSearchSonarrNext = document.getElementById('auto-search-sonarr-next');
-    const autoSearchRadarrEnabled = document.getElementById('auto-search-radarr-enabled');
-    const autoSearchRadarrInterval = document.getElementById('auto-search-radarr-interval');
-    const autoSearchRadarrNext = document.getElementById('auto-search-radarr-next');
-    const saveAutoSearchBtn = document.getElementById('save-auto-search');
-    const autoSearchFeedback = document.getElementById('auto-search-feedback');
-
     const INTERVAL_LABELS = {
         30: '30 minutes',
         60: '1 hour',
@@ -66,8 +57,6 @@
             select.appendChild(opt);
         });
     }
-    populateIntervalSelect(autoSearchSonarrInterval);
-    populateIntervalSelect(autoSearchRadarrInterval);
 
     function formatNextRun(lastRunIso, intervalMinutes, enabled) {
         if (!enabled) return 'disabled';
@@ -82,55 +71,79 @@
         return rem ? `next in ${hours}h ${rem}m` : `next in ${hours}h`;
     }
 
-    async function fetchAutoSearch() {
-        try {
-            const resp = await fetch('/api/auto-search');
-            const data = await resp.json();
-            autoSearchSonarrEnabled.checked = data.sonarr.enabled;
-            autoSearchSonarrInterval.value = data.sonarr.interval_minutes;
-            autoSearchSonarrNext.textContent = formatNextRun(
-                data.sonarr.last_run, data.sonarr.interval_minutes, data.sonarr.enabled);
-            autoSearchRadarrEnabled.checked = data.radarr.enabled;
-            autoSearchRadarrInterval.value = data.radarr.interval_minutes;
-            autoSearchRadarrNext.textContent = formatNextRun(
-                data.radarr.last_run, data.radarr.interval_minutes, data.radarr.enabled);
-        } catch (e) {
-            console.error('Failed to load auto-search:', e);
+    // Drives one "run this on a schedule" panel (auto-search, auto-unmonitor, ...)
+    function createScheduleController(name, endpoint) {
+        const el = (suffix) => document.getElementById(`${name}-${suffix}`);
+        const services = {
+            sonarr: {
+                enabled: el('sonarr-enabled'),
+                interval: el('sonarr-interval'),
+                next: el('sonarr-next'),
+            },
+            radarr: {
+                enabled: el('radarr-enabled'),
+                interval: el('radarr-interval'),
+                next: el('radarr-next'),
+            },
+        };
+        const saveBtn = document.getElementById(`save-${name}`);
+        const feedback = el('feedback');
+
+        Object.values(services).forEach((s) => populateIntervalSelect(s.interval));
+
+        async function fetchState() {
+            try {
+                const resp = await fetch(endpoint);
+                const data = await resp.json();
+                Object.entries(services).forEach(([service, els]) => {
+                    const state = data[service];
+                    els.enabled.checked = state.enabled;
+                    els.interval.value = state.interval_minutes;
+                    els.next.textContent = formatNextRun(
+                        state.last_run, state.interval_minutes, state.enabled);
+                });
+            } catch (e) {
+                console.error(`Failed to load ${name}:`, e);
+            }
         }
+
+        async function save() {
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+            try {
+                const payload = {};
+                Object.entries(services).forEach(([service, els]) => {
+                    payload[service] = {
+                        enabled: els.enabled.checked,
+                        interval_minutes: parseInt(els.interval.value, 10),
+                    };
+                });
+                const resp = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    showFeedback(feedback, 'Schedule saved', 'success');
+                    fetchState();
+                } else {
+                    showFeedback(feedback, data.error || 'Failed to save', 'error');
+                }
+            } catch (e) {
+                showFeedback(feedback, `Failed to save: ${e.message}`, 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Schedule';
+            }
+        }
+
+        saveBtn.addEventListener('click', save);
+        return { fetchState };
     }
 
-    async function saveAutoSearch() {
-        saveAutoSearchBtn.disabled = true;
-        saveAutoSearchBtn.textContent = 'Saving...';
-        try {
-            const resp = await fetch('/api/auto-search', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    sonarr: {
-                        enabled: autoSearchSonarrEnabled.checked,
-                        interval_minutes: parseInt(autoSearchSonarrInterval.value, 10),
-                    },
-                    radarr: {
-                        enabled: autoSearchRadarrEnabled.checked,
-                        interval_minutes: parseInt(autoSearchRadarrInterval.value, 10),
-                    },
-                }),
-            });
-            const data = await resp.json();
-            if (data.success) {
-                showFeedback(autoSearchFeedback, 'Schedule saved', 'success');
-                fetchAutoSearch();
-            } else {
-                showFeedback(autoSearchFeedback, data.error || 'Failed to save', 'error');
-            }
-        } catch (e) {
-            showFeedback(autoSearchFeedback, `Failed to save: ${e.message}`, 'error');
-        } finally {
-            saveAutoSearchBtn.disabled = false;
-            saveAutoSearchBtn.textContent = 'Save Schedule';
-        }
-    }
+    const autoSearchSchedule = createScheduleController('auto-search', '/api/auto-search');
+    const autoUnmonitorSchedule = createScheduleController('auto-unmonitor', '/api/auto-unmonitor');
 
     const sonarrUrlInput = document.getElementById('sonarr-url');
     const sonarrKeyInput = document.getElementById('sonarr-key');
@@ -551,6 +564,13 @@
                 badge.textContent = entry.action;
                 header.appendChild(badge);
 
+                if (entry.source === 'scheduled') {
+                    const sourceSpan = document.createElement('span');
+                    sourceSpan.className = 'unmonitor-log-entry-source';
+                    sourceSpan.textContent = 'scheduled';
+                    header.appendChild(sourceSpan);
+                }
+
                 const timeSpan = document.createElement('span');
                 timeSpan.className = 'unmonitor-log-entry-time';
                 timeSpan.textContent = formatLogTime(entry.timestamp);
@@ -720,7 +740,6 @@
         if (e.target.open) fetchUnmonitorLog();
     });
     saveConfigBtn.addEventListener('click', saveConfig);
-    saveAutoSearchBtn.addEventListener('click', saveAutoSearch);
     logRefreshBtn.addEventListener('click', fetchLogs);
     logFollowBtn.addEventListener('click', () => {
         if (followTimer) {
@@ -732,7 +751,8 @@
 
     // Initial load
     fetchConfig();
-    fetchAutoSearch();
+    autoSearchSchedule.fetchState();
+    autoUnmonitorSchedule.fetchState();
     fetchStatus();
     fetchQueue();
     fetchLogs();
@@ -754,6 +774,7 @@
         fetchStatus();
         fetchQueue();
         fetchQueueItems();
-        fetchAutoSearch();
+        autoSearchSchedule.fetchState();
+        autoUnmonitorSchedule.fetchState();
     }, 30000);
 })();

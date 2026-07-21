@@ -34,11 +34,18 @@ DEFAULT_CONFIG = {
     "auto_search_radarr_enabled": False,
     "auto_search_radarr_interval_minutes": 360,
     "auto_search_radarr_last_run": None,
+    "auto_unmonitor_sonarr_enabled": False,
+    "auto_unmonitor_sonarr_interval_minutes": 1440,
+    "auto_unmonitor_sonarr_last_run": None,
+    "auto_unmonitor_radarr_enabled": False,
+    "auto_unmonitor_radarr_interval_minutes": 1440,
+    "auto_unmonitor_radarr_last_run": None,
 }
 
-AUTO_SEARCH_INTERVALS = [30, 60, 180, 360, 720, 1440, 2880, 10080]
+SCHEDULE_INTERVALS = [30, 60, 180, 360, 720, 1440, 2880, 10080]
 
 config_lock = threading.Lock()
+log_lock = threading.Lock()
 
 
 def load_config():
@@ -65,14 +72,14 @@ def save_unmonitor_log(entries):
         json.dump(entries, f, indent=2)
 
 
-def log_unmonitor_action(service, action, movies=None, episodes=None, series=None):
+def log_unmonitor_action(service, action, movies=None, episodes=None, series=None, source="manual"):
     """Log an unmonitor/remonitor action with full item details.
 
     movies: list of {"id": int, "title": str}
     episodes: list of {"id": int, "series": str, "season": int, "episode": int, "title": str}
     series: list of {"id": int, "title": str}
+    source: "manual" (UI button) or "scheduled" (background worker)
     """
-    entries = load_unmonitor_log()
     status_change = "monitored -> unmonitored" if action == "unmonitor" else "unmonitored -> monitored"
     entry = {
         "id": str(uuid.uuid4())[:8],
@@ -80,6 +87,7 @@ def log_unmonitor_action(service, action, movies=None, episodes=None, series=Non
         "service": service,
         "action": action,
         "status_change": status_change,
+        "source": source,
     }
     if movies:
         entry["movies"] = movies
@@ -90,8 +98,11 @@ def log_unmonitor_action(service, action, movies=None, episodes=None, series=Non
     if series:
         entry["series"] = series
         entry["series_ids"] = [s["id"] for s in series]
-    entries.append(entry)
-    save_unmonitor_log(entries)
+    # The scheduler writes from a background thread while the UI may be writing too
+    with log_lock:
+        entries = load_unmonitor_log()
+        entries.append(entry)
+        save_unmonitor_log(entries)
     return entry["id"]
 
 
@@ -337,16 +348,14 @@ def get_logs(service):
         return jsonify({"success": False, "error": str(e)}), 500
 
 
-@app.route("/api/radarr/unmonitor-downloaded", methods=["POST"])
-def radarr_unmonitor_downloaded():
-    """Unmonitor all downloaded movies in Radarr."""
-    config = load_config()
+def perform_radarr_unmonitor(config, source="manual"):
+    """Unmonitor all downloaded movies in Radarr. Returns a JSON-ready dict."""
     base_url = config["radarr_url"]
     api_key = config["radarr_api_key"]
 
     result = api_request(base_url, api_key, "movie")
     if not result["success"]:
-        return jsonify({"success": False, "error": result.get("error", "Failed to fetch movies")})
+        return {"success": False, "error": result.get("error", "Failed to fetch movies")}
 
     affected_movies = [
         {"id": m["id"], "title": m.get("title", "Unknown")}
@@ -355,7 +364,7 @@ def radarr_unmonitor_downloaded():
     ]
 
     if not affected_movies:
-        return jsonify({"success": True, "count": 0, "message": "No downloaded monitored movies found"})
+        return {"success": True, "count": 0, "message": "No downloaded monitored movies found"}
 
     movie_ids = [m["id"] for m in affected_movies]
     edit_result = api_request(
@@ -365,21 +374,25 @@ def radarr_unmonitor_downloaded():
     )
 
     if edit_result["success"]:
-        log_unmonitor_action("radarr", "unmonitor", movies=affected_movies)
-        return jsonify({"success": True, "count": len(movie_ids), "ids": movie_ids})
-    return jsonify({"success": False, "error": edit_result.get("error", "Failed to update movies")})
+        log_unmonitor_action("radarr", "unmonitor", movies=affected_movies, source=source)
+        return {"success": True, "count": len(movie_ids), "ids": movie_ids}
+    return {"success": False, "error": edit_result.get("error", "Failed to update movies")}
 
 
-@app.route("/api/sonarr/unmonitor-downloaded", methods=["POST"])
-def sonarr_unmonitor_downloaded():
-    """Unmonitor all downloaded episodes and fully-downloaded series in Sonarr."""
-    config = load_config()
+@app.route("/api/radarr/unmonitor-downloaded", methods=["POST"])
+def radarr_unmonitor_downloaded():
+    """Unmonitor all downloaded movies in Radarr."""
+    return jsonify(perform_radarr_unmonitor(load_config()))
+
+
+def perform_sonarr_unmonitor(config, source="manual"):
+    """Unmonitor downloaded episodes and fully-downloaded series. Returns a JSON-ready dict."""
     base_url = config["sonarr_url"]
     api_key = config["sonarr_api_key"]
 
     series_result = api_request(base_url, api_key, "series")
     if not series_result["success"]:
-        return jsonify({"success": False, "error": series_result.get("error", "Failed to fetch series")})
+        return {"success": False, "error": series_result.get("error", "Failed to fetch series")}
 
     affected_episodes = []
     affected_series = []
@@ -424,12 +437,19 @@ def sonarr_unmonitor_downloaded():
             ep_count = len(episode_ids)
 
     if ep_count == 0 and len(affected_series) == 0:
-        return jsonify({"success": True, "count": 0, "series_count": 0,
-                        "message": "No downloaded monitored episodes or completed series found"})
+        return {"success": True, "count": 0, "series_count": 0,
+                "message": "No downloaded monitored episodes or completed series found"}
 
-    log_unmonitor_action("sonarr", "unmonitor", episodes=affected_episodes, series=affected_series)
-    return jsonify({"success": True, "count": ep_count, "series_count": len(affected_series),
-                    "episode_ids": episode_ids, "series_ids": [s["id"] for s in affected_series]})
+    log_unmonitor_action("sonarr", "unmonitor", episodes=affected_episodes,
+                         series=affected_series, source=source)
+    return {"success": True, "count": ep_count, "series_count": len(affected_series),
+            "episode_ids": episode_ids, "series_ids": [s["id"] for s in affected_series]}
+
+
+@app.route("/api/sonarr/unmonitor-downloaded", methods=["POST"])
+def sonarr_unmonitor_downloaded():
+    """Unmonitor all downloaded episodes and fully-downloaded series in Sonarr."""
+    return jsonify(perform_sonarr_unmonitor(load_config()))
 
 
 @app.route("/api/radarr/remonitor", methods=["POST"])
@@ -598,16 +618,30 @@ def trigger_search(service, config):
     )
 
 
-def check_and_run_auto_searches():
+def run_unmonitor(service, config):
+    if service == "sonarr":
+        return perform_sonarr_unmonitor(config, source="scheduled")
+    return perform_radarr_unmonitor(config, source="scheduled")
+
+
+# prefix -> callable(service, config) -> {"success": bool, ...}
+SCHEDULED_TASKS = {
+    "auto_search": trigger_search,
+    "auto_unmonitor": run_unmonitor,
+}
+
+
+def check_and_run_scheduled(prefix, runner):
+    """Run `runner` for each service whose schedule is due, then persist last_run."""
     with config_lock:
         config = load_config()
     now = datetime.now(timezone.utc)
-    dirty = False
+    completed = {}
     for service in ("sonarr", "radarr"):
-        if not config.get(f"auto_search_{service}_enabled"):
+        if not config.get(f"{prefix}_{service}_enabled"):
             continue
-        interval = int(config.get(f"auto_search_{service}_interval_minutes") or 360)
-        last_run = config.get(f"auto_search_{service}_last_run")
+        interval = int(config.get(f"{prefix}_{service}_interval_minutes") or 360)
+        last_run = config.get(f"{prefix}_{service}_last_run")
         if last_run:
             try:
                 last = datetime.fromisoformat(last_run)
@@ -617,73 +651,88 @@ def check_and_run_auto_searches():
             last = None
         if last and (now - last).total_seconds() < interval * 60:
             continue
-        result = trigger_search(service, config)
+        result = runner(service, config)
+        # Only record a run on success, so an unreachable service retries next tick
         if result.get("success"):
-            config[f"auto_search_{service}_last_run"] = now.isoformat()
-            dirty = True
-    if dirty:
+            completed[f"{prefix}_{service}_last_run"] = now.isoformat()
+    if completed:
         with config_lock:
             current = load_config()
-            for service in ("sonarr", "radarr"):
-                key = f"auto_search_{service}_last_run"
-                if key in config:
-                    current[key] = config[key]
+            current.update(completed)
             save_config(current)
 
 
-def auto_search_worker():
+def scheduler_worker():
     while True:
-        try:
-            check_and_run_auto_searches()
-        except Exception:
-            pass
+        for prefix, runner in SCHEDULED_TASKS.items():
+            try:
+                check_and_run_scheduled(prefix, runner)
+            except Exception:
+                pass
         time.sleep(60)
 
 
-@app.route("/api/auto-search", methods=["GET"])
-def get_auto_search():
+def schedule_state(prefix, default_interval):
     config = load_config()
-    return jsonify({
-        "intervals": AUTO_SEARCH_INTERVALS,
-        "sonarr": {
-            "enabled": bool(config.get("auto_search_sonarr_enabled")),
-            "interval_minutes": int(config.get("auto_search_sonarr_interval_minutes") or 360),
-            "last_run": config.get("auto_search_sonarr_last_run"),
-        },
-        "radarr": {
-            "enabled": bool(config.get("auto_search_radarr_enabled")),
-            "interval_minutes": int(config.get("auto_search_radarr_interval_minutes") or 360),
-            "last_run": config.get("auto_search_radarr_last_run"),
-        },
-    })
+    state = {"intervals": SCHEDULE_INTERVALS}
+    for service in ("sonarr", "radarr"):
+        state[service] = {
+            "enabled": bool(config.get(f"{prefix}_{service}_enabled")),
+            "interval_minutes": int(
+                config.get(f"{prefix}_{service}_interval_minutes") or default_interval
+            ),
+            "last_run": config.get(f"{prefix}_{service}_last_run"),
+        }
+    return state
 
 
-@app.route("/api/auto-search", methods=["POST"])
-def update_auto_search():
-    data = request.get_json(silent=True)
+def update_schedule(prefix, data):
+    """Apply a schedule update payload. Returns (response, status_code)."""
     if data is None:
-        return jsonify({"success": False, "error": "Invalid JSON payload"}), 400
+        return {"success": False, "error": "Invalid JSON payload"}, 400
 
     with config_lock:
         config = load_config()
         for service in ("sonarr", "radarr"):
             section = data.get(service) or {}
             if "enabled" in section:
-                config[f"auto_search_{service}_enabled"] = bool(section["enabled"])
+                config[f"{prefix}_{service}_enabled"] = bool(section["enabled"])
             if "interval_minutes" in section:
                 try:
                     minutes = int(section["interval_minutes"])
                 except (TypeError, ValueError):
-                    return jsonify({"success": False, "error": f"Invalid interval for {service}"}), 400
-                if minutes not in AUTO_SEARCH_INTERVALS:
-                    return jsonify({"success": False, "error": f"Unsupported interval for {service}"}), 400
-                config[f"auto_search_{service}_interval_minutes"] = minutes
+                    return {"success": False, "error": f"Invalid interval for {service}"}, 400
+                if minutes not in SCHEDULE_INTERVALS:
+                    return {"success": False, "error": f"Unsupported interval for {service}"}, 400
+                config[f"{prefix}_{service}_interval_minutes"] = minutes
         try:
             save_config(config)
         except Exception as e:
-            return jsonify({"success": False, "error": str(e)}), 500
+            return {"success": False, "error": str(e)}, 500
 
-    return jsonify({"success": True})
+    return {"success": True}, 200
+
+
+@app.route("/api/auto-search", methods=["GET"])
+def get_auto_search():
+    return jsonify(schedule_state("auto_search", 360))
+
+
+@app.route("/api/auto-search", methods=["POST"])
+def update_auto_search():
+    body, status = update_schedule("auto_search", request.get_json(silent=True))
+    return jsonify(body), status
+
+
+@app.route("/api/auto-unmonitor", methods=["GET"])
+def get_auto_unmonitor():
+    return jsonify(schedule_state("auto_unmonitor", 1440))
+
+
+@app.route("/api/auto-unmonitor", methods=["POST"])
+def update_auto_unmonitor():
+    body, status = update_schedule("auto_unmonitor", request.get_json(silent=True))
+    return jsonify(body), status
 
 
 @app.route("/api/config", methods=["GET"])
@@ -729,5 +778,5 @@ def update_config():
 
 
 if __name__ == "__main__":
-    threading.Thread(target=auto_search_worker, daemon=True).start()
+    threading.Thread(target=scheduler_worker, daemon=True).start()
     app.run(host="0.0.0.0", port=7664, debug=False)

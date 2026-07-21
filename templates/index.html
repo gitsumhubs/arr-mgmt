@@ -45,23 +45,23 @@
             </div>
             <div id="search-feedback" class="feedback"></div>
 
-            <div class="auto-search">
+            <div class="auto-schedule">
                 <h3>Automated Search</h3>
-                <div class="auto-search-row">
-                    <label class="auto-search-toggle">
+                <div class="auto-schedule-row">
+                    <label class="auto-schedule-toggle">
                         <input type="checkbox" id="auto-search-sonarr-enabled">
                         Sonarr every
                     </label>
                     <select id="auto-search-sonarr-interval"></select>
-                    <span id="auto-search-sonarr-next" class="auto-search-next"></span>
+                    <span id="auto-search-sonarr-next" class="auto-schedule-next"></span>
                 </div>
-                <div class="auto-search-row">
-                    <label class="auto-search-toggle">
+                <div class="auto-schedule-row">
+                    <label class="auto-schedule-toggle">
                         <input type="checkbox" id="auto-search-radarr-enabled">
                         Radarr every
                     </label>
                     <select id="auto-search-radarr-interval"></select>
-                    <span id="auto-search-radarr-next" class="auto-search-next"></span>
+                    <span id="auto-search-radarr-next" class="auto-schedule-next"></span>
                 </div>
                 <button id="save-auto-search" class="btn btn-success">Save Schedule</button>
                 <span id="auto-search-feedback" class="feedback"></span>
@@ -78,6 +78,28 @@
                 <button id="undo-radarr" class="btn btn-secondary" style="display:none">Undo Radarr</button>
             </div>
             <div id="unmonitor-feedback" class="feedback"></div>
+
+            <div class="auto-schedule">
+                <h3>Automated Unmonitor</h3>
+                <div class="auto-schedule-row">
+                    <label class="auto-schedule-toggle">
+                        <input type="checkbox" id="auto-unmonitor-sonarr-enabled">
+                        Sonarr every
+                    </label>
+                    <select id="auto-unmonitor-sonarr-interval"></select>
+                    <span id="auto-unmonitor-sonarr-next" class="auto-schedule-next"></span>
+                </div>
+                <div class="auto-schedule-row">
+                    <label class="auto-schedule-toggle">
+                        <input type="checkbox" id="auto-unmonitor-radarr-enabled">
+                        Radarr every
+                    </label>
+                    <select id="auto-unmonitor-radarr-interval"></select>
+                    <span id="auto-unmonitor-radarr-next" class="auto-schedule-next"></span>
+                </div>
+                <button id="save-auto-unmonitor" class="btn btn-success">Save Schedule</button>
+                <span id="auto-unmonitor-feedback" class="feedback"></span>
+            </div>
 
             <details id="unmonitor-log-details" class="unmonitor-log-section">
                 <summary>Action History</summary>

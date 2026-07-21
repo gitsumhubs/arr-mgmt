@@ -36,6 +36,10 @@ log viewing.
   - Unmonitors individual episodes that have files
   - Unmonitors entire series when all episodes are downloaded
   - Undo buttons appear after each action for quick reversal
+- Automated (scheduled) unmonitor per service
+  - Same interval choices and per-service toggles as automated search
+  - Runs the identical logic as the manual button, on the same 60s worker
+  - Scheduled runs are written to Action History tagged `scheduled` and stay undoable
 - Action History log (persisted to `unmonitor_log.json`)
   - Collapsible viewer with Sonarr/Radarr toggle
   - Shows exact movie titles, series names, season/episode numbers for each action
@@ -101,8 +105,10 @@ panel in the UI. See [Data Files](#configjson) for the full key list.
 | GET | `/api/queue/items` | Detailed queue items (limit param) |
 | POST | `/api/sonarr/search` | Trigger missing episode search |
 | POST | `/api/radarr/search` | Trigger missing movie search |
-| GET | `/api/auto-search` | Scheduler state + allowed intervals |
-| POST | `/api/auto-search` | Update scheduler enable/interval per service |
+| GET | `/api/auto-search` | Search scheduler state + allowed intervals |
+| POST | `/api/auto-search` | Update search scheduler enable/interval per service |
+| GET | `/api/auto-unmonitor` | Unmonitor scheduler state + allowed intervals |
+| POST | `/api/auto-unmonitor` | Update unmonitor scheduler enable/interval per service |
 | POST | `/api/sonarr/restart` | Restart Sonarr container |
 | POST | `/api/radarr/restart` | Restart Radarr container |
 | POST | `/api/sonarr/unmonitor-downloaded` | Unmonitor downloaded episodes + completed series |
@@ -139,9 +145,15 @@ schedule. Created on first save from the Settings panel; missing keys fall back 
 | `auto_search_radarr_enabled` | Scheduled movie search on/off | `true` |
 | `auto_search_radarr_interval_minutes` | Interval (must be an allowed value) | `180` |
 | `auto_search_radarr_last_run` | UTC ISO timestamp of last auto search | `2026-07-21T11:34:20+00:00` |
+| `auto_unmonitor_sonarr_enabled` | Scheduled episode/series unmonitor on/off | `false` |
+| `auto_unmonitor_sonarr_interval_minutes` | Interval (default `1440`) | `1440` |
+| `auto_unmonitor_sonarr_last_run` | UTC ISO timestamp of last auto unmonitor | `null` |
+| `auto_unmonitor_radarr_enabled` | Scheduled movie unmonitor on/off | `false` |
+| `auto_unmonitor_radarr_interval_minutes` | Interval (default `1440`) | `1440` |
+| `auto_unmonitor_radarr_last_run` | UTC ISO timestamp of last auto unmonitor | `null` |
 
 Allowed intervals (minutes): `30, 60, 180, 360, 720, 1440, 2880, 10080`. Any other
-value is rejected by `POST /api/auto-search`.
+value is rejected by `POST /api/auto-search` and `POST /api/auto-unmonitor`.
 
 **Note:** `config.json` contains live API keys but is not gitignored — avoid pasting
 its contents into public issues or docs.
@@ -154,6 +166,7 @@ Persistent action log. Each entry contains:
 - `service` - "sonarr" or "radarr"
 - `action` - "unmonitor" or "remonitor"
 - `status_change` - Human-readable direction (e.g., "monitored -> unmonitored")
+- `source` - "manual" (UI button) or "scheduled" (background worker); entries written before this field existed have no `source` and display as manual
 - `movies` - (Radarr) List of `{id, title}`
 - `episodes` - (Sonarr) List of `{id, series, season, episode, title}`
 - `series` - (Sonarr) List of `{id, title}` for series-level changes
@@ -161,24 +174,51 @@ Persistent action log. Each entry contains:
 
 ---
 
-## Automated Search Scheduler
+## Schedulers
 
-Implemented in `app.py` (`auto_search_worker` / `check_and_run_auto_searches`):
+Two independent schedules — **automated search** and **automated unmonitor** — share
+one generic implementation in `app.py`:
+
+| Piece | Purpose |
+|-------|---------|
+| `SCHEDULED_TASKS` | Maps a config key prefix to its runner: `auto_search` -> `trigger_search`, `auto_unmonitor` -> `run_unmonitor` |
+| `check_and_run_scheduled(prefix, runner)` | Runs the runner for each service whose schedule is due, then persists `last_run` |
+| `scheduler_worker()` | Daemon thread; loops over every entry in `SCHEDULED_TASKS` and sleeps 60s |
+| `schedule_state()` / `update_schedule()` | Back the `GET`/`POST` endpoints for both prefixes |
+
+Behavior common to both:
 
 - A daemon thread is started in the `__main__` block and loops every 60 seconds.
 - On each tick, for each enabled service it compares `now - last_run` against the
-  configured interval and, if due, POSTs `MissingEpisodeSearch` (Sonarr) or
-  `MissingMoviesSearch` (Radarr) to the service's `/api/v3/command` endpoint.
-- `last_run` is only updated when the command succeeds, so a failed/unreachable
-  service is retried on the next tick.
-- Config reads/writes are guarded by a `threading.Lock` so a scheduler write cannot
-  clobber a concurrent Settings save.
-- If `enabled` is on but `last_run` is null (never run), the first search fires
-  within ~1 minute of startup — the UI shows "runs within ~1 min".
+  configured interval and runs the task if due.
+- `last_run` is only updated when the task succeeds, so a failed/unreachable service
+  is retried on the next tick.
+- Config reads/writes are guarded by `config_lock`, and Action History writes by
+  `log_lock`, so background runs cannot clobber concurrent UI actions.
+- If `enabled` is on but `last_run` is null (never run), the task fires within
+  ~1 minute of startup — the UI shows "runs within ~1 min".
+- A corrupt/unparseable `last_run` is treated as "never run" rather than crashing.
 
-Because the thread starts under `if __name__ == "__main__":`, the scheduler only
-runs when the app is launched directly (`python app.py`, as the systemd unit does).
-It will **not** run under a WSGI server such as gunicorn without changes.
+Task-specific notes:
+
+- **Search** POSTs `MissingEpisodeSearch` (Sonarr) or `MissingMoviesSearch` (Radarr)
+  to the service's `/api/v3/command` endpoint.
+- **Unmonitor** calls the same `perform_sonarr_unmonitor` / `perform_radarr_unmonitor`
+  functions as the UI buttons, with `source="scheduled"` so Action History
+  distinguishes them. Entries remain undoable exactly like manual ones.
+- The Sonarr unmonitor makes one API call per series, so a large library can occupy
+  the worker thread for minutes. Other scheduled tasks simply run on a later tick;
+  nothing overlaps because a single thread drives all schedules.
+- Default unmonitor interval is 1440 minutes (24h) versus 360 (6h) for search.
+
+To add another scheduled task: add `<prefix>_<service>_enabled` /
+`_interval_minutes` / `_last_run` keys to `DEFAULT_CONFIG`, register a
+`runner(service, config) -> {"success": bool}` in `SCHEDULED_TASKS`, and expose
+`schedule_state`/`update_schedule` routes for the prefix.
+
+Because the thread starts under `if __name__ == "__main__":`, the schedulers only
+run when the app is launched directly (`python app.py`, as the systemd unit does).
+They will **not** run under a WSGI server such as gunicorn without changes.
 
 ---
 
@@ -264,8 +304,9 @@ sudo journalctl -u arr-mgmt -f
 4. Use buttons to search missing content or restart services
 5. Optionally enable Automated Search, pick an interval per service, and click Save Schedule
 6. Use Unmonitor Downloaded to bulk-unmonitor completed items
-7. Expand Action History to review past changes or undo them
-8. Review queue items and service logs as needed
+7. Optionally enable Automated Unmonitor the same way to keep the library tidy on a schedule
+8. Expand Action History to review past changes or undo them (scheduled runs are tagged)
+9. Review queue items and service logs as needed
 
 Get API keys from: Settings > General > API Key (in each app)
 
@@ -277,6 +318,8 @@ Get API keys from: Settings > General > API Key (in each app)
 - **Undo not available for old entries:** Log entries from before the detailed logging update only have IDs, not titles. Undo still works, but item names won't display.
 - **Service logs empty:** Ensure the user running arr-mgmt is in the `docker` group (`sudo usermod -aG docker josh`).
 - **Connection failed errors:** Verify Sonarr/Radarr URLs and API keys in Settings. Ensure the services are running.
-- **Automated search never fires:** Confirm the toggle is saved (check `auto_search_*_enabled` in `config.json`), and that the app was started via `python app.py` — the scheduler thread does not start under a WSGI server. Check `journalctl -u arr-mgmt -f` and the target service's logs for the triggered command.
+- **Automated search or unmonitor never fires:** Confirm the toggle is saved (check `auto_search_*_enabled` / `auto_unmonitor_*_enabled` in `config.json`), and that the app was started via `python app.py` — the scheduler thread does not start under a WSGI server. Check `journalctl -u arr-mgmt -f` and the target service's logs.
 - **"Unsupported interval" when saving the schedule:** Only the intervals listed under [config.json](#configjson) are accepted; the UI dropdown is the source of truth.
+- **Automated unmonitor re-runs on things you deliberately re-monitored:** The scheduled job applies the same rule as the button — anything monitored *and* downloaded gets unmonitored. If you re-monitor an already-downloaded item, the next scheduled run will unmonitor it again. Disable the schedule for that service or use a longer interval.
+- **A scheduled unmonitor took a long time / next tick was late:** Expected on large Sonarr libraries; the worker is single-threaded and the Sonarr scan is one API call per series.
 - **Scheduler ran but nothing downloaded:** The search command was accepted by Sonarr/Radarr — check indexer results in the Service Logs panel; arr-mgmt only triggers the search.
