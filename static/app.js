@@ -89,6 +89,16 @@
         const saveBtn = document.getElementById(`save-${name}`);
         const feedback = el('feedback');
 
+        // A cached/stale template can serve markup without this panel. Skip it rather
+        // than throwing, which would abort the rest of the page's scripts.
+        const missing = Object.values(services).some(
+            (s) => !s.enabled || !s.interval || !s.next
+        ) || !saveBtn || !feedback;
+        if (missing) {
+            console.warn(`Schedule panel "${name}" not found in DOM - skipping`);
+            return { fetchState: () => {} };
+        }
+
         Object.values(services).forEach((s) => populateIntervalSelect(s.interval));
 
         async function fetchState() {
