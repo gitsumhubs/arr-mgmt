@@ -45,9 +45,11 @@ DEFAULT_CONFIG = {
 
 SCHEDULE_INTERVALS = [30, 60, 180, 360, 720, 1440, 2880, 10080]
 
-# Only auto-monitor newly-imported seasons that started airing on/after this year.
-# Prevents old, already-completed-and-unmonitored seasons from being woken back up.
-SONARR_NEW_SEASON_MIN_YEAR = 2025
+# Only auto-monitor unmonitored, incomplete seasons that started airing on/after this
+# year. A season that's already fully downloaded is never affected by this (that's
+# handled by the "incomplete" check itself) - this floor only limits how far back an
+# actually-missing season will get woken back up and searched for again.
+SONARR_NEW_SEASON_MIN_YEAR = 2020
 
 config_lock = threading.Lock()
 log_lock = threading.Lock()
@@ -406,7 +408,10 @@ def perform_sonarr_unmonitor(config, source="manual"):
       downloaded yet) monitored, including one that shows up long after the series
       was fully unmonitored
     - series listed in config["sonarr_unmonitor_excluded_series"] are skipped
-      entirely - nothing above touches them
+      entirely (mode "exclude", the default) or restricted to only their newest
+      season (mode "latest_only") - every older season is force-unmonitored
+      regardless of completeness, and the newest season follows the normal rules
+      above as if it were the show's only season
     Returns a JSON-ready dict."""
     base_url = config["sonarr_url"]
     api_key = config["sonarr_api_key"]
@@ -415,7 +420,9 @@ def perform_sonarr_unmonitor(config, source="manual"):
     if not series_result["success"]:
         return {"success": False, "error": series_result.get("error", "Failed to fetch series")}
 
-    excluded_ids = {e["id"] for e in config.get("sonarr_unmonitor_excluded_series", [])}
+    series_modes = {
+        e["id"]: e.get("mode", "exclude") for e in config.get("sonarr_unmonitor_excluded_series", [])
+    }
 
     affected_episodes = []
     affected_series = []
@@ -425,7 +432,8 @@ def perform_sonarr_unmonitor(config, source="manual"):
     new_season_series = []
     new_season_episode_ids = []
     for s in series_result["data"]:
-        if s["id"] in excluded_ids:
+        mode = series_modes.get(s["id"])
+        if mode == "exclude":
             continue
 
         series_title = s.get("title", "Unknown")
@@ -453,6 +461,35 @@ def perform_sonarr_unmonitor(config, source="manual"):
         seasons_by_number = {}
         for ep in regular_episodes:
             seasons_by_number.setdefault(ep.get("seasonNumber"), []).append(ep)
+
+        if mode == "latest_only":
+            latest_season_num = max(seasons_by_number)
+            series_changed = False
+            force_unmonitor_ids = []
+            for season_num, season_eps in seasons_by_number.items():
+                if season_num == latest_season_num:
+                    continue
+                for ep in season_eps:
+                    # Episodes that are monitored+hasFile are already queued for
+                    # unmonitor by the per-episode loop above; only need to force the
+                    # ones that are monitored but still missing (i.e. still "wanted").
+                    if ep.get("monitored") and not ep.get("hasFile"):
+                        force_unmonitor_ids.append(ep["id"])
+                for season_entry in s.get("seasons", []):
+                    if season_entry.get("seasonNumber") == season_num and season_entry.get("monitored"):
+                        season_entry["monitored"] = False
+                        series_changed = True
+            if force_unmonitor_ids:
+                api_request(
+                    base_url, api_key, "episode/monitor",
+                    method="PUT", data={"episodeIds": force_unmonitor_ids, "monitored": False}
+                )
+            if series_changed:
+                api_request(base_url, api_key, f"series/{s['id']}", method="PUT", data=s)
+            # Only the newest season follows the normal rules below, as if it were
+            # the show's only season.
+            seasons_by_number = {latest_season_num: seasons_by_number[latest_season_num]}
+            regular_episodes = seasons_by_number[latest_season_num]
 
         # Wake up (re-monitor) any season that's unmonitored, is missing at least one
         # file, and started airing on/after SONARR_NEW_SEASON_MIN_YEAR - catches a
@@ -624,14 +661,23 @@ def sonarr_exclusions():
     return jsonify({"success": True, "exclusions": exclusions, "stale": stale})
 
 
+VALID_EXCLUSION_MODES = ("exclude", "latest_only")
+
+
 @app.route("/api/sonarr/exclusions", methods=["POST"])
 def update_sonarr_exclusions():
-    """Add, remove, or swap (removed/re-added) a Sonarr series exclusion."""
+    """Add, remove, swap (removed/re-added), or change the mode of a Sonarr series
+    exclusion. Modes: "exclude" (default, skip entirely) or "latest_only" (force-
+    unmonitor every season except the newest, which follows the normal rules)."""
     data = request.get_json(silent=True)
     if not data or "action" not in data:
         return jsonify({"success": False, "error": "Invalid payload"}), 400
 
     action = data["action"]
+    mode = data.get("mode", "exclude")
+    if mode not in VALID_EXCLUSION_MODES:
+        return jsonify({"success": False, "error": f"Invalid mode, must be one of {VALID_EXCLUSION_MODES}"}), 400
+
     with config_lock:
         config = load_config()
         exclusions = config.get("sonarr_unmonitor_excluded_series", [])
@@ -640,7 +686,7 @@ def update_sonarr_exclusions():
             if "id" not in data or "title" not in data:
                 return jsonify({"success": False, "error": "id and title required"}), 400
             if not any(e["id"] == data["id"] for e in exclusions):
-                exclusions.append({"id": data["id"], "title": data["title"]})
+                exclusions.append({"id": data["id"], "title": data["title"], "mode": mode})
         elif action == "remove":
             if "id" not in data:
                 return jsonify({"success": False, "error": "id required"}), 400
@@ -648,9 +694,16 @@ def update_sonarr_exclusions():
         elif action == "swap":
             if "old_id" not in data or "new_id" not in data or "new_title" not in data:
                 return jsonify({"success": False, "error": "old_id, new_id, new_title required"}), 400
+            old_mode = next((e.get("mode", "exclude") for e in exclusions if e["id"] == data["old_id"]), "exclude")
             exclusions = [e for e in exclusions if e["id"] != data["old_id"]]
             if not any(e["id"] == data["new_id"] for e in exclusions):
-                exclusions.append({"id": data["new_id"], "title": data["new_title"]})
+                exclusions.append({"id": data["new_id"], "title": data["new_title"], "mode": old_mode})
+        elif action == "set_mode":
+            if "id" not in data:
+                return jsonify({"success": False, "error": "id required"}), 400
+            for e in exclusions:
+                if e["id"] == data["id"]:
+                    e["mode"] = mode
         else:
             return jsonify({"success": False, "error": "Unknown action"}), 400
 

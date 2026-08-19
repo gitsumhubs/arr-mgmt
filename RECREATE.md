@@ -50,7 +50,7 @@ log viewing.
       that's complete) while the incomplete one is left untouched.
   - Re-monitors any unmonitored season (excluding specials) that's missing at least
     one file and whose first episode aired on/after `SONARR_NEW_SEASON_MIN_YEAR`
-    (currently `2025`, set in `app.py`), and re-monitors the series to match —
+    (currently `2020`, set in `app.py`), and re-monitors the series to match —
     catches a season Sonarr imported after the series was previously (fully)
     unmonitored, including one that shows up long after that (there's no rolling
     time window — `SONARR_NEW_SEASON_MIN_YEAR` is a floor, so this keeps working
@@ -64,16 +64,26 @@ log viewing.
   - Undo buttons appear after each action for quick reversal; season-only completions
     are only undoable from the Action History log (not the just-ran quick-undo
     button), and undo restores that specific season rather than the whole series
-  - **Excluded shows:** a search box lets you pick any Sonarr series to fully exclude
-    from both the button and the scheduled unmonitor — an excluded series is skipped
-    before any of the logic above runs, so it's left exactly as you set it manually.
-    Use case: a show where you only ever want the old seasons kept, with new seasons
-    excluded from this app's auto-unmonitor/auto-remonitor behavior entirely.
+  - **Excluded shows:** a search box lets you pick any Sonarr series to override the
+    normal rules, with a mode per show:
+    - **Exclude entirely** (default): skipped before any of the logic above runs, so
+      it's left exactly as you set it manually. Use case: a show where you only
+      ever want the old seasons kept, with new seasons excluded from this app's
+      auto-unmonitor/auto-remonitor behavior entirely.
+    - **Latest season only**: every season except the show's newest is
+      force-unmonitored (season + all its episodes) regardless of completeness,
+      while the newest season follows the normal rules above as if it were the
+      show's only season. Use case: a show with many old seasons you don't have
+      and don't want chased (e.g. an annual series with 20+ years of gaps), but
+      you still want the current season followed and searched for.
     Exclusions are stored by Sonarr series ID in `config.json`
-    (`sonarr_unmonitor_excluded_series`, list of `{id, title}`). If an excluded show
-    is removed and re-added in Sonarr (new ID), the panel shows a notice with a
-    one-click "Re-exclude" action when it can find a same-titled show currently in
-    the library, or "no longer in Sonarr" when it can't.
+    (`sonarr_unmonitor_excluded_series`, list of `{id, title, mode}` — `mode` is
+    `"exclude"` or `"latest_only"`, omitted/missing means `"exclude"`). Change a
+    show's mode any time via the dropdown next to it in the list — no need to
+    remove and re-add. If an excluded show is removed and re-added in Sonarr (new
+    ID), the panel shows a notice with a one-click "Re-exclude" action (carrying
+    over its mode) when it can find a same-titled show currently in the library,
+    or "no longer in Sonarr" when it can't.
 - Automated (scheduled) unmonitor per service
   - Same interval choices and per-service toggles as automated search
   - Runs the identical logic as the manual button, on the same 60s worker
@@ -153,7 +163,7 @@ panel in the UI. See [Data Files](#configjson) for the full key list.
 | POST | `/api/radarr/unmonitor-downloaded` | Unmonitor downloaded movies |
 | GET | `/api/sonarr/series-list` | List all Sonarr series (id/title/year/status) for the exclusion search box |
 | GET | `/api/sonarr/exclusions` | List current exclusions + any stale ones (removed/re-added series) |
-| POST | `/api/sonarr/exclusions` | `{"action":"add","id","title"}` / `{"action":"remove","id"}` / `{"action":"swap","old_id","new_id","new_title"}` |
+| POST | `/api/sonarr/exclusions` | `{"action":"add","id","title","mode"?}` / `{"action":"remove","id"}` / `{"action":"swap","old_id","new_id","new_title"}` / `{"action":"set_mode","id","mode"}` — `mode` is `"exclude"` (default) or `"latest_only"` |
 | POST | `/api/sonarr/remonitor` | Re-monitor episodes/series (undo) |
 | POST | `/api/radarr/remonitor` | Re-monitor movies (undo) |
 | GET | `/api/unmonitor-log` | Get action history (service filter param) |
@@ -192,7 +202,7 @@ schedule. Created on first save from the Settings panel; missing keys fall back 
 | `auto_unmonitor_radarr_enabled` | Scheduled movie unmonitor on/off | `false` |
 | `auto_unmonitor_radarr_interval_minutes` | Interval (default `1440`) | `1440` |
 | `auto_unmonitor_radarr_last_run` | UTC ISO timestamp of last auto unmonitor | `null` |
-| `sonarr_unmonitor_excluded_series` | List of `{id, title}` Sonarr series fully skipped by unmonitor (button + schedule) | `[]` |
+| `sonarr_unmonitor_excluded_series` | List of `{id, title, mode}` Sonarr series overrides for unmonitor (button + schedule); `mode` is `"exclude"` (fully skipped) or `"latest_only"` (only newest season follows normal rules) | `[]` |
 
 Allowed intervals (minutes): `30, 60, 180, 360, 720, 1440, 2880, 10080`. Any other
 value is rejected by `POST /api/auto-search` and `POST /api/auto-unmonitor`.

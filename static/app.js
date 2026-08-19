@@ -545,11 +545,32 @@
             const li = document.createElement('li');
             const name = document.createElement('span');
             name.textContent = e.title;
+
+            const modeSelect = document.createElement('select');
+            modeSelect.className = 'exclusion-mode-select';
+            [
+                { value: 'exclude', label: 'Exclude entirely' },
+                { value: 'latest_only', label: 'Latest season only' },
+            ].forEach(opt => {
+                const o = document.createElement('option');
+                o.value = opt.value;
+                o.textContent = opt.label;
+                modeSelect.appendChild(o);
+            });
+            modeSelect.value = e.mode || 'exclude';
+            modeSelect.addEventListener('change', () => setExclusionMode(e.id, modeSelect.value));
+
             const removeBtn = document.createElement('button');
             removeBtn.textContent = 'Remove';
             removeBtn.addEventListener('click', () => removeExclusion(e.id));
+
+            const controls = document.createElement('div');
+            controls.className = 'exclusion-controls';
+            controls.appendChild(modeSelect);
+            controls.appendChild(removeBtn);
+
             li.appendChild(name);
-            li.appendChild(removeBtn);
+            li.appendChild(controls);
             exclusionList.appendChild(li);
         });
     }
@@ -614,6 +635,15 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'remove', id }),
+        });
+        fetchExclusions();
+    }
+
+    async function setExclusionMode(id, mode) {
+        await fetch('/api/sonarr/exclusions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'set_mode', id, mode }),
         });
         fetchExclusions();
     }
