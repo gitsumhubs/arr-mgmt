@@ -472,7 +472,7 @@
 
             if (data.success) {
                 const noun = service === 'sonarr' ? 'episodes' : 'movies';
-                const nothingHappened = data.count === 0 && !data.series_count &&
+                const nothingHappened = data.count === 0 && !data.series_count && !data.season_count &&
                     !data.new_season_count && !data.new_season_series_count;
                 if (nothingHappened) {
                     showFeedback(unmonitorFeedback, data.message || `No monitored downloaded ${noun} found`, 'info');
@@ -484,6 +484,9 @@
                             unmonitorMsg += ` and ${data.series_count} series`;
                         }
                         parts.push(unmonitorMsg);
+                    }
+                    if (data.season_count) {
+                        parts.push(`Retired ${data.season_count} completed season${data.season_count === 1 ? '' : 's'} on still-airing shows`);
                     }
                     if (data.new_season_count) {
                         let seasonMsg = `Monitored ${data.new_season_count} new episode${data.new_season_count === 1 ? '' : 's'}`;
@@ -530,10 +533,11 @@
             });
         }
 
-        // Series-level changes
+        // Series-level (or season-level) changes
         if (entry.series) {
             entry.series.forEach(s => {
-                items.push(`${s.title || 'Series #' + s.id} (entire series)`);
+                const scope = s.season !== undefined && s.season !== null ? `Season ${s.season}` : 'entire series';
+                items.push(`${s.title || 'Series #' + s.id} (${scope})`);
             });
         }
 

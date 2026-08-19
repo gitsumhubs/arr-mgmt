@@ -33,15 +33,23 @@ log viewing.
   - Background thread checks every 60s and fires searches that are due
   - Last-run timestamp persisted in `config.json`; UI shows "next in Xh Ym"
 - Unmonitor downloaded episodes and completed series (Sonarr) and movies (Radarr)
-  - Unmonitors individual episodes that have files
-  - Unmonitors entire series when all non-special episodes are downloaded (specials
-    are ignored for this check — a show with all regular episodes downloaded but no
-    specials on disk still gets unmonitored)
+  - Unmonitors individual episodes that have files, everywhere, regardless of season
+  - Specials (season 0) are ignored for every completion check below — a show/season
+    with all regular episodes downloaded but no specials on disk still counts as done
+  - Sonarr series with `status: "ended"`: once every non-special episode is downloaded,
+    the whole series gets unmonitored (series-level flag off)
+  - Sonarr series that are still airing (`status` is `"continuing"`/`"upcoming"`/
+    anything other than `"ended"`): the series-level flag and its newest season are
+    never touched, but any *earlier* season that's fully downloaded gets its
+    season-level monitor flag turned off individually, so Sonarr stops re-scanning
+    completed seasons while it keeps watching for the next one
   - Also re-monitors any newly-imported Sonarr season (excluding specials) whose
     first episode aired on/after `SONARR_NEW_SEASON_MIN_YEAR` (currently `2025`,
     set in `app.py`), so a show that comes back for a new season isn't left
     unmonitored forever. Older seasons that happen to be unmonitored are left alone.
-  - Undo buttons appear after each action for quick reversal
+  - Undo buttons appear after each action for quick reversal; season-only completions
+    are only undoable from the Action History log (not the just-ran quick-undo
+    button), and undo restores that specific season rather than the whole series
 - Automated (scheduled) unmonitor per service
   - Same interval choices and per-service toggles as automated search
   - Runs the identical logic as the manual button, on the same 60s worker
@@ -172,10 +180,16 @@ Persistent action log. Each entry contains:
 - `service` - "sonarr" or "radarr"
 - `action` - "unmonitor" or "remonitor"
 - `status_change` - Human-readable direction (e.g., "monitored -> unmonitored")
-- `source` - "manual" (UI button) or "scheduled" (background worker); Sonarr new-season auto-monitor entries suffix this with `_new_season` (e.g. `manual_new_season`); entries written before this field existed have no `source` and display as manual
+- `source` - "manual" (UI button) or "scheduled" (background worker); Sonarr suffixes
+  this for the two automated sub-cases: `_new_season` (waking up a newly-imported
+  season) and `_season` (retiring one completed season on a still-airing show), e.g.
+  `manual_season`, `scheduled_new_season`; entries written before this field existed
+  have no `source` and display as manual
 - `movies` - (Radarr) List of `{id, title}`
 - `episodes` - (Sonarr) List of `{id, series, season, episode, title}`
-- `series` - (Sonarr) List of `{id, title}` for series-level changes
+- `series` - (Sonarr) List of `{id, title}` for series-level changes, or
+  `{id, title, season}` when the entry is a season-only completion/wake-up (undo then
+  restores just that season's monitor flag instead of the whole series)
 - `movie_ids` / `episode_ids` / `series_ids` - Flat ID lists for API calls
 
 ---
@@ -328,5 +342,7 @@ Get API keys from: Settings > General > API Key (in each app)
 - **"Unsupported interval" when saving the schedule:** Only the intervals listed under [config.json](#configjson) are accepted; the UI dropdown is the source of truth.
 - **Automated unmonitor re-runs on things you deliberately re-monitored:** The scheduled job applies the same rule as the button — anything monitored *and* downloaded gets unmonitored. If you re-monitor an already-downloaded item, the next scheduled run will unmonitor it again. Disable the schedule for that service or use a longer interval.
 - **A previously-unmonitored show unexpectedly gets monitored again:** Sonarr unmonitor now also re-monitors any season (excluding specials) that first aired on/after `SONARR_NEW_SEASON_MIN_YEAR` and isn't monitored yet — this is by design, meant to catch newly-imported seasons on shows this app unmonitored earlier. To exempt a show permanently, unmonitor it manually in Sonarr and disable auto-unmonitor for it there, or raise `SONARR_NEW_SEASON_MIN_YEAR` in `app.py`.
+- **A still-airing show never gets fully unmonitored, only some seasons do:** Expected — the series-level flag (and its newest season) is only cleared once Sonarr reports the series `status` as `"ended"`. While a show is `"continuing"`/`"upcoming"`, only earlier, fully-downloaded seasons get retired individually so Sonarr keeps watching for the next season.
+- **A show never gets touched at all even though it looks finished:** Check the series' `status` field in Sonarr — if it hasn't been refreshed to `"ended"` yet (metadata provider lag), the app treats it as still airing and only retires older completed seasons, not the series itself. A manual series refresh in Sonarr usually fixes this.
 - **A scheduled unmonitor took a long time / next tick was late:** Expected on large Sonarr libraries; the worker is single-threaded and the Sonarr scan is one API call per series.
 - **Scheduler ran but nothing downloaded:** The search command was accepted by Sonarr/Radarr — check indexer results in the Service Logs panel; arr-mgmt only triggers the search.

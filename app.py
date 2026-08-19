@@ -390,9 +390,14 @@ def radarr_unmonitor_downloaded():
 
 
 def perform_sonarr_unmonitor(config, source="manual"):
-    """Unmonitor downloaded episodes and fully-downloaded series, and re-monitor any
-    newly-imported season (excluding specials) that started airing in
-    SONARR_NEW_SEASON_MIN_YEAR or later. Returns a JSON-ready dict."""
+    """Unmonitor downloaded episodes, and:
+    - fully unmonitor a series once every non-special episode is downloaded, but only
+      once Sonarr's series status says it has "ended" (never for a still-airing show)
+    - for still-airing shows, unmonitor individual earlier seasons that are fully
+      downloaded while leaving the series and its newest season alone
+    - re-monitor any newly-imported season (excluding specials) that started airing in
+      SONARR_NEW_SEASON_MIN_YEAR or later
+    Returns a JSON-ready dict."""
     base_url = config["sonarr_url"]
     api_key = config["sonarr_api_key"]
 
@@ -402,6 +407,7 @@ def perform_sonarr_unmonitor(config, source="manual"):
 
     affected_episodes = []
     affected_series = []
+    affected_seasons = []
     episode_ids = []
     new_season_episodes = []
     new_season_series = []
@@ -458,13 +464,28 @@ def perform_sonarr_unmonitor(config, source="manual"):
             s["monitored"] = True
             api_request(base_url, api_key, f"series/{s['id']}", method="PUT", data=s)
             new_season_series.append({"id": s["id"], "title": series_title})
-        elif s.get("monitored") and regular_episodes and all(ep.get("hasFile") for ep in regular_episodes):
-            s["monitored"] = False
-            api_request(
-                base_url, api_key, f"series/{s['id']}",
-                method="PUT", data=s
-            )
-            affected_series.append({"id": s["id"], "title": series_title})
+        elif regular_episodes and s.get("status") == "ended":
+            # Show has wrapped for good - unmonitor the whole series once everything is in.
+            if s.get("monitored") and all(ep.get("hasFile") for ep in regular_episodes):
+                s["monitored"] = False
+                api_request(base_url, api_key, f"series/{s['id']}", method="PUT", data=s)
+                affected_series.append({"id": s["id"], "title": series_title})
+        elif regular_episodes:
+            # Still airing (or status unknown): never touch the series flag or its newest
+            # season - only retire earlier seasons that are fully downloaded, so Sonarr
+            # keeps watching for the next batch of episodes/seasons.
+            latest_season_num = max(seasons_by_number)
+            series_changed = False
+            for season_num, season_eps in seasons_by_number.items():
+                if season_num == latest_season_num or not all(ep.get("hasFile") for ep in season_eps):
+                    continue
+                for season_entry in s.get("seasons", []):
+                    if season_entry.get("seasonNumber") == season_num and season_entry.get("monitored"):
+                        season_entry["monitored"] = False
+                        series_changed = True
+                        affected_seasons.append({"id": s["id"], "title": series_title, "season": season_num})
+            if series_changed:
+                api_request(base_url, api_key, f"series/{s['id']}", method="PUT", data=s)
 
     ep_count = 0
     if episode_ids:
@@ -490,19 +511,30 @@ def perform_sonarr_unmonitor(config, source="manual"):
         log_unmonitor_action("sonarr", "unmonitor", episodes=affected_episodes,
                              series=affected_series, source=source)
 
+    if affected_seasons:
+        # Each item carries a "season" key so undo can restore that season specifically
+        # instead of re-monitoring the whole (still-airing) series.
+        log_unmonitor_action("sonarr", "unmonitor", series=affected_seasons,
+                             source=f"{source}_season")
+
     if new_season_count or new_season_series:
         log_unmonitor_action("sonarr", "remonitor", episodes=new_season_episodes,
                              series=new_season_series, source=f"{source}_new_season")
 
-    if ep_count == 0 and not affected_series and new_season_count == 0 and not new_season_series:
-        return {"success": True, "count": 0, "series_count": 0,
+    nothing_happened = (
+        ep_count == 0 and not affected_series and not affected_seasons
+        and new_season_count == 0 and not new_season_series
+    )
+    if nothing_happened:
+        return {"success": True, "count": 0, "series_count": 0, "season_count": 0,
                 "new_season_count": 0, "new_season_series_count": 0,
-                "message": "No downloaded monitored episodes, completed series, or new seasons found"}
+                "message": "No downloaded monitored episodes, completed series/seasons, or new seasons found"}
 
     return {
         "success": True,
         "count": ep_count, "series_count": len(affected_series),
         "episode_ids": episode_ids, "series_ids": [s["id"] for s in affected_series],
+        "season_count": len(affected_seasons),
         "new_season_count": new_season_count, "new_season_series_count": len(new_season_series),
         "new_season_episode_ids": new_season_episode_ids,
         "new_season_series_ids": [ns["id"] for ns in new_season_series],
@@ -652,6 +684,13 @@ def undo_log_entry(entry_id):
             if ep_result["success"]:
                 ep_count = len(episode_ids)
 
+        # Entries logged as season-only completions carry a "season" key per item so
+        # undo restores that specific season instead of the whole (still-airing) series.
+        season_map = {}
+        for sd in series_detail:
+            if sd.get("season") is not None:
+                season_map.setdefault(sd["id"], []).append(sd["season"])
+
         remonitored_series = []
         for sid in series_ids:
             s_result = api_request(base_url, api_key, f"series/{sid}")
@@ -659,6 +698,10 @@ def undo_log_entry(entry_id):
                 continue
             series_data = s_result["data"]
             series_data["monitored"] = True
+            for season_num in season_map.get(sid, []):
+                for season_entry in series_data.get("seasons", []):
+                    if season_entry.get("seasonNumber") == season_num:
+                        season_entry["monitored"] = True
             update = api_request(base_url, api_key, f"series/{sid}", method="PUT", data=series_data)
             if update["success"]:
                 remonitored_series.append({"id": sid, "title": series_data.get("title", "Unknown")})
