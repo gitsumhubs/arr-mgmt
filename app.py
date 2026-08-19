@@ -44,6 +44,10 @@ DEFAULT_CONFIG = {
 
 SCHEDULE_INTERVALS = [30, 60, 180, 360, 720, 1440, 2880, 10080]
 
+# Only auto-monitor newly-imported seasons that started airing on/after this year.
+# Prevents old, already-completed-and-unmonitored seasons from being woken back up.
+SONARR_NEW_SEASON_MIN_YEAR = 2025
+
 config_lock = threading.Lock()
 log_lock = threading.Lock()
 
@@ -386,7 +390,9 @@ def radarr_unmonitor_downloaded():
 
 
 def perform_sonarr_unmonitor(config, source="manual"):
-    """Unmonitor downloaded episodes and fully-downloaded series. Returns a JSON-ready dict."""
+    """Unmonitor downloaded episodes and fully-downloaded series, and re-monitor any
+    newly-imported season (excluding specials) that started airing in
+    SONARR_NEW_SEASON_MIN_YEAR or later. Returns a JSON-ready dict."""
     base_url = config["sonarr_url"]
     api_key = config["sonarr_api_key"]
 
@@ -397,6 +403,9 @@ def perform_sonarr_unmonitor(config, source="manual"):
     affected_episodes = []
     affected_series = []
     episode_ids = []
+    new_season_episodes = []
+    new_season_series = []
+    new_season_episode_ids = []
     for s in series_result["data"]:
         series_title = s.get("title", "Unknown")
         ep_result = api_request(base_url, api_key, f"episode?seriesId={s['id']}")
@@ -415,16 +424,47 @@ def perform_sonarr_unmonitor(config, source="manual"):
                     "title": ep.get("title", ""),
                 })
 
-        # Unmonitor the series if all episodes have files
-        if s.get("monitored") and episodes:
-            all_downloaded = all(ep.get("hasFile") for ep in episodes)
-            if all_downloaded:
-                s["monitored"] = False
-                api_request(
-                    base_url, api_key, f"series/{s['id']}",
-                    method="PUT", data=s
-                )
-                affected_series.append({"id": s["id"], "title": series_title})
+        # Specials (season 0) never count toward "fully downloaded" or "new season" checks
+        regular_episodes = [ep for ep in episodes if ep.get("seasonNumber", 0) != 0]
+
+        seasons_by_number = {}
+        for ep in regular_episodes:
+            seasons_by_number.setdefault(ep.get("seasonNumber"), []).append(ep)
+
+        # Wake up any season that started airing recently and isn't monitored yet -
+        # typically a season Sonarr imported after the series was previously unmonitored.
+        season_needs_monitor = False
+        for season_num, season_eps in seasons_by_number.items():
+            air_years = [int(ep["airDate"][:4]) for ep in season_eps if ep.get("airDate")]
+            if not air_years or min(air_years) < SONARR_NEW_SEASON_MIN_YEAR:
+                continue
+            unmonitored_eps = [ep for ep in season_eps if not ep.get("monitored")]
+            if not unmonitored_eps:
+                continue
+            season_needs_monitor = True
+            new_season_episode_ids.extend(ep["id"] for ep in unmonitored_eps)
+            new_season_episodes.extend({
+                "id": ep["id"],
+                "series": series_title,
+                "season": season_num,
+                "episode": ep.get("episodeNumber", 0),
+                "title": ep.get("title", ""),
+            } for ep in unmonitored_eps)
+            for season_entry in s.get("seasons", []):
+                if season_entry.get("seasonNumber") == season_num:
+                    season_entry["monitored"] = True
+
+        if season_needs_monitor:
+            s["monitored"] = True
+            api_request(base_url, api_key, f"series/{s['id']}", method="PUT", data=s)
+            new_season_series.append({"id": s["id"], "title": series_title})
+        elif s.get("monitored") and regular_episodes and all(ep.get("hasFile") for ep in regular_episodes):
+            s["monitored"] = False
+            api_request(
+                base_url, api_key, f"series/{s['id']}",
+                method="PUT", data=s
+            )
+            affected_series.append({"id": s["id"], "title": series_title})
 
     ep_count = 0
     if episode_ids:
@@ -436,14 +476,37 @@ def perform_sonarr_unmonitor(config, source="manual"):
         if monitor_result["success"]:
             ep_count = len(episode_ids)
 
-    if ep_count == 0 and len(affected_series) == 0:
-        return {"success": True, "count": 0, "series_count": 0,
-                "message": "No downloaded monitored episodes or completed series found"}
+    new_season_count = 0
+    if new_season_episode_ids:
+        monitor_result = api_request(
+            base_url, api_key, "episode/monitor",
+            method="PUT",
+            data={"episodeIds": new_season_episode_ids, "monitored": True}
+        )
+        if monitor_result["success"]:
+            new_season_count = len(new_season_episode_ids)
 
-    log_unmonitor_action("sonarr", "unmonitor", episodes=affected_episodes,
-                         series=affected_series, source=source)
-    return {"success": True, "count": ep_count, "series_count": len(affected_series),
-            "episode_ids": episode_ids, "series_ids": [s["id"] for s in affected_series]}
+    if ep_count or affected_series:
+        log_unmonitor_action("sonarr", "unmonitor", episodes=affected_episodes,
+                             series=affected_series, source=source)
+
+    if new_season_count or new_season_series:
+        log_unmonitor_action("sonarr", "remonitor", episodes=new_season_episodes,
+                             series=new_season_series, source=f"{source}_new_season")
+
+    if ep_count == 0 and not affected_series and new_season_count == 0 and not new_season_series:
+        return {"success": True, "count": 0, "series_count": 0,
+                "new_season_count": 0, "new_season_series_count": 0,
+                "message": "No downloaded monitored episodes, completed series, or new seasons found"}
+
+    return {
+        "success": True,
+        "count": ep_count, "series_count": len(affected_series),
+        "episode_ids": episode_ids, "series_ids": [s["id"] for s in affected_series],
+        "new_season_count": new_season_count, "new_season_series_count": len(new_season_series),
+        "new_season_episode_ids": new_season_episode_ids,
+        "new_season_series_ids": [ns["id"] for ns in new_season_series],
+    }
 
 
 @app.route("/api/sonarr/unmonitor-downloaded", methods=["POST"])

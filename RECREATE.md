@@ -34,7 +34,13 @@ log viewing.
   - Last-run timestamp persisted in `config.json`; UI shows "next in Xh Ym"
 - Unmonitor downloaded episodes and completed series (Sonarr) and movies (Radarr)
   - Unmonitors individual episodes that have files
-  - Unmonitors entire series when all episodes are downloaded
+  - Unmonitors entire series when all non-special episodes are downloaded (specials
+    are ignored for this check — a show with all regular episodes downloaded but no
+    specials on disk still gets unmonitored)
+  - Also re-monitors any newly-imported Sonarr season (excluding specials) whose
+    first episode aired on/after `SONARR_NEW_SEASON_MIN_YEAR` (currently `2025`,
+    set in `app.py`), so a show that comes back for a new season isn't left
+    unmonitored forever. Older seasons that happen to be unmonitored are left alone.
   - Undo buttons appear after each action for quick reversal
 - Automated (scheduled) unmonitor per service
   - Same interval choices and per-service toggles as automated search
@@ -111,7 +117,7 @@ panel in the UI. See [Data Files](#configjson) for the full key list.
 | POST | `/api/auto-unmonitor` | Update unmonitor scheduler enable/interval per service |
 | POST | `/api/sonarr/restart` | Restart Sonarr container |
 | POST | `/api/radarr/restart` | Restart Radarr container |
-| POST | `/api/sonarr/unmonitor-downloaded` | Unmonitor downloaded episodes + completed series |
+| POST | `/api/sonarr/unmonitor-downloaded` | Unmonitor downloaded episodes + completed series, and re-monitor newly-imported seasons (see below) |
 | POST | `/api/radarr/unmonitor-downloaded` | Unmonitor downloaded movies |
 | POST | `/api/sonarr/remonitor` | Re-monitor episodes/series (undo) |
 | POST | `/api/radarr/remonitor` | Re-monitor movies (undo) |
@@ -166,7 +172,7 @@ Persistent action log. Each entry contains:
 - `service` - "sonarr" or "radarr"
 - `action` - "unmonitor" or "remonitor"
 - `status_change` - Human-readable direction (e.g., "monitored -> unmonitored")
-- `source` - "manual" (UI button) or "scheduled" (background worker); entries written before this field existed have no `source` and display as manual
+- `source` - "manual" (UI button) or "scheduled" (background worker); Sonarr new-season auto-monitor entries suffix this with `_new_season` (e.g. `manual_new_season`); entries written before this field existed have no `source` and display as manual
 - `movies` - (Radarr) List of `{id, title}`
 - `episodes` - (Sonarr) List of `{id, series, season, episode, title}`
 - `series` - (Sonarr) List of `{id, title}` for series-level changes
@@ -321,5 +327,6 @@ Get API keys from: Settings > General > API Key (in each app)
 - **Automated search or unmonitor never fires:** Confirm the toggle is saved (check `auto_search_*_enabled` / `auto_unmonitor_*_enabled` in `config.json`), and that the app was started via `python app.py` — the scheduler thread does not start under a WSGI server. Check `journalctl -u arr-mgmt -f` and the target service's logs.
 - **"Unsupported interval" when saving the schedule:** Only the intervals listed under [config.json](#configjson) are accepted; the UI dropdown is the source of truth.
 - **Automated unmonitor re-runs on things you deliberately re-monitored:** The scheduled job applies the same rule as the button — anything monitored *and* downloaded gets unmonitored. If you re-monitor an already-downloaded item, the next scheduled run will unmonitor it again. Disable the schedule for that service or use a longer interval.
+- **A previously-unmonitored show unexpectedly gets monitored again:** Sonarr unmonitor now also re-monitors any season (excluding specials) that first aired on/after `SONARR_NEW_SEASON_MIN_YEAR` and isn't monitored yet — this is by design, meant to catch newly-imported seasons on shows this app unmonitored earlier. To exempt a show permanently, unmonitor it manually in Sonarr and disable auto-unmonitor for it there, or raise `SONARR_NEW_SEASON_MIN_YEAR` in `app.py`.
 - **A scheduled unmonitor took a long time / next tick was late:** Expected on large Sonarr libraries; the worker is single-threaded and the Sonarr scan is one API call per series.
 - **Scheduler ran but nothing downloaded:** The search command was accepted by Sonarr/Radarr — check indexer results in the Service Logs panel; arr-mgmt only triggers the search.

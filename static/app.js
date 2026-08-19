@@ -472,14 +472,27 @@
 
             if (data.success) {
                 const noun = service === 'sonarr' ? 'episodes' : 'movies';
-                if (data.count === 0 && (!data.series_count)) {
+                const nothingHappened = data.count === 0 && !data.series_count &&
+                    !data.new_season_count && !data.new_season_series_count;
+                if (nothingHappened) {
                     showFeedback(unmonitorFeedback, data.message || `No monitored downloaded ${noun} found`, 'info');
                 } else {
-                    let msg = `Unmonitored ${data.count} ${noun}`;
-                    if (data.series_count) {
-                        msg += ` and ${data.series_count} series`;
+                    const parts = [];
+                    if (data.count || data.series_count) {
+                        let unmonitorMsg = `Unmonitored ${data.count} ${noun}`;
+                        if (data.series_count) {
+                            unmonitorMsg += ` and ${data.series_count} series`;
+                        }
+                        parts.push(unmonitorMsg);
                     }
-                    showFeedback(unmonitorFeedback, msg, 'success');
+                    if (data.new_season_count) {
+                        let seasonMsg = `Monitored ${data.new_season_count} new episode${data.new_season_count === 1 ? '' : 's'}`;
+                        if (data.new_season_series_count) {
+                            seasonMsg += ` across ${data.new_season_series_count} new season${data.new_season_series_count === 1 ? '' : 's'}`;
+                        }
+                        parts.push(seasonMsg);
+                    }
+                    showFeedback(unmonitorFeedback, parts.join('; '), 'success');
 
                     if (service === 'sonarr') {
                         lastUnmonitorSonarr = { episode_ids: data.episode_ids, series_ids: data.series_ids };
