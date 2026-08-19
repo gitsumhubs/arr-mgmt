@@ -79,6 +79,18 @@
             </div>
             <div id="unmonitor-feedback" class="feedback"></div>
 
+            <div class="unmonitor-exclusions">
+                <h3>Excluded Shows <span class="exclusions-hint">(never touched by the button above or the schedule below)</span></h3>
+                <div id="exclusions-stale-notice" class="exclusions-stale" style="display:none"></div>
+                <div class="exclusion-search">
+                    <input type="text" id="exclusion-search-input" placeholder="Search Sonarr shows to exclude...">
+                    <div id="exclusion-search-results" class="exclusion-search-results" style="display:none"></div>
+                </div>
+                <ul id="exclusion-list" class="exclusion-list">
+                    <li class="empty">No excluded shows</li>
+                </ul>
+            </div>
+
             <div class="auto-schedule">
                 <h3>Automated Unmonitor</h3>
                 <div class="auto-schedule-row">

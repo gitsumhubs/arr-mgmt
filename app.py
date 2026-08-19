@@ -40,6 +40,7 @@ DEFAULT_CONFIG = {
     "auto_unmonitor_radarr_enabled": False,
     "auto_unmonitor_radarr_interval_minutes": 1440,
     "auto_unmonitor_radarr_last_run": None,
+    "sonarr_unmonitor_excluded_series": [],
 }
 
 SCHEDULE_INTERVALS = [30, 60, 180, 360, 720, 1440, 2880, 10080]
@@ -401,6 +402,8 @@ def perform_sonarr_unmonitor(config, source="manual"):
       started airing in SONARR_NEW_SEASON_MIN_YEAR or later - "incomplete" is what
       stops this from re-monitoring a season we already correctly finished just
       because it happens to have aired recently
+    - series listed in config["sonarr_unmonitor_excluded_series"] are skipped
+      entirely - nothing above touches them
     Returns a JSON-ready dict."""
     base_url = config["sonarr_url"]
     api_key = config["sonarr_api_key"]
@@ -408,6 +411,8 @@ def perform_sonarr_unmonitor(config, source="manual"):
     series_result = api_request(base_url, api_key, "series")
     if not series_result["success"]:
         return {"success": False, "error": series_result.get("error", "Failed to fetch series")}
+
+    excluded_ids = {e["id"] for e in config.get("sonarr_unmonitor_excluded_series", [])}
 
     affected_episodes = []
     affected_series = []
@@ -417,6 +422,9 @@ def perform_sonarr_unmonitor(config, source="manual"):
     new_season_series = []
     new_season_episode_ids = []
     for s in series_result["data"]:
+        if s["id"] in excluded_ids:
+            continue
+
         series_title = s.get("title", "Unknown")
         ep_result = api_request(base_url, api_key, f"episode?seriesId={s['id']}")
         if not ep_result["success"]:
@@ -564,6 +572,89 @@ def perform_sonarr_unmonitor(config, source="manual"):
 def sonarr_unmonitor_downloaded():
     """Unmonitor all downloaded episodes and fully-downloaded series in Sonarr."""
     return jsonify(perform_sonarr_unmonitor(load_config()))
+
+
+@app.route("/api/sonarr/series-list")
+def sonarr_series_list():
+    """List every Sonarr series (id/title/year/status) for the exclusion search box."""
+    config = load_config()
+    result = api_request(config["sonarr_url"], config["sonarr_api_key"], "series")
+    if not result["success"]:
+        return jsonify({"success": False, "error": result.get("error", "Failed to fetch series")})
+    series = sorted(
+        (
+            {"id": s["id"], "title": s.get("title", "Unknown"), "year": s.get("year"), "status": s.get("status")}
+            for s in result["data"]
+        ),
+        key=lambda s: s["title"].lower(),
+    )
+    return jsonify({"success": True, "series": series})
+
+
+@app.route("/api/sonarr/exclusions")
+def sonarr_exclusions():
+    """List excluded series, plus any exclusion whose series is no longer in Sonarr
+    (removed/re-added), with a same-title candidate in the current library if found."""
+    config = load_config()
+    exclusions = config.get("sonarr_unmonitor_excluded_series", [])
+
+    stale = []
+    result = api_request(config["sonarr_url"], config["sonarr_api_key"], "series")
+    if result["success"]:
+        excluded_ids = {e["id"] for e in exclusions}
+        current_ids = {s["id"] for s in result["data"]}
+        by_title = {
+            s.get("title", "").strip().lower(): s
+            for s in result["data"] if s["id"] not in excluded_ids
+        }
+        for e in exclusions:
+            if e["id"] in current_ids:
+                continue
+            candidate = by_title.get((e.get("title") or "").strip().lower())
+            stale.append({
+                "id": e["id"],
+                "title": e.get("title", "Unknown"),
+                "candidate_id": candidate["id"] if candidate else None,
+                "candidate_title": candidate.get("title") if candidate else None,
+            })
+
+    return jsonify({"success": True, "exclusions": exclusions, "stale": stale})
+
+
+@app.route("/api/sonarr/exclusions", methods=["POST"])
+def update_sonarr_exclusions():
+    """Add, remove, or swap (removed/re-added) a Sonarr series exclusion."""
+    data = request.get_json(silent=True)
+    if not data or "action" not in data:
+        return jsonify({"success": False, "error": "Invalid payload"}), 400
+
+    action = data["action"]
+    with config_lock:
+        config = load_config()
+        exclusions = config.get("sonarr_unmonitor_excluded_series", [])
+
+        if action == "add":
+            if "id" not in data or "title" not in data:
+                return jsonify({"success": False, "error": "id and title required"}), 400
+            if not any(e["id"] == data["id"] for e in exclusions):
+                exclusions.append({"id": data["id"], "title": data["title"]})
+        elif action == "remove":
+            if "id" not in data:
+                return jsonify({"success": False, "error": "id required"}), 400
+            exclusions = [e for e in exclusions if e["id"] != data["id"]]
+        elif action == "swap":
+            if "old_id" not in data or "new_id" not in data or "new_title" not in data:
+                return jsonify({"success": False, "error": "old_id, new_id, new_title required"}), 400
+            exclusions = [e for e in exclusions if e["id"] != data["old_id"]]
+            if not any(e["id"] == data["new_id"] for e in exclusions):
+                exclusions.append({"id": data["new_id"], "title": data["new_title"]})
+        else:
+            return jsonify({"success": False, "error": "Unknown action"}), 400
+
+        config["sonarr_unmonitor_excluded_series"] = exclusions
+        save_config(config)
+
+    return jsonify({"success": True, "exclusions": exclusions})
 
 
 @app.route("/api/radarr/remonitor", methods=["POST"])

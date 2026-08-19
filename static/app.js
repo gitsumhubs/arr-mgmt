@@ -32,6 +32,12 @@
     let lastUnmonitorSonarr = null;
     let lastUnmonitorRadarr = null;
 
+    const exclusionSearchInput = document.getElementById('exclusion-search-input');
+    const exclusionSearchResults = document.getElementById('exclusion-search-results');
+    const exclusionList = document.getElementById('exclusion-list');
+    const exclusionsStaleNotice = document.getElementById('exclusions-stale-notice');
+    let sonarrSeriesCache = null;
+
     const unmonitorLogSonarrBtn = document.getElementById('unmonitor-log-sonarr');
     const unmonitorLogRadarrBtn = document.getElementById('unmonitor-log-radarr');
     const unmonitorLogRefreshBtn = document.getElementById('unmonitor-log-refresh');
@@ -517,6 +523,145 @@
         }
     }
 
+    async function fetchSonarrSeries() {
+        if (sonarrSeriesCache) return sonarrSeriesCache;
+        try {
+            const resp = await fetch('/api/sonarr/series-list');
+            const data = await resp.json();
+            if (data.success) sonarrSeriesCache = data.series;
+        } catch (e) {
+            // Search box just stays empty on failure; not worth a dedicated feedback slot
+        }
+        return sonarrSeriesCache || [];
+    }
+
+    function renderExclusionList(exclusions) {
+        exclusionList.innerHTML = '';
+        if (!exclusions || exclusions.length === 0) {
+            exclusionList.innerHTML = '<li class="empty">No excluded shows</li>';
+            return;
+        }
+        exclusions.slice().sort((a, b) => a.title.localeCompare(b.title)).forEach(e => {
+            const li = document.createElement('li');
+            const name = document.createElement('span');
+            name.textContent = e.title;
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = 'Remove';
+            removeBtn.addEventListener('click', () => removeExclusion(e.id));
+            li.appendChild(name);
+            li.appendChild(removeBtn);
+            exclusionList.appendChild(li);
+        });
+    }
+
+    function renderStaleNotice(stale) {
+        if (!stale || stale.length === 0) {
+            exclusionsStaleNotice.style.display = 'none';
+            exclusionsStaleNotice.innerHTML = '';
+            return;
+        }
+        exclusionsStaleNotice.style.display = '';
+        exclusionsStaleNotice.innerHTML = '';
+        stale.forEach(s => {
+            const row = document.createElement('div');
+            row.className = 'exclusions-stale-row';
+            const label = document.createElement('span');
+            if (s.candidate_id) {
+                label.textContent = `"${s.title}" was removed and re-added in Sonarr`;
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-sm btn-secondary';
+                btn.textContent = 'Re-exclude';
+                btn.addEventListener('click', () => swapExclusion(s.id, s.candidate_id, s.candidate_title));
+                row.appendChild(label);
+                row.appendChild(btn);
+            } else {
+                label.textContent = `"${s.title}" is no longer in Sonarr`;
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-sm btn-secondary';
+                btn.textContent = 'Remove';
+                btn.addEventListener('click', () => removeExclusion(s.id));
+                row.appendChild(label);
+                row.appendChild(btn);
+            }
+            exclusionsStaleNotice.appendChild(row);
+        });
+    }
+
+    async function fetchExclusions() {
+        try {
+            const resp = await fetch('/api/sonarr/exclusions');
+            const data = await resp.json();
+            if (data.success) {
+                renderExclusionList(data.exclusions);
+                renderStaleNotice(data.stale);
+            }
+        } catch (e) {
+            // Leave whatever was last rendered in place
+        }
+    }
+
+    async function addExclusion(id, title) {
+        await fetch('/api/sonarr/exclusions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'add', id, title }),
+        });
+        fetchExclusions();
+    }
+
+    async function removeExclusion(id) {
+        await fetch('/api/sonarr/exclusions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'remove', id }),
+        });
+        fetchExclusions();
+    }
+
+    async function swapExclusion(oldId, newId, newTitle) {
+        await fetch('/api/sonarr/exclusions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'swap', old_id: oldId, new_id: newId, new_title: newTitle }),
+        });
+        fetchExclusions();
+    }
+
+    async function handleExclusionSearchInput() {
+        const query = exclusionSearchInput.value.trim().toLowerCase();
+        if (!query) {
+            exclusionSearchResults.style.display = 'none';
+            exclusionSearchResults.innerHTML = '';
+            return;
+        }
+        const series = await fetchSonarrSeries();
+        const matches = series.filter(s => s.title.toLowerCase().includes(query)).slice(0, 15);
+        exclusionSearchResults.innerHTML = '';
+        if (matches.length === 0) {
+            exclusionSearchResults.style.display = 'none';
+            return;
+        }
+        matches.forEach(s => {
+            const row = document.createElement('div');
+            row.className = 'exclusion-search-result';
+            row.textContent = s.title;
+            if (s.year) {
+                const year = document.createElement('span');
+                year.className = 'year';
+                year.textContent = `(${s.year})`;
+                row.appendChild(year);
+            }
+            row.addEventListener('click', () => {
+                addExclusion(s.id, s.title);
+                exclusionSearchInput.value = '';
+                exclusionSearchResults.style.display = 'none';
+                exclusionSearchResults.innerHTML = '';
+            });
+            exclusionSearchResults.appendChild(row);
+        });
+        exclusionSearchResults.style.display = '';
+    }
+
     function formatLogTime(isoStr) {
         const d = new Date(isoStr);
         return d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' +
@@ -750,6 +895,13 @@
     unmonitorRadarrBtn.addEventListener('click', () => unmonitorDownloaded('radarr'));
     undoSonarrBtn.addEventListener('click', () => undoUnmonitor('sonarr'));
     undoRadarrBtn.addEventListener('click', () => undoUnmonitor('radarr'));
+    exclusionSearchInput.addEventListener('input', handleExclusionSearchInput);
+    exclusionSearchInput.addEventListener('focus', handleExclusionSearchInput);
+    document.addEventListener('click', (e) => {
+        if (!exclusionSearchInput.contains(e.target) && !exclusionSearchResults.contains(e.target)) {
+            exclusionSearchResults.style.display = 'none';
+        }
+    });
     unmonitorLogSonarrBtn.addEventListener('click', () => {
         unmonitorLogService = 'sonarr';
         unmonitorLogSonarrBtn.classList.add('active');
@@ -784,6 +936,7 @@
     fetchQueue();
     fetchLogs();
     fetchQueueItems();
+    fetchExclusions();
     if (statusClock) {
         const updateClock = () => {
             statusClock.textContent = new Date().toLocaleTimeString([], {
