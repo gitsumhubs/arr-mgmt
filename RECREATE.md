@@ -39,14 +39,21 @@ log viewing.
   - Sonarr series with `status: "ended"`: once every non-special episode is downloaded,
     the whole series gets unmonitored (series-level flag off)
   - Sonarr series that are still airing (`status` is `"continuing"`/`"upcoming"`/
-    anything other than `"ended"`): the series-level flag and its newest season are
-    never touched, but any *earlier* season that's fully downloaded gets its
-    season-level monitor flag turned off individually, so Sonarr stops re-scanning
-    completed seasons while it keeps watching for the next one
-  - Also re-monitors any newly-imported Sonarr season (excluding specials) whose
-    first episode aired on/after `SONARR_NEW_SEASON_MIN_YEAR` (currently `2025`,
-    set in `app.py`), so a show that comes back for a new season isn't left
-    unmonitored forever. Older seasons that happen to be unmonitored are left alone.
+    anything other than `"ended"`): the series-level flag is never turned off, and
+    any *earlier* season that's fully downloaded gets its season-level monitor flag
+    turned off individually, so Sonarr stops re-scanning completed seasons
+  - The newest season of a still-airing series is always re-monitored if it isn't
+    already (series-level flag, season-level flag, and any unmonitored episodes in
+    it) — this covers both "Sonarr hasn't released those episodes yet" and "I
+    manually unmonitored the upcoming season" cases, regardless of air dates
+  - Also re-monitors any other newly-imported Sonarr season (excluding specials)
+    that isn't monitored, is missing at least one file, and whose first episode
+    aired on/after `SONARR_NEW_SEASON_MIN_YEAR` (currently `2025`, set in `app.py`)
+    — catches a season Sonarr imported after the series was previously (fully)
+    unmonitored. The "missing a file" requirement is what stops this from
+    re-monitoring a season that's already fully downloaded and was correctly
+    unmonitored just because it happens to have aired recently. Older seasons that
+    happen to be unmonitored, or seasons on an `"ended"` show, are left alone.
   - Undo buttons appear after each action for quick reversal; season-only completions
     are only undoable from the Action History log (not the just-ran quick-undo
     button), and undo restores that specific season rather than the whole series
@@ -341,7 +348,7 @@ Get API keys from: Settings > General > API Key (in each app)
 - **Automated search or unmonitor never fires:** Confirm the toggle is saved (check `auto_search_*_enabled` / `auto_unmonitor_*_enabled` in `config.json`), and that the app was started via `python app.py` — the scheduler thread does not start under a WSGI server. Check `journalctl -u arr-mgmt -f` and the target service's logs.
 - **"Unsupported interval" when saving the schedule:** Only the intervals listed under [config.json](#configjson) are accepted; the UI dropdown is the source of truth.
 - **Automated unmonitor re-runs on things you deliberately re-monitored:** The scheduled job applies the same rule as the button — anything monitored *and* downloaded gets unmonitored. If you re-monitor an already-downloaded item, the next scheduled run will unmonitor it again. Disable the schedule for that service or use a longer interval.
-- **A previously-unmonitored show unexpectedly gets monitored again:** Sonarr unmonitor now also re-monitors any season (excluding specials) that first aired on/after `SONARR_NEW_SEASON_MIN_YEAR` and isn't monitored yet — this is by design, meant to catch newly-imported seasons on shows this app unmonitored earlier. To exempt a show permanently, unmonitor it manually in Sonarr and disable auto-unmonitor for it there, or raise `SONARR_NEW_SEASON_MIN_YEAR` in `app.py`.
+- **A previously-unmonitored show unexpectedly gets monitored again:** Sonarr unmonitor now also re-monitors any *incomplete* season (excluding specials) that first aired on/after `SONARR_NEW_SEASON_MIN_YEAR` and isn't monitored yet — this is by design, meant to catch newly-imported seasons on shows this app unmonitored earlier. It should never fire on a season that's already fully downloaded (that's the "incomplete" requirement); if it does, check whether `hasFile` is actually true for every episode in that season in Sonarr. To exempt a show permanently, unmonitor it manually in Sonarr and disable auto-unmonitor for it there, or raise `SONARR_NEW_SEASON_MIN_YEAR` in `app.py`.
 - **A still-airing show never gets fully unmonitored, only some seasons do:** Expected — the series-level flag (and its newest season) is only cleared once Sonarr reports the series `status` as `"ended"`. While a show is `"continuing"`/`"upcoming"`, only earlier, fully-downloaded seasons get retired individually so Sonarr keeps watching for the next season.
 - **A show never gets touched at all even though it looks finished:** Check the series' `status` field in Sonarr — if it hasn't been refreshed to `"ended"` yet (metadata provider lag), the app treats it as still airing and only retires older completed seasons, not the series itself. A manual series refresh in Sonarr usually fixes this.
 - **A scheduled unmonitor took a long time / next tick was late:** Expected on large Sonarr libraries; the worker is single-threaded and the Sonarr scan is one API call per series.

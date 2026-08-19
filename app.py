@@ -395,8 +395,12 @@ def perform_sonarr_unmonitor(config, source="manual"):
       once Sonarr's series status says it has "ended" (never for a still-airing show)
     - for still-airing shows, unmonitor individual earlier seasons that are fully
       downloaded while leaving the series and its newest season alone
-    - re-monitor any newly-imported season (excluding specials) that started airing in
-      SONARR_NEW_SEASON_MIN_YEAR or later
+    - re-monitor a series' newest season whenever the show is still airing and that
+      season isn't monitored yet (Sonarr just hasn't released those episodes), and
+      re-monitor any other unmonitored, incomplete season (excluding specials) that
+      started airing in SONARR_NEW_SEASON_MIN_YEAR or later - "incomplete" is what
+      stops this from re-monitoring a season we already correctly finished just
+      because it happens to have aired recently
     Returns a JSON-ready dict."""
     base_url = config["sonarr_url"]
     api_key = config["sonarr_api_key"]
@@ -432,22 +436,38 @@ def perform_sonarr_unmonitor(config, source="manual"):
 
         # Specials (season 0) never count toward "fully downloaded" or "new season" checks
         regular_episodes = [ep for ep in episodes if ep.get("seasonNumber", 0) != 0]
+        if not regular_episodes:
+            continue
 
         seasons_by_number = {}
         for ep in regular_episodes:
             seasons_by_number.setdefault(ep.get("seasonNumber"), []).append(ep)
 
-        # Wake up any season that started airing recently and isn't monitored yet -
-        # typically a season Sonarr imported after the series was previously unmonitored.
-        season_needs_monitor = False
+        is_ended = s.get("status") == "ended"
+        latest_season_num = max(seasons_by_number)
+
+        # Wake up (re-monitor) any season that's unmonitored and either:
+        # - is the show's newest season and the show is still airing - Sonarr just
+        #   hasn't released those episodes yet, so keep watching for them, or
+        # - is missing at least one file and started airing on/after
+        #   SONARR_NEW_SEASON_MIN_YEAR - catches a season Sonarr imported after the
+        #   series was previously (fully) unmonitored. The "missing a file" check is
+        #   what stops this from re-monitoring a season we already correctly finished
+        #   and unmonitored just because it happens to have aired recently.
+        reactivated = False
         for season_num, season_eps in seasons_by_number.items():
-            air_years = [int(ep["airDate"][:4]) for ep in season_eps if ep.get("airDate")]
-            if not air_years or min(air_years) < SONARR_NEW_SEASON_MIN_YEAR:
-                continue
             unmonitored_eps = [ep for ep in season_eps if not ep.get("monitored")]
             if not unmonitored_eps:
                 continue
-            season_needs_monitor = True
+            is_upcoming_latest = season_num == latest_season_num and not is_ended
+            incomplete = not all(ep.get("hasFile") for ep in season_eps)
+            air_years = [int(ep["airDate"][:4]) for ep in season_eps if ep.get("airDate")]
+            recently_started_incomplete = (
+                incomplete and bool(air_years) and min(air_years) >= SONARR_NEW_SEASON_MIN_YEAR
+            )
+            if not (is_upcoming_latest or recently_started_incomplete):
+                continue
+            reactivated = True
             new_season_episode_ids.extend(ep["id"] for ep in unmonitored_eps)
             new_season_episodes.extend({
                 "id": ep["id"],
@@ -460,21 +480,20 @@ def perform_sonarr_unmonitor(config, source="manual"):
                 if season_entry.get("seasonNumber") == season_num:
                     season_entry["monitored"] = True
 
-        if season_needs_monitor:
+        if reactivated:
             s["monitored"] = True
             api_request(base_url, api_key, f"series/{s['id']}", method="PUT", data=s)
             new_season_series.append({"id": s["id"], "title": series_title})
-        elif regular_episodes and s.get("status") == "ended":
+        elif is_ended:
             # Show has wrapped for good - unmonitor the whole series once everything is in.
             if s.get("monitored") and all(ep.get("hasFile") for ep in regular_episodes):
                 s["monitored"] = False
                 api_request(base_url, api_key, f"series/{s['id']}", method="PUT", data=s)
                 affected_series.append({"id": s["id"], "title": series_title})
-        elif regular_episodes:
-            # Still airing (or status unknown): never touch the series flag or its newest
-            # season - only retire earlier seasons that are fully downloaded, so Sonarr
-            # keeps watching for the next batch of episodes/seasons.
-            latest_season_num = max(seasons_by_number)
+        else:
+            # Still airing: never touch the series flag or its newest season (already
+            # confirmed monitored above) - only retire earlier seasons that are fully
+            # downloaded, so Sonarr keeps watching for the next batch of episodes.
             series_changed = False
             for season_num, season_eps in seasons_by_number.items():
                 if season_num == latest_season_num or not all(ep.get("hasFile") for ep in season_eps):
