@@ -392,16 +392,19 @@ def radarr_unmonitor_downloaded():
 
 def perform_sonarr_unmonitor(config, source="manual"):
     """Unmonitor downloaded episodes, and:
-    - fully unmonitor a series once every non-special episode is downloaded, but only
-      once Sonarr's series status says it has "ended" (never for a still-airing show)
-    - for still-airing shows, unmonitor any season (including the newest) once it's
-      fully downloaded - a show's "continuing" status alone doesn't protect a season;
-      only an actually-incomplete season does (see below)
+    - fully unmonitor a series once every known non-special episode is downloaded,
+      regardless of Sonarr's series status - "continuing" alone doesn't protect a
+      series; only an actually-incomplete season does (see below), so this is safe
+      for still-airing shows too
+    - if some (but not all) seasons are complete, retire just those individually
+      (season-level monitor flag off) and leave the incomplete one alone
     - re-monitor any unmonitored, incomplete season (excluding specials) that started
-      airing in SONARR_NEW_SEASON_MIN_YEAR or later - "incomplete" is what stops this
-      from re-monitoring a season we already correctly finished just because it
-      happens to have aired recently, and is also what keeps a genuinely new season
-      (one Sonarr has data for but hasn't downloaded yet) monitored
+      airing in SONARR_NEW_SEASON_MIN_YEAR or later, and re-monitor the series itself
+      to match - "incomplete" is what stops this from re-monitoring a season we
+      already correctly finished just because it happens to have aired recently, and
+      is also what keeps a genuinely new season (one Sonarr has data for but hasn't
+      downloaded yet) monitored, including one that shows up long after the series
+      was fully unmonitored
     - series listed in config["sonarr_unmonitor_excluded_series"] are skipped
       entirely - nothing above touches them
     Returns a JSON-ready dict."""
@@ -451,8 +454,6 @@ def perform_sonarr_unmonitor(config, source="manual"):
         for ep in regular_episodes:
             seasons_by_number.setdefault(ep.get("seasonNumber"), []).append(ep)
 
-        is_ended = s.get("status") == "ended"
-
         # Wake up (re-monitor) any season that's unmonitored, is missing at least one
         # file, and started airing on/after SONARR_NEW_SEASON_MIN_YEAR - catches a
         # season Sonarr imported after the series was previously (fully) unmonitored.
@@ -490,17 +491,20 @@ def perform_sonarr_unmonitor(config, source="manual"):
             s["monitored"] = True
             api_request(base_url, api_key, f"series/{s['id']}", method="PUT", data=s)
             new_season_series.append({"id": s["id"], "title": series_title})
-        elif is_ended:
-            # Show has wrapped for good - unmonitor the whole series once everything is in.
-            if s.get("monitored") and all(ep.get("hasFile") for ep in regular_episodes):
+        elif all(ep.get("hasFile") for ep in regular_episodes):
+            # Every known non-special episode is downloaded - unmonitor the whole
+            # series regardless of status. Safe even for a still-airing show: the
+            # reactivation check above already catches (and takes priority over) any
+            # show with a genuinely incomplete season, and it'll flip this back on
+            # the moment Sonarr adds a real new one, whenever that happens.
+            if s.get("monitored"):
                 s["monitored"] = False
                 api_request(base_url, api_key, f"series/{s['id']}", method="PUT", data=s)
                 affected_series.append({"id": s["id"], "title": series_title})
         else:
-            # Still airing: never touch the series-level flag, but retire any season
-            # (including the newest) once it's fully downloaded - a season only stays
-            # monitored if it's actually incomplete (handled above), not just because
-            # it's the newest one on a show that hasn't formally ended.
+            # Some season is incomplete (and wasn't caught by the reactivation check
+            # above, e.g. no air date yet) - retire whichever seasons ARE fully
+            # downloaded and leave the incomplete one alone.
             series_changed = False
             for season_num, season_eps in seasons_by_number.items():
                 if not all(ep.get("hasFile") for ep in season_eps):
