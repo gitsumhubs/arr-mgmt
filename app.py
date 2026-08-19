@@ -491,35 +491,36 @@ def perform_sonarr_unmonitor(config, source="manual"):
             seasons_by_number = {latest_season_num: seasons_by_number[latest_season_num]}
             regular_episodes = seasons_by_number[latest_season_num]
 
-        # Wake up (re-monitor) any season that's unmonitored, is missing at least one
-        # file, and started airing on/after SONARR_NEW_SEASON_MIN_YEAR - catches a
-        # season Sonarr imported after the series was previously (fully) unmonitored.
-        # The "missing a file" check is what stops this from re-monitoring a season
-        # we already correctly finished and unmonitored just because it happens to
-        # have aired recently - a show's "continuing" status alone is not enough
-        # signal on its own (some shows sit "continuing" indefinitely with nothing
-        # new pending), so completeness is the only thing that matters here.
+        # Wake up (re-monitor) any season that started airing on/after
+        # SONARR_NEW_SEASON_MIN_YEAR and has an unmonitored episode that's actually
+        # missing a file - catches a season Sonarr imported after the series was
+        # previously (fully) unmonitored. Only the missing episode(s) themselves get
+        # reactivated, never their already-downloaded siblings in the same season -
+        # reactivating every unmonitored episode just because the season also
+        # contains one missing episode would flip-flop those downloaded episodes
+        # between monitored/unmonitored every run (the per-episode loop above
+        # unmonitors them again the moment they're reactivated, since they're
+        # monitored+hasFile again).
         reactivated = False
         for season_num, season_eps in seasons_by_number.items():
-            unmonitored_eps = [ep for ep in season_eps if not ep.get("monitored")]
-            if not unmonitored_eps:
+            missing_unmonitored_eps = [
+                ep for ep in season_eps if not ep.get("monitored") and not ep.get("hasFile")
+            ]
+            if not missing_unmonitored_eps:
                 continue
-            incomplete = not all(ep.get("hasFile") for ep in season_eps)
             air_years = [int(ep["airDate"][:4]) for ep in season_eps if ep.get("airDate")]
-            recently_started_incomplete = (
-                incomplete and bool(air_years) and min(air_years) >= SONARR_NEW_SEASON_MIN_YEAR
-            )
-            if not recently_started_incomplete:
+            recently_started = bool(air_years) and min(air_years) >= SONARR_NEW_SEASON_MIN_YEAR
+            if not recently_started:
                 continue
             reactivated = True
-            new_season_episode_ids.extend(ep["id"] for ep in unmonitored_eps)
+            new_season_episode_ids.extend(ep["id"] for ep in missing_unmonitored_eps)
             new_season_episodes.extend({
                 "id": ep["id"],
                 "series": series_title,
                 "season": season_num,
                 "episode": ep.get("episodeNumber", 0),
                 "title": ep.get("title", ""),
-            } for ep in unmonitored_eps)
+            } for ep in missing_unmonitored_eps)
             for season_entry in s.get("seasons", []):
                 if season_entry.get("seasonNumber") == season_num:
                     season_entry["monitored"] = True
