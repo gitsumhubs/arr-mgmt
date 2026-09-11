@@ -18,8 +18,12 @@ from flask import Flask, jsonify, render_template, request
 
 app = Flask(__name__)
 
-CONFIG_FILE = Path(__file__).parent / "config.json"
-UNMONITOR_LOG_FILE = Path(__file__).parent / "unmonitor_log.json"
+# Keep runtime state outside the image when running in Docker. The default keeps
+# the existing bare-metal layout unchanged.
+DATA_DIR = Path(os.environ.get("ARR_MGMT_DATA_DIR", Path(__file__).parent))
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+CONFIG_FILE = DATA_DIR / "config.json"
+UNMONITOR_LOG_FILE = DATA_DIR / "unmonitor_log.json"
 
 DEFAULT_CONFIG = {
     "sonarr_url": "http://192.168.1.44:8989",

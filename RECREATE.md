@@ -117,8 +117,13 @@ log viewing.
 
 ## Environment Variables
 
-None. All configuration lives in `config.json` and is editable from the Settings
-panel in the UI. See [Data Files](#configjson) for the full key list.
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `ARR_MGMT_DATA_DIR` | Directory for `config.json` and `unmonitor_log.json` | `/data` |
+| `TZ` | Container timezone | `Etc/UTC` |
+
+When unset, `ARR_MGMT_DATA_DIR` defaults to the application directory. All
+configuration lives in `config.json` and is editable from the Settings panel.
 
 ---
 
@@ -138,6 +143,9 @@ panel in the UI. See [Data Files](#configjson) for the full key list.
 ├── unmonitor_log.json      # Persistent log of unmonitor/remonitor actions
 ├── requirements.txt        # Python dependencies (flask, requests)
 ├── arr-mgmt.service        # Systemd unit file
+├── Dockerfile              # Production container image
+├── docker-compose.yml      # GHCR deployment definition
+├── .github/workflows/      # GHCR build and publish workflow
 ├── RECREATE.md             # This document
 ├── venv/                   # Python virtual environment
 ├── templates/
@@ -318,6 +326,22 @@ python3 -m venv venv
 # Test run
 ./venv/bin/python app.py
 ```
+
+### Docker Deployment
+
+The image is published by `.github/workflows/docker-publish.yml` on every push
+to `main`. The Compose deployment mounts `/docker/arr-mgmt` at `/data` for
+persistent runtime state and mounts the Docker socket for restart and log
+features. After a new image is published, run this on the deployment host:
+
+```bash
+cd /docker/arr-mgmt
+docker compose pull
+docker compose up -d
+docker compose ps
+```
+
+The Compose service uses `pull_policy: always` and `restart: unless-stopped`.
 
 ---
 
