@@ -6,9 +6,50 @@
   "sonarr_container": "sonarr",
   "radarr_container": "radarr",
   "auto_search_sonarr_enabled": true,
-  "auto_search_sonarr_interval_minutes": 60,
-  "auto_search_sonarr_last_run": "2026-07-21T14:25:20.356652+00:00",
+  "auto_search_sonarr_interval_minutes": 360,
+  "auto_search_sonarr_last_run": "2026-09-10T23:59:11.986020+00:00",
   "auto_search_radarr_enabled": true,
   "auto_search_radarr_interval_minutes": 180,
-  "auto_search_radarr_last_run": "2026-07-21T11:34:20.223584+00:00"
+  "auto_search_radarr_last_run": "2026-09-11T02:59:17.787040+00:00",
+  "auto_unmonitor_sonarr_enabled": true,
+  "auto_unmonitor_sonarr_interval_minutes": 360,
+  "auto_unmonitor_sonarr_last_run": "2026-09-11T00:00:12.020853+00:00",
+  "auto_unmonitor_radarr_enabled": true,
+  "auto_unmonitor_radarr_interval_minutes": 360,
+  "auto_unmonitor_radarr_last_run": "2026-09-11T00:00:12.020853+00:00",
+  "sonarr_unmonitor_excluded_series": [
+    {
+      "id": 81,
+      "title": "Survivor"
+    },
+    {
+      "id": 185,
+      "title": "The Amazing Race"
+    },
+    {
+      "id": 381,
+      "title": "SpongeBob SquarePants"
+    },
+    {
+      "id": 367,
+      "title": "Doctor Who (2005)"
+    },
+    {
+      "id": 157,
+      "title": "Sesame Street"
+    },
+    {
+      "id": 373,
+      "title": "Animaniacs"
+    },
+    {
+      "id": 144,
+      "title": "One Piece"
+    },
+    {
+      "id": 194,
+      "title": "Hard Knocks",
+      "mode": "latest_only"
+    }
+  ]
 }
