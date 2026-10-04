@@ -42,6 +42,8 @@ new image.
 - Sonarr/Radarr health and queue views
 - Manual and scheduled missing-content searches
 - Downloaded-item unmonitoring with undo history
+- Restores series and season monitoring for eligible missing seasons, including
+  new seasons whose episodes Sonarr already monitors
 - Per-show Sonarr exclusions
 - Docker restart and log controls
 
@@ -49,3 +51,11 @@ new image.
 
 Runtime settings are stored in `config.json`. In Docker, `ARR_MGMT_DATA_DIR` is
 set to `/data` by Compose. Do not commit API keys to public repositories.
+
+## Tests
+
+Run the Sonarr monitoring regression suite without contacting live services:
+
+```bash
+./venv/bin/python -m unittest discover -s tests -v
+```

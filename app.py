@@ -404,9 +404,10 @@ def perform_sonarr_unmonitor(config, source="manual"):
       for still-airing shows too
     - if some (but not all) seasons are complete, retire just those individually
       (season-level monitor flag off) and leave the incomplete one alone
-    - re-monitor any unmonitored, incomplete season (excluding specials) that started
-      airing in SONARR_NEW_SEASON_MIN_YEAR or later, and re-monitor the series itself
-      to match - "incomplete" is what stops this from re-monitoring a season we
+    - restore monitoring at the episode, season, and series levels for an incomplete
+      season (excluding specials) that started airing in SONARR_NEW_SEASON_MIN_YEAR
+      or later, even when its missing episodes are already monitored.
+      "Incomplete" is what stops this from re-monitoring a season we
       already correctly finished just because it happens to have aired recently, and
       is also what keeps a genuinely new season (one Sonarr has data for but hasn't
       downloaded yet) monitored, including one that shows up long after the series
@@ -496,9 +497,10 @@ def perform_sonarr_unmonitor(config, source="manual"):
             regular_episodes = seasons_by_number[latest_season_num]
 
         # Wake up (re-monitor) any season that started airing on/after
-        # SONARR_NEW_SEASON_MIN_YEAR and has an unmonitored episode that's actually
-        # missing a file - catches a season Sonarr imported after the series was
-        # previously (fully) unmonitored. Only the missing episode(s) themselves get
+        # SONARR_NEW_SEASON_MIN_YEAR and has a missing episode with monitoring off
+        # at the episode, season, or series level. Sonarr can import a new season
+        # with monitored episodes while the series itself is still unmonitored.
+        # Only the missing episode(s) themselves get
         # reactivated, never their already-downloaded siblings in the same season -
         # reactivating every unmonitored episode just because the season also
         # contains one missing episode would flip-flop those downloaded episodes
@@ -507,10 +509,17 @@ def perform_sonarr_unmonitor(config, source="manual"):
         # monitored+hasFile again).
         reactivated = False
         for season_num, season_eps in seasons_by_number.items():
+            missing_eps = [ep for ep in season_eps if not ep.get("hasFile")]
+            if not missing_eps:
+                continue
             missing_unmonitored_eps = [
-                ep for ep in season_eps if not ep.get("monitored") and not ep.get("hasFile")
+                ep for ep in missing_eps if not ep.get("monitored")
             ]
-            if not missing_unmonitored_eps:
+            season_monitored = any(
+                entry.get("seasonNumber") == season_num and entry.get("monitored")
+                for entry in s.get("seasons", [])
+            )
+            if not missing_unmonitored_eps and s.get("monitored") and season_monitored:
                 continue
             air_years = [int(ep["airDate"][:4]) for ep in season_eps if ep.get("airDate")]
             recently_started = bool(air_years) and min(air_years) >= SONARR_NEW_SEASON_MIN_YEAR

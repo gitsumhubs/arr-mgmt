@@ -102119,5 +102119,4005 @@
     "episode_ids": [
       63716
     ]
+  },
+  {
+    "id": "ef4bcfdf",
+    "timestamp": "2026-09-11T06:00:20.606280+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63313,
+        "series": "Stuart Fails to Save the Universe",
+        "season": 1,
+        "episode": 8,
+        "title": "Spoiler: We're as Confused as You Are"
+      },
+      {
+        "id": 63587,
+        "series": "Dark Matter (2024)",
+        "season": 2,
+        "episode": 3,
+        "title": "Everything Beautiful, Everything Terrible"
+      }
+    ],
+    "episode_ids": [
+      63313,
+      63587
+    ]
+  },
+  {
+    "id": "a15dccc5",
+    "timestamp": "2026-09-11T18:00:28.745602+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 62408,
+        "series": "That Time I Got Reincarnated as a Slime",
+        "season": 4,
+        "episode": 20,
+        "title": "Chronoa the Hero (Part 1)"
+      }
+    ],
+    "episode_ids": [
+      62408
+    ]
+  },
+  {
+    "id": "5d47aa52",
+    "timestamp": "2026-09-12T06:00:39.877703+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "series": [
+      {
+        "id": 432,
+        "title": "The Traitors (US)"
+      }
+    ],
+    "series_ids": [
+      432
+    ]
+  },
+  {
+    "id": "b20a39c2",
+    "timestamp": "2026-09-12T18:00:48.911529+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63961,
+        "series": "Bleach",
+        "season": 17,
+        "episode": 43,
+        "title": "BLOOD FOR MY BONE"
+      },
+      {
+        "id": 64357,
+        "series": "Daemons of the Shadow Realm",
+        "season": 1,
+        "episode": 21,
+        "title": "Zashiki-Warashi and Higashi Village"
+      }
+    ],
+    "episode_ids": [
+      63961,
+      64357
+    ]
+  },
+  {
+    "id": "ae6676ab",
+    "timestamp": "2026-09-13T06:00:57.535432+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63289,
+        "series": "Digimon Beatbreak",
+        "season": 1,
+        "episode": 36,
+        "title": "Twisted Code"
+      },
+      {
+        "id": 63290,
+        "series": "Digimon Beatbreak",
+        "season": 1,
+        "episode": 37,
+        "title": "Kind Magic"
+      },
+      {
+        "id": 63291,
+        "series": "Digimon Beatbreak",
+        "season": 1,
+        "episode": 38,
+        "title": "Hollow Thirst"
+      },
+      {
+        "id": 63292,
+        "series": "Digimon Beatbreak",
+        "season": 1,
+        "episode": 39,
+        "title": "Lip Service"
+      },
+      {
+        "id": 63293,
+        "series": "Digimon Beatbreak",
+        "season": 1,
+        "episode": 40,
+        "title": "Unfading Night"
+      }
+    ],
+    "episode_ids": [
+      63289,
+      63290,
+      63291,
+      63292,
+      63293
+    ]
+  },
+  {
+    "id": "7dba0c38",
+    "timestamp": "2026-09-13T06:00:57.663000+00:00",
+    "service": "sonarr",
+    "action": "remonitor",
+    "status_change": "unmonitored -> monitored",
+    "source": "scheduled_new_season",
+    "episodes": [
+      {
+        "id": 64420,
+        "series": "The Traitors (US)",
+        "season": 4,
+        "episode": 13,
+        "title": "TBA"
+      }
+    ],
+    "episode_ids": [
+      64420
+    ],
+    "series": [
+      {
+        "id": 432,
+        "title": "The Traitors (US)"
+      }
+    ],
+    "series_ids": [
+      432
+    ]
+  },
+  {
+    "id": "88822d3f",
+    "timestamp": "2026-09-13T12:01:01.874912+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 62852,
+        "series": "The Walking Dead: Dead City",
+        "season": 3,
+        "episode": 8,
+        "title": "Tenebrae"
+      },
+      {
+        "id": 63547,
+        "series": "The Traitors (US)",
+        "season": 4,
+        "episode": 1,
+        "title": "Let the Cards Fall As They Will"
+      },
+      {
+        "id": 63548,
+        "series": "The Traitors (US)",
+        "season": 4,
+        "episode": 2,
+        "title": "The Death Conga"
+      },
+      {
+        "id": 63549,
+        "series": "The Traitors (US)",
+        "season": 4,
+        "episode": 3,
+        "title": "Show Me Your Faces"
+      },
+      {
+        "id": 63550,
+        "series": "The Traitors (US)",
+        "season": 4,
+        "episode": 4,
+        "title": "Cut the Head off the Snake"
+      },
+      {
+        "id": 63551,
+        "series": "The Traitors (US)",
+        "season": 4,
+        "episode": 5,
+        "title": "If You're Gonna Come for Me, I'll Finish You"
+      },
+      {
+        "id": 63552,
+        "series": "The Traitors (US)",
+        "season": 4,
+        "episode": 6,
+        "title": "Planning a Coup"
+      },
+      {
+        "id": 63553,
+        "series": "The Traitors (US)",
+        "season": 4,
+        "episode": 7,
+        "title": "The Black Banquet"
+      },
+      {
+        "id": 63554,
+        "series": "The Traitors (US)",
+        "season": 4,
+        "episode": 8,
+        "title": "A Queen Never Comes Off Her Throne"
+      },
+      {
+        "id": 63555,
+        "series": "The Traitors (US)",
+        "season": 4,
+        "episode": 9,
+        "title": "Think Outside the Box"
+      },
+      {
+        "id": 63556,
+        "series": "The Traitors (US)",
+        "season": 4,
+        "episode": 10,
+        "title": "Do You Know the Enemy?"
+      },
+      {
+        "id": 63557,
+        "series": "The Traitors (US)",
+        "season": 4,
+        "episode": 11,
+        "title": "Leap of Faith"
+      },
+      {
+        "id": 63558,
+        "series": "The Traitors (US)",
+        "season": 4,
+        "episode": 12,
+        "title": "Reunion"
+      }
+    ],
+    "episode_ids": [
+      62852,
+      63547,
+      63548,
+      63549,
+      63550,
+      63551,
+      63552,
+      63553,
+      63554,
+      63555,
+      63556,
+      63557,
+      63558
+    ],
+    "series": [
+      {
+        "id": 142,
+        "title": "The Walking Dead: Dead City"
+      }
+    ],
+    "series_ids": [
+      142
+    ]
+  },
+  {
+    "id": "af993f44",
+    "timestamp": "2026-09-13T18:01:06.120951+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled_season",
+    "series": [
+      {
+        "id": 432,
+        "title": "The Traitors (US)",
+        "season": 4
+      }
+    ],
+    "series_ids": [
+      432
+    ]
+  },
+  {
+    "id": "5843e0b9",
+    "timestamp": "2026-09-14T06:01:16.146157+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64077,
+        "series": "Lanterns",
+        "season": 1,
+        "episode": 5,
+        "title": "Lights Out"
+      }
+    ],
+    "episode_ids": [
+      64077
+    ]
+  },
+  {
+    "id": "22d59f65",
+    "timestamp": "2026-09-14T06:01:17.328602+00:00",
+    "service": "radarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "movies": [
+      {
+        "id": 2391,
+        "title": "The End of Oak Street"
+      }
+    ],
+    "movie_ids": [
+      2391
+    ]
+  },
+  {
+    "id": "3e26c705",
+    "timestamp": "2026-09-15T06:01:36.106554+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64225,
+        "series": "It's Always Sunny in Philadelphia",
+        "season": 18,
+        "episode": 6,
+        "title": "The War on Alcohol"
+      }
+    ],
+    "episode_ids": [
+      64225
+    ]
+  },
+  {
+    "id": "5fa1a29f",
+    "timestamp": "2026-09-16T00:01:49.885828+00:00",
+    "service": "radarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "movies": [
+      {
+        "id": 2423,
+        "title": "Coyote vs. Acme"
+      }
+    ],
+    "movie_ids": [
+      2423
+    ]
+  },
+  {
+    "id": "b27c1f0a",
+    "timestamp": "2026-09-16T06:01:55.012476+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63282,
+        "series": "Slow Horses",
+        "season": 6,
+        "episode": 1,
+        "title": "Circle of Life"
+      }
+    ],
+    "episode_ids": [
+      63282
+    ]
+  },
+  {
+    "id": "2e2abb2c",
+    "timestamp": "2026-09-16T06:01:56.333262+00:00",
+    "service": "radarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "movies": [
+      {
+        "id": 2292,
+        "title": "Kindergarten Cop"
+      },
+      {
+        "id": 2432,
+        "title": "No Other Choice"
+      },
+      {
+        "id": 2433,
+        "title": "The Rivals of Amziah King"
+      },
+      {
+        "id": 2436,
+        "title": "Nirvanna the Band the Show the Movie"
+      },
+      {
+        "id": 2449,
+        "title": "The Living Daylights"
+      }
+    ],
+    "movie_ids": [
+      2292,
+      2432,
+      2433,
+      2436,
+      2449
+    ]
+  },
+  {
+    "id": "675f3cac",
+    "timestamp": "2026-09-16T12:01:59.528020+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63677,
+        "series": "Reacher",
+        "season": 4,
+        "episode": 8,
+        "title": "Cut"
+      }
+    ],
+    "episode_ids": [
+      63677
+    ],
+    "series": [
+      {
+        "id": 135,
+        "title": "Reacher"
+      }
+    ],
+    "series_ids": [
+      135
+    ]
+  },
+  {
+    "id": "31461248",
+    "timestamp": "2026-09-16T18:02:03.718420+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63690,
+        "series": "Saga of Tanya the Evil",
+        "season": 2,
+        "episode": 2,
+        "title": "A Strange Friendship"
+      },
+      {
+        "id": 64055,
+        "series": "Tomb Raider King",
+        "season": 1,
+        "episode": 9,
+        "title": "The Ruler of Relics"
+      }
+    ],
+    "episode_ids": [
+      63690,
+      64055
+    ]
+  },
+  {
+    "id": "3e8231b3",
+    "timestamp": "2026-09-17T06:02:13.572756+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 62858,
+        "series": "South Park",
+        "season": 29,
+        "episode": 1,
+        "title": "South American Biker Gangs"
+      }
+    ],
+    "episode_ids": [
+      62858
+    ]
+  },
+  {
+    "id": "c959a05f",
+    "timestamp": "2026-09-17T18:02:21.452010+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 55760,
+        "series": "MobLand",
+        "season": 2,
+        "episode": 1,
+        "title": "I Wanna Be Your Dog"
+      }
+    ],
+    "episode_ids": [
+      55760
+    ]
+  },
+  {
+    "id": "b6dc2340",
+    "timestamp": "2026-09-18T00:02:28.495608+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63717,
+        "series": "Taskmaster",
+        "season": 22,
+        "episode": 3,
+        "title": "The Butterfly Centurion"
+      }
+    ],
+    "episode_ids": [
+      63717
+    ]
+  },
+  {
+    "id": "1716d341",
+    "timestamp": "2026-09-18T06:02:32.655773+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63314,
+        "series": "Stuart Fails to Save the Universe",
+        "season": 1,
+        "episode": 9,
+        "title": "Spoiler: We Couldn't Get Green Lantern"
+      },
+      {
+        "id": 63588,
+        "series": "Dark Matter (2024)",
+        "season": 2,
+        "episode": 4,
+        "title": "Stars, Hide Your Fires"
+      }
+    ],
+    "episode_ids": [
+      63314,
+      63588
+    ]
+  },
+  {
+    "id": "8d005675",
+    "timestamp": "2026-09-18T18:02:40.259566+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 62409,
+        "series": "That Time I Got Reincarnated as a Slime",
+        "season": 4,
+        "episode": 21,
+        "title": "Chronoa the Hero (Part 2)"
+      }
+    ],
+    "episode_ids": [
+      62409
+    ],
+    "series": [
+      {
+        "id": 432,
+        "title": "The Traitors (US)"
+      }
+    ],
+    "series_ids": [
+      432
+    ]
+  },
+  {
+    "id": "02fc3fe9",
+    "timestamp": "2026-09-19T18:02:55.226521+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63962,
+        "series": "Bleach",
+        "season": 17,
+        "episode": 44,
+        "title": "THE PERFECT CRIMSON"
+      },
+      {
+        "id": 64358,
+        "series": "Daemons of the Shadow Realm",
+        "season": 1,
+        "episode": 22,
+        "title": "The Kagemori Brothers and the Kuroya Siblings"
+      }
+    ],
+    "episode_ids": [
+      63962,
+      64358
+    ]
+  },
+  {
+    "id": "7012c4af",
+    "timestamp": "2026-09-21T06:03:17.667492+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64078,
+        "series": "Lanterns",
+        "season": 1,
+        "episode": 6,
+        "title": "Bad Optics"
+      }
+    ],
+    "episode_ids": [
+      64078
+    ]
+  },
+  {
+    "id": "f9e30f80",
+    "timestamp": "2026-09-22T06:04:27.468586+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64226,
+        "series": "It's Always Sunny in Philadelphia",
+        "season": 18,
+        "episode": 7,
+        "title": "Gilligan's Island: A Conspiracy Theorist's Paradise"
+      }
+    ],
+    "episode_ids": [
+      64226
+    ]
+  },
+  {
+    "id": "dd75d209",
+    "timestamp": "2026-09-22T18:04:36.423582+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64474,
+        "series": "Franklin",
+        "season": 2,
+        "episode": 1,
+        "title": "Franklin's Visitor / Franklin's Not-So-Broken Bone"
+      },
+      {
+        "id": 64475,
+        "series": "Franklin",
+        "season": 2,
+        "episode": 2,
+        "title": "Franklin's Gift / Franklin Growing Up Fast"
+      },
+      {
+        "id": 64476,
+        "series": "Franklin",
+        "season": 2,
+        "episode": 3,
+        "title": "Franklin the Spy / Franklin's Library Book"
+      },
+      {
+        "id": 64477,
+        "series": "Franklin",
+        "season": 2,
+        "episode": 4,
+        "title": "Franklin's Kite / Franklin and the Babysitter"
+      },
+      {
+        "id": 64478,
+        "series": "Franklin",
+        "season": 2,
+        "episode": 5,
+        "title": "Franklin and the Broken Globe / Franklin's Valentines"
+      },
+      {
+        "id": 64479,
+        "series": "Franklin",
+        "season": 2,
+        "episode": 6,
+        "title": "Franklin's Family Treasure / Franklin's Music Lessons"
+      },
+      {
+        "id": 64480,
+        "series": "Franklin",
+        "season": 2,
+        "episode": 7,
+        "title": "Franklin Takes a Trip / Franklin's Bicycle Helmet"
+      },
+      {
+        "id": 64481,
+        "series": "Franklin",
+        "season": 2,
+        "episode": 8,
+        "title": "Franklin's Birthday Party / Franklin's Nickname"
+      },
+      {
+        "id": 64482,
+        "series": "Franklin",
+        "season": 2,
+        "episode": 9,
+        "title": "Franklin and Otter's Visit / Franklin's Collection"
+      },
+      {
+        "id": 64483,
+        "series": "Franklin",
+        "season": 2,
+        "episode": 10,
+        "title": "Franklin Says Sorry / Franklin and the Fire"
+      },
+      {
+        "id": 64484,
+        "series": "Franklin",
+        "season": 2,
+        "episode": 11,
+        "title": "Franklin's Garden / Franklin Runs Away"
+      },
+      {
+        "id": 64485,
+        "series": "Franklin",
+        "season": 2,
+        "episode": 12,
+        "title": "Franklin's Gloomy Day / Franklin Tells Time"
+      },
+      {
+        "id": 64486,
+        "series": "Franklin",
+        "season": 2,
+        "episode": 13,
+        "title": "Franklin's Test / Franklin and the Duckling"
+      },
+      {
+        "id": 64487,
+        "series": "Franklin",
+        "season": 3,
+        "episode": 1,
+        "title": "Franklin and His Night Friend / Franklin and the Two Henrys"
+      },
+      {
+        "id": 64488,
+        "series": "Franklin",
+        "season": 3,
+        "episode": 2,
+        "title": "Franklin's Nature Hike / Franklin's Starring Role"
+      },
+      {
+        "id": 64489,
+        "series": "Franklin",
+        "season": 3,
+        "episode": 3,
+        "title": "Franklin's Masterpiece / Franklin and the Computer"
+      },
+      {
+        "id": 64490,
+        "series": "Franklin",
+        "season": 3,
+        "episode": 4,
+        "title": "Franklin the Trooper / Franklin's Fossil"
+      },
+      {
+        "id": 64491,
+        "series": "Franklin",
+        "season": 3,
+        "episode": 5,
+        "title": "Franklin and the Fortune Teller / Franklin's Cellar"
+      },
+      {
+        "id": 64492,
+        "series": "Franklin",
+        "season": 3,
+        "episode": 6,
+        "title": "Franklin Plants a Tree / Franklin the Hero"
+      },
+      {
+        "id": 64493,
+        "series": "Franklin",
+        "season": 3,
+        "episode": 7,
+        "title": "Franklin's Day Off / Franklin's Homemade Cookies"
+      },
+      {
+        "id": 64494,
+        "series": "Franklin",
+        "season": 3,
+        "episode": 8,
+        "title": "Franklin the Fabulous / Franklin Camps Out"
+      },
+      {
+        "id": 64495,
+        "series": "Franklin",
+        "season": 3,
+        "episode": 9,
+        "title": "Franklin and the Puppy / Franklin Takes the Bus"
+      },
+      {
+        "id": 64496,
+        "series": "Franklin",
+        "season": 3,
+        "episode": 10,
+        "title": "Franklin and the Copycat / Big Brother Franklin"
+      },
+      {
+        "id": 64497,
+        "series": "Franklin",
+        "season": 3,
+        "episode": 11,
+        "title": "Franklin and the Grump / Franklin's Promise"
+      },
+      {
+        "id": 64498,
+        "series": "Franklin",
+        "season": 3,
+        "episode": 12,
+        "title": "Franklin and the Thunderstorm / Franklin's Maple Syrup"
+      },
+      {
+        "id": 64499,
+        "series": "Franklin",
+        "season": 3,
+        "episode": 13,
+        "title": "Franklin Helps Out / Franklin's Missing Snacks"
+      },
+      {
+        "id": 64500,
+        "series": "Franklin",
+        "season": 4,
+        "episode": 1,
+        "title": "Franklin's Good Deeds / Franklin's Submarine"
+      },
+      {
+        "id": 64501,
+        "series": "Franklin",
+        "season": 4,
+        "episode": 2,
+        "title": "Mr. Fix-It Franklin / Franklin Has the Hiccups"
+      },
+      {
+        "id": 64502,
+        "series": "Franklin",
+        "season": 4,
+        "episode": 3,
+        "title": "Franklin Delivers / Franklin's Shell Trouble"
+      },
+      {
+        "id": 64503,
+        "series": "Franklin",
+        "season": 4,
+        "episode": 4,
+        "title": "Franklin's Sailboat / Franklin Snoops"
+      },
+      {
+        "id": 64504,
+        "series": "Franklin",
+        "season": 4,
+        "episode": 5,
+        "title": "Franklin's Father / Franklin Plays Hockey"
+      },
+      {
+        "id": 64505,
+        "series": "Franklin",
+        "season": 4,
+        "episode": 6,
+        "title": "Franklin and the Puppet Play / Franklin's Stopwatch"
+      },
+      {
+        "id": 64506,
+        "series": "Franklin",
+        "season": 4,
+        "episode": 7,
+        "title": "Franklin Meets Ermine / Franklin's Funny Business"
+      },
+      {
+        "id": 64507,
+        "series": "Franklin",
+        "season": 4,
+        "episode": 8,
+        "title": "Franklin and Sam / Franklin's Berry Patch"
+      },
+      {
+        "id": 64508,
+        "series": "Franklin",
+        "season": 4,
+        "episode": 9,
+        "title": "Franklin's Rival / Franklin and the Trading Cards"
+      },
+      {
+        "id": 64509,
+        "series": "Franklin",
+        "season": 4,
+        "episode": 10,
+        "title": "Franklin's Robot / Franklin the Detective"
+      },
+      {
+        "id": 64510,
+        "series": "Franklin",
+        "season": 4,
+        "episode": 11,
+        "title": "Franklin the Fearless / Franklin's Lucky Charm"
+      },
+      {
+        "id": 64511,
+        "series": "Franklin",
+        "season": 4,
+        "episode": 12,
+        "title": "Franklin at the Seashore / Franklin and Snail's Dream"
+      },
+      {
+        "id": 64512,
+        "series": "Franklin",
+        "season": 4,
+        "episode": 13,
+        "title": "My Franklin / Franklin's Mom"
+      },
+      {
+        "id": 64513,
+        "series": "Franklin",
+        "season": 5,
+        "episode": 1,
+        "title": "Franklin the Teacher / Franklin's Allergy"
+      },
+      {
+        "id": 64514,
+        "series": "Franklin",
+        "season": 5,
+        "episode": 2,
+        "title": "Franklin Loses a Book / Franklin and Betty"
+      },
+      {
+        "id": 64515,
+        "series": "Franklin",
+        "season": 5,
+        "episode": 3,
+        "title": "Franklin's Pumpkin / Franklin's Jug Band"
+      },
+      {
+        "id": 64516,
+        "series": "Franklin",
+        "season": 5,
+        "episode": 4,
+        "title": "Franklin and the Bus Patrol / Franklin and Wolvie"
+      },
+      {
+        "id": 64517,
+        "series": "Franklin",
+        "season": 5,
+        "episode": 5,
+        "title": "Franklin Stays Up / Franklin's Bargain"
+      },
+      {
+        "id": 64518,
+        "series": "Franklin",
+        "season": 5,
+        "episode": 6,
+        "title": "Franklin's Big Game / Franklin's Reading Club"
+      },
+      {
+        "id": 64519,
+        "series": "Franklin",
+        "season": 5,
+        "episode": 7,
+        "title": "Franklin in Two Places / Franklin's First Star"
+      },
+      {
+        "id": 64520,
+        "series": "Franklin",
+        "season": 5,
+        "episode": 8,
+        "title": "Franklin's Float / Franklin's Party Plans"
+      },
+      {
+        "id": 64521,
+        "series": "Franklin",
+        "season": 5,
+        "episode": 9,
+        "title": "Gee Whiz Franklin / Franklin Can't Wait"
+      },
+      {
+        "id": 64522,
+        "series": "Franklin",
+        "season": 5,
+        "episode": 10,
+        "title": "Franklin's Spring First / Franklin Plays Golf"
+      },
+      {
+        "id": 64523,
+        "series": "Franklin",
+        "season": 5,
+        "episode": 11,
+        "title": "Franklin's Canoe Trip / Franklin's Interview"
+      },
+      {
+        "id": 64524,
+        "series": "Franklin",
+        "season": 5,
+        "episode": 12,
+        "title": "Franklin's Crystal / Franklin's Advice"
+      },
+      {
+        "id": 64525,
+        "series": "Franklin",
+        "season": 5,
+        "episode": 13,
+        "title": "Franklin's Cookie Question / Franklin's Picnic"
+      },
+      {
+        "id": 64529,
+        "series": "Franklin",
+        "season": 6,
+        "episode": 4,
+        "title": "Franklin's Swimming Party / Franklin's Soccer Field Folly"
+      },
+      {
+        "id": 64540,
+        "series": "Kipper",
+        "season": 1,
+        "episode": 1,
+        "title": "The Visitor"
+      },
+      {
+        "id": 64541,
+        "series": "Kipper",
+        "season": 1,
+        "episode": 2,
+        "title": "The Umbrella"
+      },
+      {
+        "id": 64542,
+        "series": "Kipper",
+        "season": 1,
+        "episode": 3,
+        "title": "The Seaside"
+      },
+      {
+        "id": 64543,
+        "series": "Kipper",
+        "season": 1,
+        "episode": 4,
+        "title": "Nothing Ever Happens"
+      },
+      {
+        "id": 64544,
+        "series": "Kipper",
+        "season": 1,
+        "episode": 5,
+        "title": "Pig's Present"
+      },
+      {
+        "id": 64545,
+        "series": "Kipper",
+        "season": 1,
+        "episode": 6,
+        "title": "The Rainbow Puddle"
+      },
+      {
+        "id": 64546,
+        "series": "Kipper",
+        "season": 1,
+        "episode": 7,
+        "title": "The Butterfly"
+      },
+      {
+        "id": 64547,
+        "series": "Kipper",
+        "season": 1,
+        "episode": 8,
+        "title": "The Bleepers"
+      },
+      {
+        "id": 64548,
+        "series": "Kipper",
+        "season": 1,
+        "episode": 9,
+        "title": "Snowy Day"
+      },
+      {
+        "id": 64549,
+        "series": "Kipper",
+        "season": 1,
+        "episode": 10,
+        "title": "Pig's Cousin"
+      },
+      {
+        "id": 64550,
+        "series": "Kipper",
+        "season": 1,
+        "episode": 11,
+        "title": "The Paddling Pool"
+      },
+      {
+        "id": 64551,
+        "series": "Kipper",
+        "season": 1,
+        "episode": 12,
+        "title": "Tiger's Torch"
+      },
+      {
+        "id": 64552,
+        "series": "Kipper",
+        "season": 1,
+        "episode": 13,
+        "title": "The Conker Tree"
+      },
+      {
+        "id": 64553,
+        "series": "Kipper",
+        "season": 2,
+        "episode": 1,
+        "title": "The Goldfish"
+      },
+      {
+        "id": 64554,
+        "series": "Kipper",
+        "season": 2,
+        "episode": 2,
+        "title": "Sleepless Night"
+      },
+      {
+        "id": 64555,
+        "series": "Kipper",
+        "season": 2,
+        "episode": 3,
+        "title": "The Camping Trip"
+      },
+      {
+        "id": 64556,
+        "series": "Kipper",
+        "season": 2,
+        "episode": 4,
+        "title": "The Igloo"
+      },
+      {
+        "id": 64557,
+        "series": "Kipper",
+        "season": 2,
+        "episode": 5,
+        "title": "Hiccups"
+      },
+      {
+        "id": 64558,
+        "series": "Kipper",
+        "season": 2,
+        "episode": 6,
+        "title": "The Little Ghost"
+      },
+      {
+        "id": 64559,
+        "series": "Kipper",
+        "season": 2,
+        "episode": 7,
+        "title": "Space Invaders"
+      },
+      {
+        "id": 64560,
+        "series": "Kipper",
+        "season": 2,
+        "episode": 8,
+        "title": "The Magnifying Glass"
+      },
+      {
+        "id": 64561,
+        "series": "Kipper",
+        "season": 2,
+        "episode": 9,
+        "title": "Kipper Is Unwell"
+      },
+      {
+        "id": 64562,
+        "series": "Kipper",
+        "season": 2,
+        "episode": 10,
+        "title": "The Nest"
+      },
+      {
+        "id": 64563,
+        "series": "Kipper",
+        "season": 2,
+        "episode": 11,
+        "title": "The Magic Lamp"
+      },
+      {
+        "id": 64564,
+        "series": "Kipper",
+        "season": 2,
+        "episode": 12,
+        "title": "The Gismo"
+      },
+      {
+        "id": 64565,
+        "series": "Kipper",
+        "season": 2,
+        "episode": 13,
+        "title": "Kipper's Circus"
+      },
+      {
+        "id": 64566,
+        "series": "Kipper",
+        "season": 3,
+        "episode": 1,
+        "title": "The Lost Mug"
+      },
+      {
+        "id": 64567,
+        "series": "Kipper",
+        "season": 3,
+        "episode": 2,
+        "title": "The Rescue"
+      },
+      {
+        "id": 64568,
+        "series": "Kipper",
+        "season": 3,
+        "episode": 3,
+        "title": "The Picnic"
+      },
+      {
+        "id": 64569,
+        "series": "Kipper",
+        "season": 3,
+        "episode": 4,
+        "title": "The Treasure Hunt"
+      },
+      {
+        "id": 64570,
+        "series": "Kipper",
+        "season": 3,
+        "episode": 5,
+        "title": "Jake's Bird"
+      },
+      {
+        "id": 64571,
+        "series": "Kipper",
+        "season": 3,
+        "episode": 6,
+        "title": "The Dinosaur"
+      },
+      {
+        "id": 64572,
+        "series": "Kipper",
+        "season": 3,
+        "episode": 7,
+        "title": "Tiger's Sledge"
+      },
+      {
+        "id": 64573,
+        "series": "Kipper",
+        "season": 3,
+        "episode": 8,
+        "title": "The Swimming Pool"
+      },
+      {
+        "id": 64574,
+        "series": "Kipper",
+        "season": 3,
+        "episode": 9,
+        "title": "Arnold's Balloon Trip"
+      },
+      {
+        "id": 64575,
+        "series": "Kipper",
+        "season": 3,
+        "episode": 10,
+        "title": "The Magic Act"
+      },
+      {
+        "id": 64576,
+        "series": "Kipper",
+        "season": 3,
+        "episode": 11,
+        "title": "Cakes and Tails"
+      },
+      {
+        "id": 64577,
+        "series": "Kipper",
+        "season": 3,
+        "episode": 12,
+        "title": "The Long Walk"
+      },
+      {
+        "id": 64578,
+        "series": "Kipper",
+        "season": 3,
+        "episode": 13,
+        "title": "Christmas Eve"
+      },
+      {
+        "id": 64579,
+        "series": "Kipper",
+        "season": 4,
+        "episode": 1,
+        "title": "Surprise Party"
+      },
+      {
+        "id": 64580,
+        "series": "Kipper",
+        "season": 4,
+        "episode": 2,
+        "title": "The Ball"
+      },
+      {
+        "id": 64581,
+        "series": "Kipper",
+        "season": 4,
+        "episode": 3,
+        "title": "Pirates"
+      },
+      {
+        "id": 64582,
+        "series": "Kipper",
+        "season": 4,
+        "episode": 4,
+        "title": "Tiger's Cold"
+      },
+      {
+        "id": 64583,
+        "series": "Kipper",
+        "season": 4,
+        "episode": 5,
+        "title": "Looking After Arnold"
+      },
+      {
+        "id": 64584,
+        "series": "Kipper",
+        "season": 4,
+        "episode": 6,
+        "title": "The Mouse"
+      },
+      {
+        "id": 64585,
+        "series": "Kipper",
+        "season": 4,
+        "episode": 7,
+        "title": "Clouds"
+      },
+      {
+        "id": 64586,
+        "series": "Kipper",
+        "season": 4,
+        "episode": 8,
+        "title": "Crazy Golf"
+      },
+      {
+        "id": 64587,
+        "series": "Kipper",
+        "season": 4,
+        "episode": 9,
+        "title": "Echo Echo"
+      },
+      {
+        "id": 64588,
+        "series": "Kipper",
+        "season": 4,
+        "episode": 10,
+        "title": "The Big Freeze"
+      },
+      {
+        "id": 64589,
+        "series": "Kipper",
+        "season": 4,
+        "episode": 11,
+        "title": "Jake's Friend"
+      },
+      {
+        "id": 64590,
+        "series": "Kipper",
+        "season": 4,
+        "episode": 12,
+        "title": "The Fair"
+      },
+      {
+        "id": 64591,
+        "series": "Kipper",
+        "season": 4,
+        "episode": 13,
+        "title": "Big Owl's Bath"
+      },
+      {
+        "id": 64592,
+        "series": "Kipper",
+        "season": 5,
+        "episode": 1,
+        "title": "Tiger's Joke Box"
+      },
+      {
+        "id": 64593,
+        "series": "Kipper",
+        "season": 5,
+        "episode": 2,
+        "title": "Tiger's Rocket"
+      },
+      {
+        "id": 64594,
+        "series": "Kipper",
+        "season": 5,
+        "episode": 3,
+        "title": "The Jumble Sale"
+      },
+      {
+        "id": 64595,
+        "series": "Kipper",
+        "season": 5,
+        "episode": 4,
+        "title": "Water Water Everywhere"
+      },
+      {
+        "id": 64596,
+        "series": "Kipper",
+        "season": 5,
+        "episode": 5,
+        "title": "Pig's Shop"
+      },
+      {
+        "id": 64597,
+        "series": "Kipper",
+        "season": 5,
+        "episode": 6,
+        "title": "Hide and Seek"
+      },
+      {
+        "id": 64598,
+        "series": "Kipper",
+        "season": 5,
+        "episode": 7,
+        "title": "The Costume Party"
+      },
+      {
+        "id": 64599,
+        "series": "Kipper",
+        "season": 5,
+        "episode": 8,
+        "title": "Hedgehog Watch"
+      },
+      {
+        "id": 64600,
+        "series": "Kipper",
+        "season": 5,
+        "episode": 9,
+        "title": "Skates"
+      },
+      {
+        "id": 64601,
+        "series": "Kipper",
+        "season": 5,
+        "episode": 10,
+        "title": "Cousins"
+      },
+      {
+        "id": 64602,
+        "series": "Kipper",
+        "season": 5,
+        "episode": 11,
+        "title": "The Flying Machine"
+      },
+      {
+        "id": 64603,
+        "series": "Kipper",
+        "season": 5,
+        "episode": 12,
+        "title": "Arnold's Drum"
+      },
+      {
+        "id": 64604,
+        "series": "Kipper",
+        "season": 5,
+        "episode": 13,
+        "title": "The Key"
+      },
+      {
+        "id": 64605,
+        "series": "Kipper",
+        "season": 6,
+        "episode": 1,
+        "title": "The Holiday"
+      },
+      {
+        "id": 64606,
+        "series": "Kipper",
+        "season": 6,
+        "episode": 2,
+        "title": "The Big Race"
+      },
+      {
+        "id": 64607,
+        "series": "Kipper",
+        "season": 6,
+        "episode": 3,
+        "title": "Arnold On Wheels"
+      },
+      {
+        "id": 64608,
+        "series": "Kipper",
+        "season": 6,
+        "episode": 4,
+        "title": "Pig's Sweater"
+      },
+      {
+        "id": 64609,
+        "series": "Kipper",
+        "season": 6,
+        "episode": 5,
+        "title": "Buried Treasure"
+      },
+      {
+        "id": 64610,
+        "series": "Kipper",
+        "season": 6,
+        "episode": 6,
+        "title": "Clay Time"
+      },
+      {
+        "id": 64611,
+        "series": "Kipper",
+        "season": 6,
+        "episode": 7,
+        "title": "The Purple Park Monster"
+      },
+      {
+        "id": 64612,
+        "series": "Kipper",
+        "season": 6,
+        "episode": 8,
+        "title": "The River Trip"
+      },
+      {
+        "id": 64613,
+        "series": "Kipper",
+        "season": 6,
+        "episode": 9,
+        "title": "The Robot"
+      },
+      {
+        "id": 64614,
+        "series": "Kipper",
+        "season": 6,
+        "episode": 10,
+        "title": "The Missing Tape Mystery"
+      },
+      {
+        "id": 64615,
+        "series": "Kipper",
+        "season": 6,
+        "episode": 11,
+        "title": "Kipper the Hero"
+      },
+      {
+        "id": 64616,
+        "series": "Kipper",
+        "season": 6,
+        "episode": 12,
+        "title": "The Magic Carpet"
+      },
+      {
+        "id": 64617,
+        "series": "Kipper",
+        "season": 6,
+        "episode": 13,
+        "title": "The Farm"
+      }
+    ],
+    "episode_ids": [
+      64474,
+      64475,
+      64476,
+      64477,
+      64478,
+      64479,
+      64480,
+      64481,
+      64482,
+      64483,
+      64484,
+      64485,
+      64486,
+      64487,
+      64488,
+      64489,
+      64490,
+      64491,
+      64492,
+      64493,
+      64494,
+      64495,
+      64496,
+      64497,
+      64498,
+      64499,
+      64500,
+      64501,
+      64502,
+      64503,
+      64504,
+      64505,
+      64506,
+      64507,
+      64508,
+      64509,
+      64510,
+      64511,
+      64512,
+      64513,
+      64514,
+      64515,
+      64516,
+      64517,
+      64518,
+      64519,
+      64520,
+      64521,
+      64522,
+      64523,
+      64524,
+      64525,
+      64529,
+      64540,
+      64541,
+      64542,
+      64543,
+      64544,
+      64545,
+      64546,
+      64547,
+      64548,
+      64549,
+      64550,
+      64551,
+      64552,
+      64553,
+      64554,
+      64555,
+      64556,
+      64557,
+      64558,
+      64559,
+      64560,
+      64561,
+      64562,
+      64563,
+      64564,
+      64565,
+      64566,
+      64567,
+      64568,
+      64569,
+      64570,
+      64571,
+      64572,
+      64573,
+      64574,
+      64575,
+      64576,
+      64577,
+      64578,
+      64579,
+      64580,
+      64581,
+      64582,
+      64583,
+      64584,
+      64585,
+      64586,
+      64587,
+      64588,
+      64589,
+      64590,
+      64591,
+      64592,
+      64593,
+      64594,
+      64595,
+      64596,
+      64597,
+      64598,
+      64599,
+      64600,
+      64601,
+      64602,
+      64603,
+      64604,
+      64605,
+      64606,
+      64607,
+      64608,
+      64609,
+      64610,
+      64611,
+      64612,
+      64613,
+      64614,
+      64615,
+      64616,
+      64617
+    ],
+    "series": [
+      {
+        "id": 456,
+        "title": "Kipper"
+      }
+    ],
+    "series_ids": [
+      456
+    ]
+  },
+  {
+    "id": "a5ec72da",
+    "timestamp": "2026-09-22T18:04:36.647843+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled_season",
+    "series": [
+      {
+        "id": 455,
+        "title": "Franklin",
+        "season": 2
+      },
+      {
+        "id": 455,
+        "title": "Franklin",
+        "season": 3
+      },
+      {
+        "id": 455,
+        "title": "Franklin",
+        "season": 4
+      },
+      {
+        "id": 455,
+        "title": "Franklin",
+        "season": 5
+      }
+    ],
+    "series_ids": [
+      455,
+      455,
+      455,
+      455
+    ]
+  },
+  {
+    "id": "63670e57",
+    "timestamp": "2026-09-23T00:04:41.921585+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64208,
+        "series": "The Great British Bake Off",
+        "season": 17,
+        "episode": 1,
+        "title": "Cake Week"
+      },
+      {
+        "id": 64620,
+        "series": "John Adams",
+        "season": 1,
+        "episode": 1,
+        "title": "Join or Die"
+      },
+      {
+        "id": 64621,
+        "series": "John Adams",
+        "season": 1,
+        "episode": 2,
+        "title": "Independence"
+      },
+      {
+        "id": 64622,
+        "series": "John Adams",
+        "season": 1,
+        "episode": 3,
+        "title": "Don't Tread on Me"
+      },
+      {
+        "id": 64623,
+        "series": "John Adams",
+        "season": 1,
+        "episode": 4,
+        "title": "Reunion"
+      },
+      {
+        "id": 64624,
+        "series": "John Adams",
+        "season": 1,
+        "episode": 5,
+        "title": "Unite or Die"
+      },
+      {
+        "id": 64625,
+        "series": "John Adams",
+        "season": 1,
+        "episode": 6,
+        "title": "Unnecessary War"
+      },
+      {
+        "id": 64626,
+        "series": "John Adams",
+        "season": 1,
+        "episode": 7,
+        "title": "Peacefield"
+      }
+    ],
+    "episode_ids": [
+      64208,
+      64620,
+      64621,
+      64622,
+      64623,
+      64624,
+      64625,
+      64626
+    ],
+    "series": [
+      {
+        "id": 457,
+        "title": "John Adams"
+      }
+    ],
+    "series_ids": [
+      457
+    ]
+  },
+  {
+    "id": "1e946471",
+    "timestamp": "2026-09-23T06:04:45.918627+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63283,
+        "series": "Slow Horses",
+        "season": 6,
+        "episode": 2,
+        "title": "Daddy Issues"
+      },
+      {
+        "id": 64032,
+        "series": "Brothers (2026)",
+        "season": 1,
+        "episode": 1,
+        "title": "On the Road"
+      },
+      {
+        "id": 64033,
+        "series": "Brothers (2026)",
+        "season": 1,
+        "episode": 2,
+        "title": "The Hunt"
+      },
+      {
+        "id": 64461,
+        "series": "Franklin",
+        "season": 1,
+        "episode": 1,
+        "title": "Franklin Plays the Game / Franklin Wants a Pet"
+      },
+      {
+        "id": 64462,
+        "series": "Franklin",
+        "season": 1,
+        "episode": 2,
+        "title": "Hurry Up, Franklin / Franklin's Bad Day"
+      },
+      {
+        "id": 64463,
+        "series": "Franklin",
+        "season": 1,
+        "episode": 3,
+        "title": "Franklin Goes to School / Franklin Is Lost"
+      },
+      {
+        "id": 64464,
+        "series": "Franklin",
+        "season": 1,
+        "episode": 4,
+        "title": "Franklin Has a Sleepover / Franklin's Halloween"
+      },
+      {
+        "id": 64465,
+        "series": "Franklin",
+        "season": 1,
+        "episode": 5,
+        "title": "Franklin Rides a Bike / Franklin Is Messy"
+      },
+      {
+        "id": 64466,
+        "series": "Franklin",
+        "season": 1,
+        "episode": 6,
+        "title": "Franklin Fibs / Franklin's Blanket"
+      },
+      {
+        "id": 64467,
+        "series": "Franklin",
+        "season": 1,
+        "episode": 7,
+        "title": "Franklin Is Bossy / Franklin's Fort"
+      },
+      {
+        "id": 64468,
+        "series": "Franklin",
+        "season": 1,
+        "episode": 8,
+        "title": "Finders Keepers for Franklin / Franklin's New Friend"
+      },
+      {
+        "id": 64469,
+        "series": "Franklin",
+        "season": 1,
+        "episode": 9,
+        "title": "Franklin's School Play / Franklin and the Secret Club"
+      },
+      {
+        "id": 64470,
+        "series": "Franklin",
+        "season": 1,
+        "episode": 10,
+        "title": "Franklin and the Red Scooter / Franklin in the Dark"
+      },
+      {
+        "id": 64471,
+        "series": "Franklin",
+        "season": 1,
+        "episode": 11,
+        "title": "Franklin and the Tooth Fairy / Franklin Takes the Blame"
+      },
+      {
+        "id": 64472,
+        "series": "Franklin",
+        "season": 1,
+        "episode": 12,
+        "title": "Franklin's Christmas Gift / Franklin's Granny"
+      },
+      {
+        "id": 64473,
+        "series": "Franklin",
+        "season": 1,
+        "episode": 13,
+        "title": "Franklin and the Baby / Franklin Goes to Day Camp"
+      }
+    ],
+    "episode_ids": [
+      63283,
+      64032,
+      64033,
+      64461,
+      64462,
+      64463,
+      64464,
+      64465,
+      64466,
+      64467,
+      64468,
+      64469,
+      64470,
+      64471,
+      64472,
+      64473
+    ]
+  },
+  {
+    "id": "eb7264e4",
+    "timestamp": "2026-09-23T06:04:46.024969+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled_season",
+    "series": [
+      {
+        "id": 455,
+        "title": "Franklin",
+        "season": 1
+      }
+    ],
+    "series_ids": [
+      455
+    ]
+  },
+  {
+    "id": "f7957f6a",
+    "timestamp": "2026-09-23T18:04:54.405867+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63691,
+        "series": "Saga of Tanya the Evil",
+        "season": 2,
+        "episode": 3,
+        "title": "Well-Intentioned Mediator"
+      },
+      {
+        "id": 64056,
+        "series": "Tomb Raider King",
+        "season": 1,
+        "episode": 10,
+        "title": "The Curse of Relics"
+      }
+    ],
+    "episode_ids": [
+      63691,
+      64056
+    ]
+  },
+  {
+    "id": "909693be",
+    "timestamp": "2026-09-24T18:05:11.591187+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 55761,
+        "series": "MobLand",
+        "season": 2,
+        "episode": 2,
+        "title": "Song 2"
+      }
+    ],
+    "episode_ids": [
+      55761
+    ]
+  },
+  {
+    "id": "10c7c30b",
+    "timestamp": "2026-09-25T00:05:15.863772+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63718,
+        "series": "Taskmaster",
+        "season": 22,
+        "episode": 4,
+        "title": "An Act Of Self-Erasure"
+      }
+    ],
+    "episode_ids": [
+      63718
+    ]
+  },
+  {
+    "id": "18482a93",
+    "timestamp": "2026-09-25T06:05:20.140831+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63315,
+        "series": "Stuart Fails to Save the Universe",
+        "season": 1,
+        "episode": 10,
+        "title": "Spoiler: Filmed Before a Live Studio Audience"
+      },
+      {
+        "id": 63589,
+        "series": "Dark Matter (2024)",
+        "season": 2,
+        "episode": 5,
+        "title": "Love and Be Loved"
+      }
+    ],
+    "episode_ids": [
+      63315,
+      63589
+    ],
+    "series": [
+      {
+        "id": 427,
+        "title": "Stuart Fails to Save the Universe"
+      }
+    ],
+    "series_ids": [
+      427
+    ]
+  },
+  {
+    "id": "26e9b5ed",
+    "timestamp": "2026-09-25T18:05:29.360067+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 62410,
+        "series": "That Time I Got Reincarnated as a Slime",
+        "season": 4,
+        "episode": 22,
+        "title": "Where the Soul Resides"
+      }
+    ],
+    "episode_ids": [
+      62410
+    ]
+  },
+  {
+    "id": "90b2f41b",
+    "timestamp": "2026-09-25T18:05:29.471674+00:00",
+    "service": "sonarr",
+    "action": "remonitor",
+    "status_change": "unmonitored -> monitored",
+    "source": "scheduled_new_season",
+    "episodes": [
+      {
+        "id": 63297,
+        "series": "The Road Trip",
+        "season": 1,
+        "episode": 1,
+        "title": "Write Off"
+      },
+      {
+        "id": 63298,
+        "series": "The Road Trip",
+        "season": 1,
+        "episode": 2,
+        "title": "Road Rage"
+      },
+      {
+        "id": 63299,
+        "series": "The Road Trip",
+        "season": 1,
+        "episode": 3,
+        "title": "Pulled Over"
+      },
+      {
+        "id": 63300,
+        "series": "The Road Trip",
+        "season": 1,
+        "episode": 4,
+        "title": "Beyond Repair"
+      },
+      {
+        "id": 63301,
+        "series": "The Road Trip",
+        "season": 1,
+        "episode": 5,
+        "title": "Pit Stop"
+      },
+      {
+        "id": 63302,
+        "series": "The Road Trip",
+        "season": 1,
+        "episode": 6,
+        "title": "Just Married"
+      }
+    ],
+    "episode_ids": [
+      63297,
+      63298,
+      63299,
+      63300,
+      63301,
+      63302
+    ],
+    "series": [
+      {
+        "id": 424,
+        "title": "The Road Trip"
+      }
+    ],
+    "series_ids": [
+      424
+    ]
+  },
+  {
+    "id": "88b424bc",
+    "timestamp": "2026-09-26T06:05:40.540315+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63297,
+        "series": "The Road Trip",
+        "season": 1,
+        "episode": 1,
+        "title": "Write Off"
+      },
+      {
+        "id": 63298,
+        "series": "The Road Trip",
+        "season": 1,
+        "episode": 2,
+        "title": "Road Rage"
+      },
+      {
+        "id": 63299,
+        "series": "The Road Trip",
+        "season": 1,
+        "episode": 3,
+        "title": "Pulled Over"
+      },
+      {
+        "id": 63300,
+        "series": "The Road Trip",
+        "season": 1,
+        "episode": 4,
+        "title": "Beyond Repair"
+      },
+      {
+        "id": 63301,
+        "series": "The Road Trip",
+        "season": 1,
+        "episode": 5,
+        "title": "Pit Stop"
+      },
+      {
+        "id": 63302,
+        "series": "The Road Trip",
+        "season": 1,
+        "episode": 6,
+        "title": "Just Married"
+      }
+    ],
+    "episode_ids": [
+      63297,
+      63298,
+      63299,
+      63300,
+      63301,
+      63302
+    ],
+    "series": [
+      {
+        "id": 424,
+        "title": "The Road Trip"
+      }
+    ],
+    "series_ids": [
+      424
+    ]
+  },
+  {
+    "id": "9c548e58",
+    "timestamp": "2026-09-26T18:05:49.012091+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63963,
+        "series": "Bleach",
+        "season": 17,
+        "episode": 45,
+        "title": "DEFEND YOU"
+      },
+      {
+        "id": 64359,
+        "series": "Daemons of the Shadow Realm",
+        "season": 1,
+        "episode": 23,
+        "title": "Emotion and Reason"
+      }
+    ],
+    "episode_ids": [
+      63963,
+      64359
+    ]
+  },
+  {
+    "id": "ac9b3705",
+    "timestamp": "2026-09-28T06:06:11.636479+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63713,
+        "series": "Animal Control",
+        "season": 5,
+        "episode": 1,
+        "title": "Seahawks and Piglets"
+      },
+      {
+        "id": 64079,
+        "series": "Lanterns",
+        "season": 1,
+        "episode": 7,
+        "title": "The Jordan Boys' Legacy"
+      }
+    ],
+    "episode_ids": [
+      63713,
+      64079
+    ]
+  },
+  {
+    "id": "cb482e1b",
+    "timestamp": "2026-09-28T12:06:15.624313+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 62823,
+        "series": "Futurama",
+        "season": 11,
+        "episode": 10,
+        "title": "Final Ending: The Last Conclusion"
+      },
+      {
+        "id": 64207,
+        "series": "The Simpsons",
+        "season": 38,
+        "episode": 1,
+        "title": "The Children's Book Job"
+      }
+    ],
+    "episode_ids": [
+      62823,
+      64207
+    ],
+    "series": [
+      {
+        "id": 45,
+        "title": "Futurama"
+      }
+    ],
+    "series_ids": [
+      45
+    ]
+  },
+  {
+    "id": "1291bfc4",
+    "timestamp": "2026-09-28T18:06:19.391153+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64419,
+        "series": "The Simpsons",
+        "season": 38,
+        "episode": 2,
+        "title": "Diary of a Chimpy Kid"
+      }
+    ],
+    "episode_ids": [
+      64419
+    ]
+  },
+  {
+    "id": "76e76820",
+    "timestamp": "2026-09-29T06:06:30.438940+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64227,
+        "series": "It's Always Sunny in Philadelphia",
+        "season": 18,
+        "episode": 8,
+        "title": "Mac and Dennis Tear Their ACLs"
+      }
+    ],
+    "episode_ids": [
+      64227
+    ]
+  },
+  {
+    "id": "d65460f6",
+    "timestamp": "2026-09-29T12:06:36.853110+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 62957,
+        "series": "Orphan Black",
+        "season": 2,
+        "episode": 1,
+        "title": "Nature Under Constraint and Vexed"
+      },
+      {
+        "id": 62958,
+        "series": "Orphan Black",
+        "season": 2,
+        "episode": 2,
+        "title": "Governed By Sound Reason and True Religion"
+      },
+      {
+        "id": 62959,
+        "series": "Orphan Black",
+        "season": 2,
+        "episode": 3,
+        "title": "Mingling Its Own Nature with It"
+      },
+      {
+        "id": 62960,
+        "series": "Orphan Black",
+        "season": 2,
+        "episode": 4,
+        "title": "Governed As It Were By Chance"
+      },
+      {
+        "id": 62961,
+        "series": "Orphan Black",
+        "season": 2,
+        "episode": 5,
+        "title": "Ipsa Scientia Potestas Est"
+      },
+      {
+        "id": 62962,
+        "series": "Orphan Black",
+        "season": 2,
+        "episode": 6,
+        "title": "To Hound Nature in Her Wanderings"
+      },
+      {
+        "id": 62963,
+        "series": "Orphan Black",
+        "season": 2,
+        "episode": 7,
+        "title": "Knowledge of Causes, and Secret Motion of Things"
+      },
+      {
+        "id": 62964,
+        "series": "Orphan Black",
+        "season": 2,
+        "episode": 8,
+        "title": "Variable and Full of Perturbation"
+      },
+      {
+        "id": 62965,
+        "series": "Orphan Black",
+        "season": 2,
+        "episode": 9,
+        "title": "Things Which Have Never Yet Been Done"
+      },
+      {
+        "id": 62966,
+        "series": "Orphan Black",
+        "season": 2,
+        "episode": 10,
+        "title": "By Means Which Have Never Yet Been Tried"
+      },
+      {
+        "id": 62967,
+        "series": "Orphan Black",
+        "season": 3,
+        "episode": 1,
+        "title": "The Weight of This Combination"
+      },
+      {
+        "id": 62968,
+        "series": "Orphan Black",
+        "season": 3,
+        "episode": 2,
+        "title": "Transitory Sacrifices of Crisis"
+      },
+      {
+        "id": 62969,
+        "series": "Orphan Black",
+        "season": 3,
+        "episode": 3,
+        "title": "Formalized, Complex, and Costly"
+      },
+      {
+        "id": 62970,
+        "series": "Orphan Black",
+        "season": 3,
+        "episode": 4,
+        "title": "Newer Elements of Our Defense"
+      },
+      {
+        "id": 62971,
+        "series": "Orphan Black",
+        "season": 3,
+        "episode": 5,
+        "title": "Scarred by Many Past Frustrations"
+      },
+      {
+        "id": 62972,
+        "series": "Orphan Black",
+        "season": 3,
+        "episode": 6,
+        "title": "Certain Agony of the Battlefield"
+      },
+      {
+        "id": 62973,
+        "series": "Orphan Black",
+        "season": 3,
+        "episode": 7,
+        "title": "Community of Dreadful Fear and Hate"
+      },
+      {
+        "id": 62974,
+        "series": "Orphan Black",
+        "season": 3,
+        "episode": 8,
+        "title": "Ruthless in Purpose, and Insidious in Method"
+      },
+      {
+        "id": 62975,
+        "series": "Orphan Black",
+        "season": 3,
+        "episode": 9,
+        "title": "Insolvent Phantom of Tomorrow"
+      },
+      {
+        "id": 62976,
+        "series": "Orphan Black",
+        "season": 3,
+        "episode": 10,
+        "title": "History Yet to Be Written"
+      },
+      {
+        "id": 62977,
+        "series": "Orphan Black",
+        "season": 4,
+        "episode": 1,
+        "title": "The Collapse of Nature"
+      },
+      {
+        "id": 62978,
+        "series": "Orphan Black",
+        "season": 4,
+        "episode": 2,
+        "title": "Transgressive Border Crossing"
+      },
+      {
+        "id": 62979,
+        "series": "Orphan Black",
+        "season": 4,
+        "episode": 3,
+        "title": "The Stigmata of Progress"
+      },
+      {
+        "id": 62980,
+        "series": "Orphan Black",
+        "season": 4,
+        "episode": 4,
+        "title": "From Instinct to Rational Control"
+      },
+      {
+        "id": 62981,
+        "series": "Orphan Black",
+        "season": 4,
+        "episode": 5,
+        "title": "Human Raw Material"
+      },
+      {
+        "id": 62982,
+        "series": "Orphan Black",
+        "season": 4,
+        "episode": 6,
+        "title": "The Scandal of Altruism"
+      },
+      {
+        "id": 62983,
+        "series": "Orphan Black",
+        "season": 4,
+        "episode": 7,
+        "title": "The Antisocialism of Sex"
+      },
+      {
+        "id": 62984,
+        "series": "Orphan Black",
+        "season": 4,
+        "episode": 8,
+        "title": "The Redesign of Natural Objects"
+      },
+      {
+        "id": 62985,
+        "series": "Orphan Black",
+        "season": 4,
+        "episode": 9,
+        "title": "The Mitigation of Competition"
+      },
+      {
+        "id": 62986,
+        "series": "Orphan Black",
+        "season": 4,
+        "episode": 10,
+        "title": "From Dancing Mice to Psychopaths"
+      },
+      {
+        "id": 62987,
+        "series": "Orphan Black",
+        "season": 5,
+        "episode": 1,
+        "title": "The Few Who Dare"
+      },
+      {
+        "id": 62988,
+        "series": "Orphan Black",
+        "season": 5,
+        "episode": 2,
+        "title": "Clutch of Greed"
+      },
+      {
+        "id": 62989,
+        "series": "Orphan Black",
+        "season": 5,
+        "episode": 3,
+        "title": "Beneath Her Heart"
+      },
+      {
+        "id": 62990,
+        "series": "Orphan Black",
+        "season": 5,
+        "episode": 4,
+        "title": "Let the Children and Childbearers Toil"
+      },
+      {
+        "id": 62991,
+        "series": "Orphan Black",
+        "season": 5,
+        "episode": 5,
+        "title": "Ease for Idle Millionaires"
+      },
+      {
+        "id": 62992,
+        "series": "Orphan Black",
+        "season": 5,
+        "episode": 6,
+        "title": "Manacled Slim Wrists"
+      },
+      {
+        "id": 62993,
+        "series": "Orphan Black",
+        "season": 5,
+        "episode": 7,
+        "title": "Gag or Throttle"
+      },
+      {
+        "id": 62994,
+        "series": "Orphan Black",
+        "season": 5,
+        "episode": 8,
+        "title": "Guillotines Decide"
+      },
+      {
+        "id": 62995,
+        "series": "Orphan Black",
+        "season": 5,
+        "episode": 9,
+        "title": "One Fettered Slave"
+      },
+      {
+        "id": 62996,
+        "series": "Orphan Black",
+        "season": 5,
+        "episode": 10,
+        "title": "To Right the Wrongs of Many"
+      }
+    ],
+    "episode_ids": [
+      62957,
+      62958,
+      62959,
+      62960,
+      62961,
+      62962,
+      62963,
+      62964,
+      62965,
+      62966,
+      62967,
+      62968,
+      62969,
+      62970,
+      62971,
+      62972,
+      62973,
+      62974,
+      62975,
+      62976,
+      62977,
+      62978,
+      62979,
+      62980,
+      62981,
+      62982,
+      62983,
+      62984,
+      62985,
+      62986,
+      62987,
+      62988,
+      62989,
+      62990,
+      62991,
+      62992,
+      62993,
+      62994,
+      62995,
+      62996
+    ],
+    "series": [
+      {
+        "id": 418,
+        "title": "Orphan Black"
+      }
+    ],
+    "series_ids": [
+      418
+    ]
+  },
+  {
+    "id": "8884b421",
+    "timestamp": "2026-09-30T00:06:45.479353+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64209,
+        "series": "The Great British Bake Off",
+        "season": 17,
+        "episode": 2,
+        "title": "Biscuit Week"
+      }
+    ],
+    "episode_ids": [
+      64209
+    ]
+  },
+  {
+    "id": "33f5fbd6",
+    "timestamp": "2026-09-30T06:06:50.163411+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63284,
+        "series": "Slow Horses",
+        "season": 6,
+        "episode": 3,
+        "title": "Resurrection"
+      },
+      {
+        "id": 64034,
+        "series": "Brothers",
+        "season": 1,
+        "episode": 3,
+        "title": "Little Woody"
+      }
+    ],
+    "episode_ids": [
+      63284,
+      64034
+    ]
+  },
+  {
+    "id": "d0cb150e",
+    "timestamp": "2026-09-30T18:06:58.002607+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63692,
+        "series": "Saga of Tanya the Evil",
+        "season": 2,
+        "episode": 4,
+        "title": "Operation Iron Hammer"
+      },
+      {
+        "id": 64057,
+        "series": "Tomb Raider King",
+        "season": 1,
+        "episode": 11,
+        "title": "Tian Fu's Relic"
+      }
+    ],
+    "episode_ids": [
+      63692,
+      64057
+    ]
+  },
+  {
+    "id": "3ca9684a",
+    "timestamp": "2026-10-01T06:07:06.819129+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 62859,
+        "series": "South Park",
+        "season": 29,
+        "episode": 2,
+        "title": "Billionaire Weenietown"
+      }
+    ],
+    "episode_ids": [
+      62859
+    ]
+  },
+  {
+    "id": "369b9806",
+    "timestamp": "2026-10-01T12:07:12.515069+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64043,
+        "series": "Shark Tank",
+        "season": 18,
+        "episode": 1,
+        "title": "Beast Mode"
+      },
+      {
+        "id": 64044,
+        "series": "Shark Tank",
+        "season": 18,
+        "episode": 2,
+        "title": "Favorite Daughters"
+      },
+      {
+        "id": 63574,
+        "series": "East of Eden (2026)",
+        "season": 1,
+        "episode": 1,
+        "title": "Part 1: Brothers"
+      },
+      {
+        "id": 64218,
+        "series": "East of Eden (2026)",
+        "season": 1,
+        "episode": 2,
+        "title": "Part 2: Cathy"
+      },
+      {
+        "id": 64219,
+        "series": "East of Eden (2026)",
+        "season": 1,
+        "episode": 3,
+        "title": "Part 3: In the Valley"
+      },
+      {
+        "id": 64220,
+        "series": "East of Eden (2026)",
+        "season": 1,
+        "episode": 4,
+        "title": "Part 4: Kate"
+      }
+    ],
+    "episode_ids": [
+      64043,
+      64044,
+      63574,
+      64218,
+      64219,
+      64220
+    ]
+  },
+  {
+    "id": "06165cce",
+    "timestamp": "2026-10-01T18:07:18.399836+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 55762,
+        "series": "MobLand",
+        "season": 2,
+        "episode": 3,
+        "title": "Bonzo Goes to Bitburg"
+      },
+      {
+        "id": 64221,
+        "series": "East of Eden (2026)",
+        "season": 1,
+        "episode": 5,
+        "title": "Departure"
+      }
+    ],
+    "episode_ids": [
+      55762,
+      64221
+    ]
+  },
+  {
+    "id": "b78ff70e",
+    "timestamp": "2026-10-02T00:07:22.780042+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63719,
+        "series": "Taskmaster",
+        "season": 22,
+        "episode": 5,
+        "title": "You're Nice"
+      },
+      {
+        "id": 64222,
+        "series": "East of Eden (2026)",
+        "season": 1,
+        "episode": 6,
+        "title": "The Great Try"
+      },
+      {
+        "id": 64223,
+        "series": "East of Eden (2026)",
+        "season": 1,
+        "episode": 7,
+        "title": "Timshel"
+      }
+    ],
+    "episode_ids": [
+      63719,
+      64222,
+      64223
+    ],
+    "series": [
+      {
+        "id": 435,
+        "title": "East of Eden (2026)"
+      }
+    ],
+    "series_ids": [
+      435
+    ]
+  },
+  {
+    "id": "2c4885b5",
+    "timestamp": "2026-10-02T06:07:26.782017+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63698,
+        "series": "Saga of Tanya the Evil",
+        "season": 2,
+        "episode": 10,
+        "title": "A Way to Survive"
+      },
+      {
+        "id": 63590,
+        "series": "Dark Matter (2024)",
+        "season": 2,
+        "episode": 6,
+        "title": "What the Universe Is Made Of"
+      }
+    ],
+    "episode_ids": [
+      63698,
+      63590
+    ]
+  },
+  {
+    "id": "5b4a058d",
+    "timestamp": "2026-10-02T18:07:35.143781+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 62411,
+        "series": "That Time I Got Reincarnated as a Slime",
+        "season": 4,
+        "episode": 23,
+        "title": "Granville's Hope"
+      }
+    ],
+    "episode_ids": [
+      62411
+    ]
+  },
+  {
+    "id": "9900f97c",
+    "timestamp": "2026-10-03T12:07:48.199972+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64644,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 3,
+        "title": "A Dim Light Amid Despair: Humanity's Comeback (1)"
+      },
+      {
+        "id": 64645,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 4,
+        "title": "The Night of the Closing Ceremony: Humanity's Comeback (2)"
+      },
+      {
+        "id": 64646,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 5,
+        "title": "First Battle: The Struggle for Trost (1)"
+      },
+      {
+        "id": 64647,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 6,
+        "title": "The World the Girl Saw: The Struggle for Trost (2)"
+      },
+      {
+        "id": 64648,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 7,
+        "title": "Small Blade: The Struggle for Trost (3)"
+      },
+      {
+        "id": 64649,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 8,
+        "title": "I Can Hear His Heartbeat: The Struggle for Trost (4)"
+      },
+      {
+        "id": 64650,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 9,
+        "title": "Whereabouts of His Left Arm: The Struggle for Trost (5)"
+      },
+      {
+        "id": 64651,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 10,
+        "title": "Response: The Struggle for Trost (6)"
+      },
+      {
+        "id": 64652,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 11,
+        "title": "Idol: The Struggle for Trost (7)"
+      },
+      {
+        "id": 64653,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 12,
+        "title": "Wound: The Struggle for Trost (8)"
+      },
+      {
+        "id": 64654,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 13,
+        "title": "Primal Desire: The Struggle for Trost (9)"
+      },
+      {
+        "id": 64655,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 14,
+        "title": "Can't Look into His Eyes Yet: Eve of the Counterattack (1)"
+      },
+      {
+        "id": 64656,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 15,
+        "title": "Special Operations Squad: Eve of the Counterattack (2)"
+      },
+      {
+        "id": 64657,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 16,
+        "title": "What Needs to Be Done Now: Eve of the Counterattack (3)"
+      },
+      {
+        "id": 64658,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 17,
+        "title": "Female Titan: The 57th Exterior Scouting Mission (1)"
+      },
+      {
+        "id": 64659,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 18,
+        "title": "Forest of Giant Trees: The 57th Exterior Scouting Mission (2)"
+      },
+      {
+        "id": 64660,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 19,
+        "title": "Bite: The 57th Exterior Scouting Mission (3)"
+      },
+      {
+        "id": 64661,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 20,
+        "title": "Erwin Smith: The 57th Exterior Scouting Mission (4)"
+      },
+      {
+        "id": 64662,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 21,
+        "title": "Crushing Blow: The 57th Exterior Scouting Mission (5)"
+      },
+      {
+        "id": 64663,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 22,
+        "title": "The Defeated: The 57th Exterior Scouting Mission (6)"
+      },
+      {
+        "id": 64664,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 23,
+        "title": "Smile: Assault on Stohess (1)"
+      },
+      {
+        "id": 64665,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 24,
+        "title": "Mercy: Assault on Stohess (2)"
+      },
+      {
+        "id": 64666,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 25,
+        "title": "Wall: Assault on Stohess (3)"
+      },
+      {
+        "id": 64676,
+        "series": "Attack on Titan",
+        "season": 2,
+        "episode": 10,
+        "title": "Children"
+      },
+      {
+        "id": 64679,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 1,
+        "title": "Smoke Signal"
+      },
+      {
+        "id": 64680,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 2,
+        "title": "Pain"
+      },
+      {
+        "id": 64681,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 3,
+        "title": "Old Story"
+      },
+      {
+        "id": 64682,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 4,
+        "title": "Trust"
+      },
+      {
+        "id": 64683,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 5,
+        "title": "Reply"
+      },
+      {
+        "id": 64684,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 6,
+        "title": "Sin"
+      },
+      {
+        "id": 64685,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 7,
+        "title": "Wish"
+      },
+      {
+        "id": 64686,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 8,
+        "title": "Outside the Walls of Orvud District"
+      },
+      {
+        "id": 64687,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 9,
+        "title": "Ruler of the Walls"
+      },
+      {
+        "id": 64688,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 10,
+        "title": "Friends"
+      },
+      {
+        "id": 64689,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 11,
+        "title": "Bystander"
+      },
+      {
+        "id": 64690,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 12,
+        "title": "Night of the Battle to Retake the Wall"
+      },
+      {
+        "id": 64701,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 1,
+        "title": "The Other Side of the Sea"
+      },
+      {
+        "id": 64702,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 2,
+        "title": "Midnight Train"
+      },
+      {
+        "id": 64703,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 3,
+        "title": "The Door of Hope"
+      },
+      {
+        "id": 64707,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 7,
+        "title": "Assault"
+      },
+      {
+        "id": 64708,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 8,
+        "title": "Assassin's Bullet"
+      },
+      {
+        "id": 64709,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 9,
+        "title": "Brave Volunteers"
+      },
+      {
+        "id": 64710,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 10,
+        "title": "A Sound Argument"
+      },
+      {
+        "id": 64711,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 11,
+        "title": "Deceiver"
+      },
+      {
+        "id": 64712,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 12,
+        "title": "Guides"
+      },
+      {
+        "id": 64713,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 13,
+        "title": "Children of the Forest"
+      },
+      {
+        "id": 64715,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 15,
+        "title": "Sole Salvation"
+      },
+      {
+        "id": 64717,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 17,
+        "title": "Judgment"
+      },
+      {
+        "id": 64718,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 18,
+        "title": "Sneak Attack"
+      },
+      {
+        "id": 64719,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 19,
+        "title": "Two Brothers"
+      },
+      {
+        "id": 64720,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 20,
+        "title": "Memories of the Future"
+      },
+      {
+        "id": 64721,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 21,
+        "title": "From You, 2,000 Years Ago"
+      },
+      {
+        "id": 64722,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 22,
+        "title": "Thaw"
+      },
+      {
+        "id": 64723,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 23,
+        "title": "Sunset"
+      },
+      {
+        "id": 64724,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 24,
+        "title": "Pride"
+      },
+      {
+        "id": 64725,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 25,
+        "title": "Night of the End"
+      },
+      {
+        "id": 64726,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 26,
+        "title": "Traitor"
+      },
+      {
+        "id": 64727,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 27,
+        "title": "Retrospective"
+      },
+      {
+        "id": 64728,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 28,
+        "title": "The Dawn of Humanity"
+      },
+      {
+        "id": 64729,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 29,
+        "title": "The Final Chapters: Special 1"
+      },
+      {
+        "id": 64730,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 30,
+        "title": "The Final Chapters Special 2"
+      },
+      {
+        "id": 64773,
+        "series": "Sentenced to Be a Hero",
+        "season": 1,
+        "episode": 1,
+        "title": "Sentence: Support Retreat From Couveunge Forest"
+      },
+      {
+        "id": 64774,
+        "series": "Sentenced to Be a Hero",
+        "season": 1,
+        "episode": 2,
+        "title": "Sentence: Spearhead the Recapture of the Zewan Gan Tunnels 1"
+      },
+      {
+        "id": 64775,
+        "series": "Sentenced to Be a Hero",
+        "season": 1,
+        "episode": 3,
+        "title": "Sentence: Spearhead the Recapture of the Zewan Gan Tunnels 2"
+      },
+      {
+        "id": 64776,
+        "series": "Sentenced to Be a Hero",
+        "season": 1,
+        "episode": 4,
+        "title": "Standby Order: Mureed Fortress"
+      },
+      {
+        "id": 64777,
+        "series": "Sentenced to Be a Hero",
+        "season": 1,
+        "episode": 5,
+        "title": "Sentence: Defense Against Corruption at Mureed Fortress 1"
+      },
+      {
+        "id": 64778,
+        "series": "Sentenced to Be a Hero",
+        "season": 1,
+        "episode": 6,
+        "title": "Sentence: Defense Against Corruption at Mureed Fortress 2"
+      },
+      {
+        "id": 64779,
+        "series": "Sentenced to Be a Hero",
+        "season": 1,
+        "episode": 7,
+        "title": "Sentence: Feigned Day Off at Port City Ioff"
+      },
+      {
+        "id": 64780,
+        "series": "Sentenced to Be a Hero",
+        "season": 1,
+        "episode": 8,
+        "title": "Sentence: Undercover Investigation in Sodrick's Shell 1"
+      },
+      {
+        "id": 64781,
+        "series": "Sentenced to Be a Hero",
+        "season": 1,
+        "episode": 9,
+        "title": "Sentence: Undercover Investigation in Sodrick's Shell 2"
+      },
+      {
+        "id": 64782,
+        "series": "Sentenced to Be a Hero",
+        "season": 1,
+        "episode": 10,
+        "title": "Sentence: Aid in Evacuation of Ioff Cheg Port 1"
+      },
+      {
+        "id": 64783,
+        "series": "Sentenced to Be a Hero",
+        "season": 1,
+        "episode": 11,
+        "title": "Sentence: Aid in Evacuation of Ioff Cheg Port 2"
+      },
+      {
+        "id": 64784,
+        "series": "Sentenced to Be a Hero",
+        "season": 1,
+        "episode": 12,
+        "title": "Sentence: Aid in Evacuation of Ioff Cheg Port 3"
+      }
+    ],
+    "episode_ids": [
+      64644,
+      64645,
+      64646,
+      64647,
+      64648,
+      64649,
+      64650,
+      64651,
+      64652,
+      64653,
+      64654,
+      64655,
+      64656,
+      64657,
+      64658,
+      64659,
+      64660,
+      64661,
+      64662,
+      64663,
+      64664,
+      64665,
+      64666,
+      64676,
+      64679,
+      64680,
+      64681,
+      64682,
+      64683,
+      64684,
+      64685,
+      64686,
+      64687,
+      64688,
+      64689,
+      64690,
+      64701,
+      64702,
+      64703,
+      64707,
+      64708,
+      64709,
+      64710,
+      64711,
+      64712,
+      64713,
+      64715,
+      64717,
+      64718,
+      64719,
+      64720,
+      64721,
+      64722,
+      64723,
+      64724,
+      64725,
+      64726,
+      64727,
+      64728,
+      64729,
+      64730,
+      64773,
+      64774,
+      64775,
+      64776,
+      64777,
+      64778,
+      64779,
+      64780,
+      64781,
+      64782,
+      64783,
+      64784
+    ]
+  },
+  {
+    "id": "48e000ce",
+    "timestamp": "2026-10-03T12:07:48.390874+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled_season",
+    "series": [
+      {
+        "id": 459,
+        "title": "Sentenced to Be a Hero",
+        "season": 1
+      }
+    ],
+    "series_ids": [
+      459
+    ]
+  },
+  {
+    "id": "01e47ff4",
+    "timestamp": "2026-10-03T12:07:49.904854+00:00",
+    "service": "radarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "movies": [
+      {
+        "id": 2467,
+        "title": "The Pagemaster"
+      }
+    ],
+    "movie_ids": [
+      2467
+    ]
+  },
+  {
+    "id": "dbe2dadf",
+    "timestamp": "2026-10-03T18:07:53.190134+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63964,
+        "series": "Bleach",
+        "season": 17,
+        "episode": 46,
+        "title": "THE END"
+      },
+      {
+        "id": 64360,
+        "series": "Daemons of the Shadow Realm",
+        "season": 1,
+        "episode": 24,
+        "title": "Higashi Village and Nishino Village"
+      },
+      {
+        "id": 64704,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 4,
+        "title": "From One Hand to Another"
+      },
+      {
+        "id": 64705,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 5,
+        "title": "Declaration of War"
+      },
+      {
+        "id": 64706,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 6,
+        "title": "The War Hammer Titan"
+      }
+    ],
+    "episode_ids": [
+      63964,
+      64360,
+      64704,
+      64705,
+      64706
+    ]
+  },
+  {
+    "id": "1ae88776",
+    "timestamp": "2026-10-03T18:07:53.295602+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled_season",
+    "series": [
+      {
+        "id": 453,
+        "title": "Daemons of the Shadow Realm",
+        "season": 1
+      }
+    ],
+    "series_ids": [
+      453
+    ]
+  },
+  {
+    "id": "462e7eca",
+    "timestamp": "2026-10-04T00:07:58.179724+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64716,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 16,
+        "title": "Above and Below"
+      }
+    ],
+    "episode_ids": [
+      64716
+    ]
+  },
+  {
+    "id": "341a3509",
+    "timestamp": "2026-10-04T04:29:10.310523+00:00",
+    "service": "sonarr",
+    "action": "remonitor",
+    "status_change": "unmonitored -> monitored",
+    "source": "manual_new_season",
+    "series": [
+      {
+        "id": 86,
+        "title": "The Gentlemen"
+      }
+    ],
+    "series_ids": [
+      86
+    ]
+  },
+  {
+    "id": "c74db0d7",
+    "timestamp": "2026-10-04T04:33:06.572392+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "manual",
+    "episodes": [
+      {
+        "id": 64642,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 1,
+        "title": "To You, in 2,000 Years: The Fall of Shiganshina (1)"
+      },
+      {
+        "id": 64643,
+        "series": "Attack on Titan",
+        "season": 1,
+        "episode": 2,
+        "title": "That Day: The Fall of Shiganshina (2)"
+      },
+      {
+        "id": 64667,
+        "series": "Attack on Titan",
+        "season": 2,
+        "episode": 1,
+        "title": "Beast Titan"
+      },
+      {
+        "id": 64668,
+        "series": "Attack on Titan",
+        "season": 2,
+        "episode": 2,
+        "title": "I'm Home"
+      },
+      {
+        "id": 64669,
+        "series": "Attack on Titan",
+        "season": 2,
+        "episode": 3,
+        "title": "Southwestward"
+      },
+      {
+        "id": 64670,
+        "series": "Attack on Titan",
+        "season": 2,
+        "episode": 4,
+        "title": "Soldier"
+      },
+      {
+        "id": 64671,
+        "series": "Attack on Titan",
+        "season": 2,
+        "episode": 5,
+        "title": "Historia"
+      },
+      {
+        "id": 64672,
+        "series": "Attack on Titan",
+        "season": 2,
+        "episode": 6,
+        "title": "Warrior"
+      },
+      {
+        "id": 64673,
+        "series": "Attack on Titan",
+        "season": 2,
+        "episode": 7,
+        "title": "Close Combat"
+      },
+      {
+        "id": 64674,
+        "series": "Attack on Titan",
+        "season": 2,
+        "episode": 8,
+        "title": "The Hunters"
+      },
+      {
+        "id": 64675,
+        "series": "Attack on Titan",
+        "season": 2,
+        "episode": 9,
+        "title": "Opening"
+      },
+      {
+        "id": 64677,
+        "series": "Attack on Titan",
+        "season": 2,
+        "episode": 11,
+        "title": "Charge"
+      },
+      {
+        "id": 64678,
+        "series": "Attack on Titan",
+        "season": 2,
+        "episode": 12,
+        "title": "Scream"
+      },
+      {
+        "id": 64691,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 13,
+        "title": "The Town Where Everything Began"
+      },
+      {
+        "id": 64692,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 14,
+        "title": "Thunder Spears"
+      },
+      {
+        "id": 64693,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 15,
+        "title": "Descent"
+      },
+      {
+        "id": 64694,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 16,
+        "title": "Perfect Game"
+      },
+      {
+        "id": 64698,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 20,
+        "title": "That Day"
+      },
+      {
+        "id": 64700,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 22,
+        "title": "The Other Side of the Wall"
+      }
+    ],
+    "episode_ids": [
+      64642,
+      64643,
+      64667,
+      64668,
+      64669,
+      64670,
+      64671,
+      64672,
+      64673,
+      64674,
+      64675,
+      64677,
+      64678,
+      64691,
+      64692,
+      64693,
+      64694,
+      64698,
+      64700
+    ]
+  },
+  {
+    "id": "43f71618",
+    "timestamp": "2026-10-04T04:33:06.844749+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "manual_season",
+    "series": [
+      {
+        "id": 458,
+        "title": "Attack on Titan",
+        "season": 1
+      },
+      {
+        "id": 458,
+        "title": "Attack on Titan",
+        "season": 2
+      }
+    ],
+    "series_ids": [
+      458,
+      458
+    ]
+  },
+  {
+    "id": "7ed6dfee",
+    "timestamp": "2026-10-04T04:33:07.076270+00:00",
+    "service": "sonarr",
+    "action": "remonitor",
+    "status_change": "unmonitored -> monitored",
+    "source": "manual_new_season",
+    "series": [
+      {
+        "id": 241,
+        "title": "The Terminal List"
+      },
+      {
+        "id": 432,
+        "title": "The Traitors (US)"
+      }
+    ],
+    "series_ids": [
+      241,
+      432
+    ]
   }
 ]

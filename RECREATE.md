@@ -48,10 +48,13 @@ log viewing.
     - If only some seasons are complete, those are retired individually
       (season-level monitor flag off, including the newest season if it's the one
       that's complete) while the incomplete one is left untouched.
-  - Re-monitors an individual unmonitored episode (excluding specials) if it's
-    actually missing a file and its season's first episode aired on/after
-    `SONARR_NEW_SEASON_MIN_YEAR` (currently `2020`, set in `app.py`), and
-    re-monitors the season + series to match — catches a season Sonarr imported
+  - Restores monitoring for an incomplete season (excluding specials) if its
+    season's first episode aired on/after `SONARR_NEW_SEASON_MIN_YEAR` (currently
+    `2020`, set in `app.py`) and monitoring is off at the series, season, or
+    missing-episode level. The series and season flags are checked independently
+    of the episode flags: Sonarr can add a monitored new season and monitored
+    episodes under a previously unmonitored series, which still blocks automatic
+    downloads until the series flag is restored. This catches a season Sonarr imported
     after the series was previously (fully) unmonitored, including one that shows
     up long after that (there's no rolling time window — `SONARR_NEW_SEASON_MIN_YEAR`
     is a floor, so this keeps working indefinitely into the future). Only the
@@ -146,6 +149,7 @@ configuration lives in `config.json` and is editable from the Settings panel.
 ├── Dockerfile              # Production container image
 ├── docker-compose.yml      # GHCR deployment definition
 ├── .github/workflows/      # GHCR build and publish workflow
+├── tests/                  # Sonarr monitoring regression tests (unittest)
 ├── RECREATE.md             # This document
 ├── venv/                   # Python virtual environment
 ├── templates/
@@ -302,7 +306,14 @@ cd /home/josh/Projects/arr-mgmt
 ./venv/bin/python app.py
 
 # Production (systemd, auto-start on boot)
+portctl list
+portctl status
 sudo systemctl start arr-mgmt
+
+# Stop / status / logs
+sudo systemctl stop arr-mgmt
+systemctl status arr-mgmt
+journalctl -u arr-mgmt -n 100 --no-pager
 ```
 
 The app binds `0.0.0.0:7664` with `debug=False`. There is no authentication — keep
@@ -322,6 +333,10 @@ python3 -m venv venv
 
 # Copy app.py, templates/index.html, static/style.css, static/app.js
 # Copy arr-mgmt.service
+
+# Check and register the port before starting a new installation
+portctl check 7664
+portctl allocate 7664 arr-mgmt
 
 # Test run
 ./venv/bin/python app.py
@@ -400,6 +415,19 @@ Get API keys from: Settings > General > API Key (in each app)
 
 ---
 
+## Testing
+
+The regression tests use an in-memory Sonarr API and temporary action history;
+they do not read API keys or alter the live library.
+
+```bash
+./venv/bin/python -m unittest discover -s tests -v
+```
+
+Coverage includes missing episodes whose parent series or season is unmonitored,
+repeat-run idempotence, partially downloaded seasons, completed-series retirement,
+the year floor, fully excluded shows, and latest-season-only exclusions.
+
 ## Troubleshooting
 
 - **Buttons show "Working..." for a long time (Sonarr):** The unmonitor endpoint fetches episodes for every series sequentially. Large libraries take time.
@@ -415,3 +443,18 @@ Get API keys from: Settings > General > API Key (in each app)
 - **A genuinely upcoming season (e.g. only 1 episode announced so far) keeps getting unmonitored:** This should only happen if that season is already fully downloaded relative to what Sonarr currently knows about it (e.g. that 1 known episode has a file) — the app can't tell "this is all there'll ever be" from "more episodes are coming but Sonarr hasn't added them yet." If this happens, exclude the show via the Excluded Shows list until the rest of the season lands in Sonarr.
 - **A scheduled unmonitor took a long time / next tick was late:** Expected on large Sonarr libraries; the worker is single-threaded and the Sonarr scan is one API call per series.
 - **Scheduler ran but nothing downloaded:** The search command was accepted by Sonarr/Radarr — check indexer results in the Service Logs panel; arr-mgmt only triggers the search.
+
+### A new season is monitored but never downloads
+
+Check the series-level `monitored` flag as well as the season and episode flags.
+All three levels must permit automatic downloads. Before the October 4, 2026 fix,
+the wake-up logic only considered missing episodes with their own flag off, so it
+missed new seasons whose episodes were already monitored under an unmonitored
+series. The Gentlemen season 2 exposed this case.
+
+The corrected manual/scheduled unmonitor task restores eligible series/season
+flags even when every missing episode is already monitored. It logs that recovery
+under `manual_new_season` or `scheduled_new_season`, leaves downloaded episode
+flags off, and retains exclusions and the 2020 season-year floor. The regular
+missing-episode search then picks up those episodes; a targeted Sonarr season
+search can recover content immediately without waiting for the next search cycle.
