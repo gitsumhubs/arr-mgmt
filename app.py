@@ -45,6 +45,7 @@ DEFAULT_CONFIG = {
     "auto_unmonitor_radarr_interval_minutes": 1440,
     "auto_unmonitor_radarr_last_run": None,
     "sonarr_unmonitor_excluded_series": [],
+    "sonarr_remonitor_ignore_year_series": [],
 }
 
 SCHEDULE_INTERVALS = [30, 60, 180, 360, 720, 1440, 2880, 10080]
@@ -406,7 +407,9 @@ def perform_sonarr_unmonitor(config, source="manual"):
       (season-level monitor flag off) and leave the incomplete one alone
     - restore monitoring at the episode, season, and series levels for an incomplete
       season (excluding specials) that started airing in SONARR_NEW_SEASON_MIN_YEAR
-      or later, even when its missing episodes are already monitored.
+      or later, even when its missing episodes are already monitored. Shows selected
+      in the monitoring audit bypass only this year requirement (including undated
+      seasons); exclusions, latest-only mode, and completeness checks still apply.
       "Incomplete" is what stops this from re-monitoring a season we
       already correctly finished just because it happens to have aired recently, and
       is also what keeps a genuinely new season (one Sonarr has data for but hasn't
@@ -427,6 +430,9 @@ def perform_sonarr_unmonitor(config, source="manual"):
 
     series_modes = {
         e["id"]: e.get("mode", "exclude") for e in config.get("sonarr_unmonitor_excluded_series", [])
+    }
+    ignore_year_ids = {
+        e["id"] for e in config.get("sonarr_remonitor_ignore_year_series", [])
     }
 
     affected_episodes = []
@@ -497,7 +503,8 @@ def perform_sonarr_unmonitor(config, source="manual"):
             regular_episodes = seasons_by_number[latest_season_num]
 
         # Wake up (re-monitor) any season that started airing on/after
-        # SONARR_NEW_SEASON_MIN_YEAR and has a missing episode with monitoring off
+        # SONARR_NEW_SEASON_MIN_YEAR (or has a saved year exception) and has a
+        # missing episode with monitoring off
         # at the episode, season, or series level. Sonarr can import a new season
         # with monitored episodes while the series itself is still unmonitored.
         # Only the missing episode(s) themselves get
@@ -523,7 +530,7 @@ def perform_sonarr_unmonitor(config, source="manual"):
                 continue
             air_years = [int(ep["airDate"][:4]) for ep in season_eps if ep.get("airDate")]
             recently_started = bool(air_years) and min(air_years) >= SONARR_NEW_SEASON_MIN_YEAR
-            if not recently_started:
+            if not recently_started and s["id"] not in ignore_year_ids:
                 continue
             reactivated = True
             new_season_episode_ids.extend(ep["id"] for ep in missing_unmonitored_eps)
@@ -643,6 +650,102 @@ def sonarr_series_list():
         key=lambda s: s["title"].lower(),
     )
     return jsonify({"success": True, "series": series})
+
+
+@app.route("/api/sonarr/monitoring-audit")
+def sonarr_monitoring_audit():
+    """Read-only scan of incomplete seasons outside the normal year cutoff.
+
+    Without scan=true, return saved exceptions without contacting Sonarr.
+    Scanning never changes monitoring; selections apply on the next unmonitor run.
+    """
+    config = load_config()
+    overrides = config.get("sonarr_remonitor_ignore_year_series", [])
+    modes = {e["id"]: e.get("mode", "exclude")
+             for e in config.get("sonarr_unmonitor_excluded_series", [])}
+    shows = {
+        e["id"]: {"id": e["id"], "title": e.get("title", "Unknown"),
+                  "ignore_year": True, "seasons": [],
+                  "excluded": modes.get(e["id"]) == "exclude", "stale": False}
+        for e in overrides
+    }
+    scan = request.args.get("scan") == "true"
+    failed_series = []
+    if scan:
+        result = api_request(config["sonarr_url"], config["sonarr_api_key"], "series")
+        if not result["success"]:
+            return jsonify({"success": False, "error": result.get("error", "Failed to fetch series")}), 502
+        current_ids = {s["id"] for s in result["data"]}
+        for row in shows.values():
+            row["stale"] = row["id"] not in current_ids
+        for series in result["data"]:
+            series_id = series["id"]
+            title = series.get("title", "Unknown")
+            if series_id in shows:
+                shows[series_id]["title"] = title
+            mode = modes.get(series_id)
+            if mode == "exclude":
+                continue
+            episodes = api_request(config["sonarr_url"], config["sonarr_api_key"],
+                                   f"episode?seriesId={series_id}")
+            if not episodes["success"]:
+                failed_series.append(title)
+                continue
+            seasons = {}
+            for episode in episodes["data"]:
+                number = episode.get("seasonNumber", 0)
+                if number != 0:
+                    seasons.setdefault(number, []).append(episode)
+            if mode == "latest_only" and seasons:
+                latest = max(seasons)
+                seasons = {latest: seasons[latest]}
+            gaps = []
+            for number, season_eps in sorted(seasons.items()):
+                missing = sum(not ep.get("hasFile") for ep in season_eps)
+                if not missing:
+                    continue
+                years = [int(ep["airDate"][:4]) for ep in season_eps if ep.get("airDate")]
+                year = min(years) if years else None
+                if year is None or year < SONARR_NEW_SEASON_MIN_YEAR:
+                    gaps.append({"season": number, "year": year, "missing": missing})
+            if gaps or series_id in shows:
+                shows[series_id] = {
+                    "id": series_id, "title": title, "ignore_year": series_id in shows,
+                    "seasons": gaps, "excluded": False, "stale": False,
+                }
+    return jsonify({
+        "success": True, "scanned": scan, "min_year": SONARR_NEW_SEASON_MIN_YEAR,
+        "shows": sorted(shows.values(), key=lambda row: row["title"].lower()),
+        "failed_series": failed_series,
+    })
+
+
+@app.route("/api/sonarr/monitoring-audit", methods=["POST"])
+def update_sonarr_monitoring_audit():
+    """Save/remove a per-show year exception without modifying Sonarr."""
+    data = request.get_json(silent=True)
+    if (not isinstance(data, dict) or type(data.get("id")) is not int
+            or data["id"] <= 0 or type(data.get("enabled")) is not bool):
+        return jsonify({"success": False, "error": "A positive integer id and boolean enabled are required"}), 400
+    series_id = data["id"]
+    selected = None
+    if data["enabled"]:
+        config = load_config()
+        result = api_request(config["sonarr_url"], config["sonarr_api_key"], "series")
+        if not result["success"]:
+            return jsonify({"success": False, "error": result.get("error", "Failed to fetch series")}), 502
+        selected = next((s for s in result["data"] if s["id"] == series_id), None)
+        if selected is None:
+            return jsonify({"success": False, "error": "Show is no longer in Sonarr; run the audit again"}), 404
+    with config_lock:
+        config = load_config()
+        overrides = [e for e in config.get("sonarr_remonitor_ignore_year_series", [])
+                     if e["id"] != series_id]
+        if selected is not None:
+            overrides.append({"id": series_id, "title": selected.get("title", "Unknown")})
+        config["sonarr_remonitor_ignore_year_series"] = overrides
+        save_config(config)
+    return jsonify({"success": True, "overrides": overrides})
 
 
 @app.route("/api/sonarr/exclusions")

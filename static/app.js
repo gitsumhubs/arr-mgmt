@@ -36,6 +36,17 @@
     const exclusionSearchResults = document.getElementById('exclusion-search-results');
     const exclusionList = document.getElementById('exclusion-list');
     const exclusionsStaleNotice = document.getElementById('exclusions-stale-notice');
+    const auditDetails = document.getElementById('monitoring-audit');
+    const auditScanBtn = document.getElementById('monitoring-audit-scan');
+    const auditFilter = document.getElementById('monitoring-audit-filter');
+    const auditList = document.getElementById('monitoring-audit-list');
+    const auditSummary = document.getElementById('monitoring-audit-summary');
+    const auditFeedback = document.getElementById('monitoring-audit-feedback');
+    let auditShows = [];
+    let auditLoaded = false;
+    let auditScanned = false;
+    let auditLoading = false;
+    const auditSaving = new Map();
     let sonarrSeriesCache = null;
 
     const unmonitorLogSonarrBtn = document.getElementById('unmonitor-log-sonarr');
@@ -495,11 +506,13 @@
                         parts.push(`Retired ${data.season_count} completed season${data.season_count === 1 ? '' : 's'} on still-airing shows`);
                     }
                     if (data.new_season_count) {
-                        let seasonMsg = `Monitored ${data.new_season_count} new episode${data.new_season_count === 1 ? '' : 's'}`;
+                        let seasonMsg = `Re-monitored ${data.new_season_count} missing episode${data.new_season_count === 1 ? '' : 's'}`;
                         if (data.new_season_series_count) {
-                            seasonMsg += ` across ${data.new_season_series_count} new season${data.new_season_series_count === 1 ? '' : 's'}`;
+                            seasonMsg += ` across ${data.new_season_series_count} show${data.new_season_series_count === 1 ? '' : 's'}`;
                         }
                         parts.push(seasonMsg);
+                    } else if (data.new_season_series_count) {
+                        parts.push(`Restored monitoring for ${data.new_season_series_count} show${data.new_season_series_count === 1 ? '' : 's'}`);
                     }
                     showFeedback(unmonitorFeedback, parts.join('; '), 'success');
 
@@ -520,6 +533,107 @@
         } finally {
             btn.disabled = false;
             btn.textContent = originalText;
+        }
+    }
+
+    function renderMonitoringAudit() {
+        auditList.replaceChildren();
+        const query = auditFilter.value.trim().toLowerCase();
+        const matches = auditShows.filter(show => show.title.toLowerCase().includes(query));
+        const selectedCount = auditShows.filter(show => show.ignore_year).length;
+        auditSummary.textContent = `${selectedCount} saved show exception${selectedCount === 1 ? '' : 's'}. ` +
+            (auditScanned ? `${auditShows.length} show${auditShows.length === 1 ? '' : 's'} in this audit.` :
+                'Run an audit to find older missing seasons.');
+        if (!matches.length) {
+            const empty = document.createElement('li');
+            empty.className = 'audit-empty';
+            empty.textContent = query ? 'No shows match your filter.' :
+                (auditScanned ? 'No older missing seasons or saved exceptions found.' : 'No saved exceptions yet.');
+            auditList.appendChild(empty);
+        }
+        matches.forEach(show => {
+            const row = document.createElement('li');
+            const label = document.createElement('label');
+            label.className = 'audit-show';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = auditSaving.has(show.id) ? auditSaving.get(show.id) : show.ignore_year;
+            checkbox.disabled = auditLoading || auditSaving.has(show.id) ||
+                ((!show.ignore_year) && (show.excluded || show.stale));
+            checkbox.setAttribute('aria-label', `Ignore year cutoff for ${show.title}`);
+            checkbox.addEventListener('change', () => saveMonitoringOverride(show, checkbox.checked));
+            const title = document.createElement('span');
+            title.textContent = show.title;
+            label.append(checkbox, title);
+            const detail = document.createElement('div');
+            detail.className = 'audit-seasons';
+            if (show.stale) {
+                detail.textContent = 'No longer in Sonarr. Uncheck to remove this saved exception.';
+            } else if (show.excluded) {
+                detail.textContent = 'Excluded entirely: this exception has no effect while the show is excluded.';
+            } else if (show.seasons.length) {
+                detail.textContent = show.seasons.map(season =>
+                    `Season ${season.season} (${season.year ?? 'undated'}): ${season.missing} missing`
+                ).join(' · ');
+            } else {
+                detail.textContent = auditScanned ? 'Saved exception; no older missing seasons found in this scan.' :
+                    'Saved exception. Run an audit to review missing seasons.';
+            }
+            row.append(label, detail);
+            auditList.appendChild(row);
+        });
+        auditScanBtn.disabled = auditLoading || auditSaving.size > 0;
+    }
+
+    async function fetchMonitoringAudit(scan = false) {
+        if (auditLoading || auditSaving.size) return;
+        auditLoading = true;
+        auditScanBtn.disabled = true;
+        auditScanBtn.textContent = scan ? 'Scanning...' : 'Loading...';
+        renderMonitoringAudit();
+        showFeedback(auditFeedback, scan ? 'Reading Sonarr seasons. Large libraries may take a while...' : 'Loading saved selections...', 'info');
+        try {
+            const response = await fetch('/api/sonarr/monitoring-audit' + (scan ? '?scan=true' : ''));
+            const data = await response.json();
+            if (!response.ok || !data.success) throw new Error(data.error || 'Could not load the audit');
+            auditShows = data.shows;
+            auditLoaded = true;
+            auditScanned = data.scanned;
+            const failures = data.failed_series || [];
+            showFeedback(auditFeedback, failures.length ?
+                `Incomplete audit — could not read: ${failures.join(', ')}. Run the audit again to retry.` :
+                (scan ? 'Audit complete. Select shows to allow older missing episodes to be re-monitored.' : ''),
+                failures.length ? 'error' : 'info');
+        } catch (error) {
+            showFeedback(auditFeedback, `Audit failed: ${error.message}. You can retry with Run Audit.`, 'error');
+        } finally {
+            auditLoading = false;
+            auditScanBtn.textContent = 'Run Audit';
+            renderMonitoringAudit();
+        }
+    }
+
+    async function saveMonitoringOverride(show, enabled) {
+        auditSaving.set(show.id, enabled);
+        renderMonitoringAudit();
+        try {
+            const response = await fetch('/api/sonarr/monitoring-audit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: show.id, enabled }),
+            });
+            const data = await response.json();
+            if (!response.ok || !data.success) throw new Error(data.error || 'Could not save selection');
+            show.ignore_year = enabled;
+            if (!enabled && !show.seasons.length) auditShows = auditShows.filter(row => row.id !== show.id);
+            showFeedback(auditFeedback, enabled ?
+                `Saved: ${show.title} will ignore the year cutoff on the next Sonarr unmonitor run.` :
+                `Removed: ${show.title} will use the normal year cutoff on future runs.`, 'success');
+        } catch (error) {
+            showFeedback(auditFeedback, `Selection was not saved: ${error.message}`, 'error');
+        } finally {
+            auditSaving.delete(show.id);
+            renderMonitoringAudit();
         }
     }
 
@@ -925,6 +1039,11 @@
     unmonitorRadarrBtn.addEventListener('click', () => unmonitorDownloaded('radarr'));
     undoSonarrBtn.addEventListener('click', () => undoUnmonitor('sonarr'));
     undoRadarrBtn.addEventListener('click', () => undoUnmonitor('radarr'));
+    auditDetails.addEventListener('toggle', () => {
+        if (auditDetails.open && !auditLoaded) fetchMonitoringAudit();
+    });
+    auditScanBtn.addEventListener('click', () => fetchMonitoringAudit(true));
+    auditFilter.addEventListener('input', renderMonitoringAudit);
     exclusionSearchInput.addEventListener('input', handleExclusionSearchInput);
     exclusionSearchInput.addEventListener('focus', handleExclusionSearchInput);
     document.addEventListener('click', (e) => {

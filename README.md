@@ -45,12 +45,19 @@ new image.
 - Restores series and season monitoring for eligible missing seasons, including
   new seasons whose episodes Sonarr already monitors
 - Per-show Sonarr exclusions
+- Season Monitoring Audit under Unmonitor Downloaded: scan older missing seasons
+  and save per-show exceptions to the 2020 cutoff. Exceptions apply on the next
+  manual or scheduled Sonarr unmonitor run; existing show exclusions take priority.
 - Docker restart and log controls
 
 ## Configuration
 
 Runtime settings are stored in `config.json`. In Docker, `ARR_MGMT_DATA_DIR` is
 set to `/data` by Compose. Do not commit API keys to public repositories.
+The audit saves `{id, title}` selections in `sonarr_remonitor_ignore_year_series`
+(empty by default). A selected show can re-monitor missing episodes in any season,
+including undated ones. Saving a selection does not modify Sonarr immediately;
+removing one restores the cutoff for future runs without undoing past changes.
 
 ## Tests
 

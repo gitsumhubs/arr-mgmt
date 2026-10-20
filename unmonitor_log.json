@@ -106119,5 +106119,1610 @@
       241,
       432
     ]
+  },
+  {
+    "id": "7f39782b",
+    "timestamp": "2026-10-04T04:50:23.258144+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "manual",
+    "episodes": [
+      {
+        "id": 63701,
+        "series": "The Gentlemen",
+        "season": 2,
+        "episode": 1,
+        "title": "The Road to Kingdom"
+      },
+      {
+        "id": 64298,
+        "series": "The Gentlemen",
+        "season": 2,
+        "episode": 2,
+        "title": "There's a Rat in the Kitchen"
+      },
+      {
+        "id": 64299,
+        "series": "The Gentlemen",
+        "season": 2,
+        "episode": 3,
+        "title": "Do You Reject Satan?"
+      },
+      {
+        "id": 64300,
+        "series": "The Gentlemen",
+        "season": 2,
+        "episode": 4,
+        "title": "The Bigger Picture"
+      },
+      {
+        "id": 64301,
+        "series": "The Gentlemen",
+        "season": 2,
+        "episode": 5,
+        "title": "A Suburban A-Road on the Outskirts of Basingstoke"
+      },
+      {
+        "id": 64302,
+        "series": "The Gentlemen",
+        "season": 2,
+        "episode": 6,
+        "title": "The Bells of San Domenico"
+      },
+      {
+        "id": 64303,
+        "series": "The Gentlemen",
+        "season": 2,
+        "episode": 7,
+        "title": "This Mad Circus"
+      },
+      {
+        "id": 64304,
+        "series": "The Gentlemen",
+        "season": 2,
+        "episode": 8,
+        "title": "Bring Me the Head"
+      }
+    ],
+    "episode_ids": [
+      63701,
+      64298,
+      64299,
+      64300,
+      64301,
+      64302,
+      64303,
+      64304
+    ],
+    "series": [
+      {
+        "id": 86,
+        "title": "The Gentlemen"
+      }
+    ],
+    "series_ids": [
+      86
+    ]
+  },
+  {
+    "id": "02804a6f",
+    "timestamp": "2026-10-04T12:08:35.339314+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64441,
+        "series": "The Traitors (US)",
+        "season": 5,
+        "episode": 1,
+        "title": "A New Dawn Is Rising"
+      },
+      {
+        "id": 64442,
+        "series": "The Traitors (US)",
+        "season": 5,
+        "episode": 2,
+        "title": "I'm a Sweaty Boy"
+      },
+      {
+        "id": 64443,
+        "series": "The Traitors (US)",
+        "season": 5,
+        "episode": 3,
+        "title": "The Traitors Are Watching"
+      },
+      {
+        "id": 64444,
+        "series": "The Traitors (US)",
+        "season": 5,
+        "episode": 4,
+        "title": "The Death Parade"
+      },
+      {
+        "id": 64695,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 17,
+        "title": "Hero"
+      },
+      {
+        "id": 64696,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 18,
+        "title": "Midnight Sun"
+      },
+      {
+        "id": 64697,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 19,
+        "title": "The Basement"
+      },
+      {
+        "id": 64699,
+        "series": "Attack on Titan",
+        "season": 3,
+        "episode": 21,
+        "title": "Attack Titan"
+      },
+      {
+        "id": 64714,
+        "series": "Attack on Titan",
+        "season": 4,
+        "episode": 14,
+        "title": "Savagery"
+      },
+      {
+        "id": 64787,
+        "series": "Golden Axe",
+        "season": 1,
+        "episode": 1,
+        "title": "The Legend of the Emerald Blade"
+      },
+      {
+        "id": 64788,
+        "series": "Golden Axe",
+        "season": 1,
+        "episode": 2,
+        "title": "Rideable Beasts"
+      },
+      {
+        "id": 64789,
+        "series": "Golden Axe",
+        "season": 1,
+        "episode": 3,
+        "title": "Tender Hamlet"
+      },
+      {
+        "id": 64790,
+        "series": "Golden Axe",
+        "season": 1,
+        "episode": 4,
+        "title": "Fly Like an Eagle"
+      },
+      {
+        "id": 64791,
+        "series": "Golden Axe",
+        "season": 1,
+        "episode": 5,
+        "title": "The Brothers Bad"
+      },
+      {
+        "id": 64792,
+        "series": "Golden Axe",
+        "season": 1,
+        "episode": 6,
+        "title": "Return to Wenisburg"
+      },
+      {
+        "id": 64793,
+        "series": "Golden Axe",
+        "season": 1,
+        "episode": 7,
+        "title": "The Cold Bard Truth"
+      },
+      {
+        "id": 64794,
+        "series": "Golden Axe",
+        "season": 1,
+        "episode": 8,
+        "title": "Into the Cowoods"
+      },
+      {
+        "id": 64795,
+        "series": "Golden Axe",
+        "season": 1,
+        "episode": 9,
+        "title": "Because We're Us"
+      },
+      {
+        "id": 64796,
+        "series": "Golden Axe",
+        "season": 1,
+        "episode": 10,
+        "title": "For Yuria"
+      }
+    ],
+    "episode_ids": [
+      64441,
+      64442,
+      64443,
+      64444,
+      64695,
+      64696,
+      64697,
+      64699,
+      64714,
+      64787,
+      64788,
+      64789,
+      64790,
+      64791,
+      64792,
+      64793,
+      64794,
+      64795,
+      64796
+    ],
+    "series": [
+      {
+        "id": 458,
+        "title": "Attack on Titan"
+      },
+      {
+        "id": 460,
+        "title": "Golden Axe"
+      }
+    ],
+    "series_ids": [
+      458,
+      460
+    ]
+  },
+  {
+    "id": "cb3a8b3c",
+    "timestamp": "2026-10-04T18:08:39.326023+00:00",
+    "service": "sonarr",
+    "action": "remonitor",
+    "status_change": "unmonitored -> monitored",
+    "source": "scheduled_new_season",
+    "episodes": [
+      {
+        "id": 64797,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 16,
+        "title": "Happy Hell-o-ween"
+      }
+    ],
+    "episode_ids": [
+      64797
+    ],
+    "series": [
+      {
+        "id": 41,
+        "title": "Family Guy"
+      }
+    ],
+    "series_ids": [
+      41
+    ]
+  },
+  {
+    "id": "3ce56464",
+    "timestamp": "2026-10-05T00:08:43.489348+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 54765,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 1,
+        "title": "The Edible Arrangement"
+      },
+      {
+        "id": 54914,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 2,
+        "title": "Pumpkin Spice Girls"
+      },
+      {
+        "id": 54915,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 3,
+        "title": "Man-Fest Destiny"
+      },
+      {
+        "id": 54916,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 4,
+        "title": "Bringing Up Brady"
+      },
+      {
+        "id": 60820,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 5,
+        "title": "Dear Francis"
+      },
+      {
+        "id": 61369,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 6,
+        "title": "Viewer DMs"
+      },
+      {
+        "id": 61370,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 7,
+        "title": "Scent of a Woman"
+      },
+      {
+        "id": 61371,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 8,
+        "title": "Play Time"
+      },
+      {
+        "id": 61372,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 9,
+        "title": "Phony Montana"
+      },
+      {
+        "id": 61745,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 10,
+        "title": "A Few More Ways to Die in the West"
+      },
+      {
+        "id": 61746,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 11,
+        "title": "Tall Stewie"
+      },
+      {
+        "id": 61747,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 12,
+        "title": "Lower G.I. Joe"
+      },
+      {
+        "id": 61748,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 13,
+        "title": "Friend's Best Man"
+      },
+      {
+        "id": 61749,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 14,
+        "title": "Let the Goodtimes Walk"
+      },
+      {
+        "id": 61750,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 15,
+        "title": "High School History"
+      }
+    ],
+    "episode_ids": [
+      54765,
+      54914,
+      54915,
+      54916,
+      60820,
+      61369,
+      61370,
+      61371,
+      61372,
+      61745,
+      61746,
+      61747,
+      61748,
+      61749,
+      61750
+    ]
+  },
+  {
+    "id": "67669dd9",
+    "timestamp": "2026-10-05T06:08:47.643432+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64080,
+        "series": "Lanterns",
+        "season": 1,
+        "episode": 8,
+        "title": "Dirt and Stars"
+      }
+    ],
+    "episode_ids": [
+      64080
+    ],
+    "series": [
+      {
+        "id": 425,
+        "title": "Lanterns"
+      }
+    ],
+    "series_ids": [
+      425
+    ]
+  },
+  {
+    "id": "157901f7",
+    "timestamp": "2026-10-05T06:08:47.738694+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled_season",
+    "series": [
+      {
+        "id": 41,
+        "title": "Family Guy",
+        "season": 24
+      }
+    ],
+    "series_ids": [
+      41
+    ]
+  },
+  {
+    "id": "f94dc60d",
+    "timestamp": "2026-10-05T12:08:51.964245+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64364,
+        "series": "Animal Control",
+        "season": 5,
+        "episode": 2,
+        "title": "Crows and Lizard Eggs"
+      }
+    ],
+    "episode_ids": [
+      64364
+    ]
+  },
+  {
+    "id": "c5765c41",
+    "timestamp": "2026-10-05T18:08:56.479058+00:00",
+    "service": "sonarr",
+    "action": "remonitor",
+    "status_change": "unmonitored -> monitored",
+    "source": "scheduled_new_season",
+    "episodes": [
+      {
+        "id": 64798,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 16,
+        "title": "Happy Hell-o-ween"
+      }
+    ],
+    "episode_ids": [
+      64798
+    ],
+    "series": [
+      {
+        "id": 41,
+        "title": "Family Guy"
+      }
+    ],
+    "series_ids": [
+      41
+    ]
+  },
+  {
+    "id": "4a62717d",
+    "timestamp": "2026-10-05T18:08:57.312029+00:00",
+    "service": "radarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "movies": [
+      {
+        "id": 2115,
+        "title": "Spider-Man: Brand New Day"
+      }
+    ],
+    "movie_ids": [
+      2115
+    ]
+  },
+  {
+    "id": "642caa90",
+    "timestamp": "2026-10-06T00:09:00.506424+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 54765,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 1,
+        "title": "The Edible Arrangement"
+      },
+      {
+        "id": 54914,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 2,
+        "title": "Pumpkin Spice Girls"
+      },
+      {
+        "id": 54915,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 3,
+        "title": "Man-Fest Destiny"
+      },
+      {
+        "id": 54916,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 4,
+        "title": "Bringing Up Brady"
+      },
+      {
+        "id": 60820,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 5,
+        "title": "Dear Francis"
+      },
+      {
+        "id": 61369,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 6,
+        "title": "Viewer DMs"
+      },
+      {
+        "id": 61370,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 7,
+        "title": "Scent of a Woman"
+      },
+      {
+        "id": 61371,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 8,
+        "title": "Play Time"
+      },
+      {
+        "id": 61372,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 9,
+        "title": "Phony Montana"
+      },
+      {
+        "id": 61745,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 10,
+        "title": "A Few More Ways to Die in the West"
+      },
+      {
+        "id": 61746,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 11,
+        "title": "Tall Stewie"
+      },
+      {
+        "id": 61747,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 12,
+        "title": "Lower G.I. Joe"
+      },
+      {
+        "id": 61748,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 13,
+        "title": "Friend's Best Man"
+      },
+      {
+        "id": 61749,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 14,
+        "title": "Let the Goodtimes Walk"
+      },
+      {
+        "id": 61750,
+        "series": "Family Guy",
+        "season": 24,
+        "episode": 15,
+        "title": "High School History"
+      }
+    ],
+    "episode_ids": [
+      54765,
+      54914,
+      54915,
+      54916,
+      60820,
+      61369,
+      61370,
+      61371,
+      61372,
+      61745,
+      61746,
+      61747,
+      61748,
+      61749,
+      61750
+    ]
+  },
+  {
+    "id": "3b661133",
+    "timestamp": "2026-10-06T06:09:04.553263+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64228,
+        "series": "It's Always Sunny in Philadelphia",
+        "season": 18,
+        "episode": 9,
+        "title": "Frank's Team: A Dark Day for Baseball"
+      }
+    ],
+    "episode_ids": [
+      64228
+    ]
+  },
+  {
+    "id": "bcca27b3",
+    "timestamp": "2026-10-06T06:09:04.692293+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled_season",
+    "series": [
+      {
+        "id": 41,
+        "title": "Family Guy",
+        "season": 24
+      }
+    ],
+    "series_ids": [
+      41
+    ]
+  },
+  {
+    "id": "d85102d5",
+    "timestamp": "2026-10-07T00:09:16.812692+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64210,
+        "series": "The Great British Bake Off",
+        "season": 17,
+        "episode": 3,
+        "title": "Audience Choice Week"
+      }
+    ],
+    "episode_ids": [
+      64210
+    ]
+  },
+  {
+    "id": "2df6acc4",
+    "timestamp": "2026-10-07T06:09:21.074095+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63285,
+        "series": "Slow Horses",
+        "season": 6,
+        "episode": 4,
+        "title": "Lost & Found"
+      },
+      {
+        "id": 64035,
+        "series": "Brothers",
+        "season": 1,
+        "episode": 4,
+        "title": "The Band"
+      }
+    ],
+    "episode_ids": [
+      63285,
+      64035
+    ]
+  },
+  {
+    "id": "ec01f06c",
+    "timestamp": "2026-10-07T18:09:28.963204+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63693,
+        "series": "Saga of Tanya the Evil",
+        "season": 2,
+        "episode": 5,
+        "title": "Unlucky Draw"
+      }
+    ],
+    "episode_ids": [
+      63693
+    ]
+  },
+  {
+    "id": "55e98572",
+    "timestamp": "2026-10-08T12:09:41.963694+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 55763,
+        "series": "MobLand",
+        "season": 2,
+        "episode": 4,
+        "title": "Blank Curtain"
+      },
+      {
+        "id": 64041,
+        "series": "Abbott Elementary",
+        "season": 6,
+        "episode": 1,
+        "title": "Jungle Classroom"
+      },
+      {
+        "id": 64045,
+        "series": "Shark Tank",
+        "season": 18,
+        "episode": 3,
+        "title": "Diary of a Shark"
+      }
+    ],
+    "episode_ids": [
+      55763,
+      64041,
+      64045
+    ]
+  },
+  {
+    "id": "83d1be7d",
+    "timestamp": "2026-10-09T00:09:50.364578+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63720,
+        "series": "Taskmaster",
+        "season": 22,
+        "episode": 6,
+        "title": "To Void an Oblong"
+      }
+    ],
+    "episode_ids": [
+      63720
+    ]
+  },
+  {
+    "id": "3a0bde18",
+    "timestamp": "2026-10-09T06:09:54.492480+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63591,
+        "series": "Dark Matter (2024)",
+        "season": 2,
+        "episode": 7,
+        "title": "The Pyramid"
+      }
+    ],
+    "episode_ids": [
+      63591
+    ]
+  },
+  {
+    "id": "a7d44ef9",
+    "timestamp": "2026-10-09T12:09:58.526417+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64445,
+        "series": "The Traitors (US)",
+        "season": 5,
+        "episode": 5,
+        "title": "Wake of the Living Dead"
+      },
+      {
+        "id": 63996,
+        "series": "Avatar: Seven Havens",
+        "season": 1,
+        "episode": 1,
+        "title": "On the Horizon"
+      },
+      {
+        "id": 63997,
+        "series": "Avatar: Seven Havens",
+        "season": 1,
+        "episode": 2,
+        "title": "Into the Storm"
+      },
+      {
+        "id": 63998,
+        "series": "Avatar: Seven Havens",
+        "season": 1,
+        "episode": 3,
+        "title": "The Order"
+      }
+    ],
+    "episode_ids": [
+      64445,
+      63996,
+      63997,
+      63998
+    ]
+  },
+  {
+    "id": "743f1df7",
+    "timestamp": "2026-10-09T12:09:59.399897+00:00",
+    "service": "radarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "movies": [
+      {
+        "id": 2401,
+        "title": "Matchbox the Movie"
+      }
+    ],
+    "movie_ids": [
+      2401
+    ]
+  },
+  {
+    "id": "88336827",
+    "timestamp": "2026-10-09T18:10:02.840037+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 62412,
+        "series": "That Time I Got Reincarnated as a Slime",
+        "season": 4,
+        "episode": 24,
+        "title": "The Hero Awakens"
+      }
+    ],
+    "episode_ids": [
+      62412
+    ],
+    "series": [
+      {
+        "id": 391,
+        "title": "That Time I Got Reincarnated as a Slime"
+      }
+    ],
+    "series_ids": [
+      391
+    ]
+  },
+  {
+    "id": "ee0da636",
+    "timestamp": "2026-10-10T06:10:11.268842+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64825,
+        "series": "Ludwig (2024)",
+        "season": 1,
+        "episode": 1,
+        "title": "Episode 1"
+      },
+      {
+        "id": 64826,
+        "series": "Ludwig (2024)",
+        "season": 1,
+        "episode": 2,
+        "title": "Episode 2"
+      },
+      {
+        "id": 64827,
+        "series": "Ludwig (2024)",
+        "season": 1,
+        "episode": 3,
+        "title": "Episode 3"
+      },
+      {
+        "id": 64828,
+        "series": "Ludwig (2024)",
+        "season": 1,
+        "episode": 4,
+        "title": "Episode 4"
+      },
+      {
+        "id": 64829,
+        "series": "Ludwig (2024)",
+        "season": 1,
+        "episode": 5,
+        "title": "Episode 5"
+      },
+      {
+        "id": 64830,
+        "series": "Ludwig (2024)",
+        "season": 1,
+        "episode": 6,
+        "title": "Episode 6"
+      },
+      {
+        "id": 64831,
+        "series": "Ludwig (2024)",
+        "season": 2,
+        "episode": 1,
+        "title": "Episode 1"
+      },
+      {
+        "id": 64832,
+        "series": "Ludwig (2024)",
+        "season": 2,
+        "episode": 2,
+        "title": "Episode 2"
+      },
+      {
+        "id": 64833,
+        "series": "Ludwig (2024)",
+        "season": 2,
+        "episode": 3,
+        "title": "Episode 3"
+      },
+      {
+        "id": 64834,
+        "series": "Ludwig (2024)",
+        "season": 2,
+        "episode": 4,
+        "title": "Episode 4"
+      },
+      {
+        "id": 64835,
+        "series": "Ludwig (2024)",
+        "season": 2,
+        "episode": 5,
+        "title": "Episode 5"
+      },
+      {
+        "id": 64836,
+        "series": "Ludwig (2024)",
+        "season": 2,
+        "episode": 6,
+        "title": "Episode 6"
+      }
+    ],
+    "episode_ids": [
+      64825,
+      64826,
+      64827,
+      64828,
+      64829,
+      64830,
+      64831,
+      64832,
+      64833,
+      64834,
+      64835,
+      64836
+    ],
+    "series": [
+      {
+        "id": 461,
+        "title": "Ludwig (2024)"
+      }
+    ],
+    "series_ids": [
+      461
+    ]
+  },
+  {
+    "id": "5bc9b4f1",
+    "timestamp": "2026-10-10T06:10:12.407297+00:00",
+    "service": "radarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "movies": [
+      {
+        "id": 2129,
+        "title": "The Odyssey"
+      },
+      {
+        "id": 2468,
+        "title": "The Mule"
+      }
+    ],
+    "movie_ids": [
+      2129,
+      2468
+    ]
+  },
+  {
+    "id": "5012c253",
+    "timestamp": "2026-10-10T18:10:20.095243+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63965,
+        "series": "Bleach",
+        "season": 17,
+        "episode": 47,
+        "title": "THE END 2"
+      }
+    ],
+    "episode_ids": [
+      63965
+    ]
+  },
+  {
+    "id": "400e3d41",
+    "timestamp": "2026-10-11T18:10:37.306590+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64841,
+        "series": "The Vermilion Mask",
+        "season": 1,
+        "episode": 1,
+        "title": "Peru the Mask Maker"
+      }
+    ],
+    "episode_ids": [
+      64841
+    ]
+  },
+  {
+    "id": "95c3ce64",
+    "timestamp": "2026-10-11T18:10:37.438768+00:00",
+    "service": "sonarr",
+    "action": "remonitor",
+    "status_change": "unmonitored -> monitored",
+    "source": "scheduled_new_season",
+    "series": [
+      {
+        "id": 356,
+        "title": "Black Clover"
+      }
+    ],
+    "series_ids": [
+      356
+    ]
+  },
+  {
+    "id": "c1cce26a",
+    "timestamp": "2026-10-12T06:10:47.048264+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64853,
+        "series": "Black Clover",
+        "season": 2,
+        "episode": 1,
+        "title": "The Battle Begins"
+      },
+      {
+        "id": 64854,
+        "series": "Black Clover",
+        "season": 2,
+        "episode": 2,
+        "title": "The Door to Hell"
+      }
+    ],
+    "episode_ids": [
+      64853,
+      64854
+    ],
+    "series": [
+      {
+        "id": 41,
+        "title": "Family Guy"
+      }
+    ],
+    "series_ids": [
+      41
+    ]
+  },
+  {
+    "id": "e2e4872e",
+    "timestamp": "2026-10-13T06:11:02.608602+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64229,
+        "series": "It's Always Sunny in Philadelphia",
+        "season": 18,
+        "episode": 10,
+        "title": "The Guys Have a Sleepover"
+      }
+    ],
+    "episode_ids": [
+      64229
+    ],
+    "series": [
+      {
+        "id": 54,
+        "title": "It's Always Sunny in Philadelphia"
+      }
+    ],
+    "series_ids": [
+      54
+    ]
+  },
+  {
+    "id": "f101b0fd",
+    "timestamp": "2026-10-14T00:11:15.577531+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64211,
+        "series": "The Great British Bake Off",
+        "season": 17,
+        "episode": 4,
+        "title": "Bread Week"
+      }
+    ],
+    "episode_ids": [
+      64211
+    ]
+  },
+  {
+    "id": "6c322a18",
+    "timestamp": "2026-10-14T06:11:19.640670+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63286,
+        "series": "Slow Horses",
+        "season": 6,
+        "episode": 5,
+        "title": "Sayonara"
+      },
+      {
+        "id": 63305,
+        "series": "VisionQuest",
+        "season": 1,
+        "episode": 1,
+        "title": "No Strings"
+      },
+      {
+        "id": 64818,
+        "series": "VisionQuest",
+        "season": 1,
+        "episode": 2,
+        "title": "Theseus"
+      },
+      {
+        "id": 64036,
+        "series": "Brothers (2026)",
+        "season": 1,
+        "episode": 5,
+        "title": "Valentine's Day"
+      }
+    ],
+    "episode_ids": [
+      63286,
+      63305,
+      64818,
+      64036
+    ]
+  },
+  {
+    "id": "730f0bb7",
+    "timestamp": "2026-10-14T18:11:27.442242+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63694,
+        "series": "Saga of Tanya the Evil",
+        "season": 2,
+        "episode": 6,
+        "title": "Decoy"
+      },
+      {
+        "id": 64058,
+        "series": "Tomb Raider King",
+        "season": 1,
+        "episode": 12,
+        "title": "Tomb Raider King"
+      }
+    ],
+    "episode_ids": [
+      63694,
+      64058
+    ],
+    "series": [
+      {
+        "id": 447,
+        "title": "Tomb Raider King"
+      }
+    ],
+    "series_ids": [
+      447
+    ]
+  },
+  {
+    "id": "1f3ca84e",
+    "timestamp": "2026-10-15T06:11:36.558642+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 62860,
+        "series": "South Park",
+        "season": 29,
+        "episode": 3,
+        "title": "You Like That On Your Face"
+      },
+      {
+        "id": 64632,
+        "series": "Abbott Elementary",
+        "season": 6,
+        "episode": 2,
+        "title": "Check-Ins"
+      }
+    ],
+    "episode_ids": [
+      62860,
+      64632
+    ]
+  },
+  {
+    "id": "ba3da0c2",
+    "timestamp": "2026-10-15T12:11:40.936459+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 55764,
+        "series": "MobLand",
+        "season": 2,
+        "episode": 5,
+        "title": "Birdland"
+      }
+    ],
+    "episode_ids": [
+      55764
+    ]
+  },
+  {
+    "id": "cd902894",
+    "timestamp": "2026-10-15T18:11:45.516922+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 54636,
+        "series": "The Diplomat (US)",
+        "season": 4,
+        "episode": 1,
+        "title": "Windsor"
+      },
+      {
+        "id": 64288,
+        "series": "The Diplomat (US)",
+        "season": 4,
+        "episode": 2,
+        "title": "Redcoats"
+      },
+      {
+        "id": 64289,
+        "series": "The Diplomat (US)",
+        "season": 4,
+        "episode": 3,
+        "title": "The Typo"
+      },
+      {
+        "id": 64290,
+        "series": "The Diplomat (US)",
+        "season": 4,
+        "episode": 4,
+        "title": "Pagliacci"
+      },
+      {
+        "id": 64291,
+        "series": "The Diplomat (US)",
+        "season": 4,
+        "episode": 5,
+        "title": "Special Envoy"
+      },
+      {
+        "id": 64293,
+        "series": "The Diplomat (US)",
+        "season": 4,
+        "episode": 7,
+        "title": "Phony Negroni"
+      },
+      {
+        "id": 64294,
+        "series": "The Diplomat (US)",
+        "season": 4,
+        "episode": 8,
+        "title": "Warships"
+      },
+      {
+        "id": 64801,
+        "series": "Shark Tank",
+        "season": 18,
+        "episode": 4,
+        "title": "The Mindy Project"
+      }
+    ],
+    "episode_ids": [
+      54636,
+      64288,
+      64289,
+      64290,
+      64291,
+      64293,
+      64294,
+      64801
+    ]
+  },
+  {
+    "id": "4be08de5",
+    "timestamp": "2026-10-16T00:11:49.453334+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63721,
+        "series": "Taskmaster",
+        "season": 22,
+        "episode": 7,
+        "title": "The Oldest I've Ever Looked"
+      }
+    ],
+    "episode_ids": [
+      63721
+    ]
+  },
+  {
+    "id": "3d77d568",
+    "timestamp": "2026-10-16T06:11:53.491863+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63592,
+        "series": "Dark Matter (2024)",
+        "season": 2,
+        "episode": 8,
+        "title": "The Basic Oneness of Everything"
+      }
+    ],
+    "episode_ids": [
+      63592
+    ]
+  },
+  {
+    "id": "dc6e3269",
+    "timestamp": "2026-10-16T12:11:57.437107+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 55535,
+        "series": "Tulsa King",
+        "season": 4,
+        "episode": 1,
+        "title": "W.W.D.D."
+      },
+      {
+        "id": 64446,
+        "series": "The Traitors (US)",
+        "season": 5,
+        "episode": 6,
+        "title": "A Murder of Necessity"
+      },
+      {
+        "id": 63999,
+        "series": "Avatar: Seven Havens",
+        "season": 1,
+        "episode": 4,
+        "title": "The Faceless"
+      },
+      {
+        "id": 64000,
+        "series": "Avatar: Seven Havens",
+        "season": 1,
+        "episode": 5,
+        "title": "The One Left Behind"
+      },
+      {
+        "id": 64001,
+        "series": "Avatar: Seven Havens",
+        "season": 1,
+        "episode": 6,
+        "title": "Night of the Afflicted"
+      }
+    ],
+    "episode_ids": [
+      55535,
+      64446,
+      63999,
+      64000,
+      64001
+    ]
+  },
+  {
+    "id": "d4260a8a",
+    "timestamp": "2026-10-17T00:12:05.276952+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64292,
+        "series": "The Diplomat",
+        "season": 4,
+        "episode": 6,
+        "title": "The Dead"
+      }
+    ],
+    "episode_ids": [
+      64292
+    ],
+    "series": [
+      {
+        "id": 172,
+        "title": "The Diplomat"
+      }
+    ],
+    "series_ids": [
+      172
+    ]
+  },
+  {
+    "id": "11e27494",
+    "timestamp": "2026-10-17T18:12:17.932447+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 63966,
+        "series": "Bleach",
+        "season": 17,
+        "episode": 48,
+        "title": "THE END TWO WORLD"
+      },
+      {
+        "id": 64842,
+        "series": "The Vermilion Mask",
+        "season": 1,
+        "episode": 2,
+        "title": "The Mask of the War God"
+      }
+    ],
+    "episode_ids": [
+      63966,
+      64842
+    ]
+  },
+  {
+    "id": "625a21c4",
+    "timestamp": "2026-10-19T12:12:47.035372+00:00",
+    "service": "sonarr",
+    "action": "unmonitor",
+    "status_change": "monitored -> unmonitored",
+    "source": "scheduled",
+    "episodes": [
+      {
+        "id": 64638,
+        "series": "The Simpsons",
+        "season": 38,
+        "episode": 3,
+        "title": "Treehouse of Horror Presents: The Revengening"
+      },
+      {
+        "id": 64365,
+        "series": "Animal Control",
+        "season": 5,
+        "episode": 3,
+        "title": "Bugs and Rabid Dogs"
+      }
+    ],
+    "episode_ids": [
+      64638,
+      64365
+    ]
   }
 ]

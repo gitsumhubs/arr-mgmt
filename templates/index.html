@@ -79,6 +79,24 @@
             </div>
             <div id="unmonitor-feedback" class="feedback"></div>
 
+            <details id="monitoring-audit" class="monitoring-audit">
+                <summary>Season Monitoring Audit</summary>
+                <p class="panel-desc">Review missing episodes in seasons that started before 2020 or have no air date.
+                    Select a show to ignore the year cutoff for all its seasons. Selections save automatically
+                    and apply on the next Sonarr unmonitor button click or scheduled run.</p>
+                <p class="audit-note">Downloaded episodes stay unmonitored. Excluded Shows and Latest season only still take priority.
+                    Removing a selection restores the cutoff for future runs; it does not undo earlier monitoring changes.</p>
+                <div class="audit-controls">
+                    <button id="monitoring-audit-scan" class="btn btn-sm btn-secondary">Run Audit</button>
+                    <label class="audit-filter">Filter shows
+                        <input id="monitoring-audit-filter" type="search" placeholder="Search audit results...">
+                    </label>
+                </div>
+                <p id="monitoring-audit-summary" class="audit-note">Open to view saved selections, then run an audit to find older missing seasons.</p>
+                <div id="monitoring-audit-feedback" class="feedback" role="status" aria-live="polite"></div>
+                <ul id="monitoring-audit-list" class="audit-list"></ul>
+            </details>
+
             <div class="unmonitor-exclusions">
                 <h3>Excluded Shows <span class="exclusions-hint">(never touched by the button above or the schedule below)</span></h3>
                 <div id="exclusions-stale-notice" class="exclusions-stale" style="display:none"></div>

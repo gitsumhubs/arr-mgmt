@@ -462,6 +462,91 @@ h3 {
     color: #17a2b8;
 }
 
+.monitoring-audit {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #2a3a5c;
+}
+
+.monitoring-audit summary {
+    cursor: pointer;
+    color: #ddd;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.audit-note, .audit-seasons {
+    color: #aaa;
+    font-size: 0.85em;
+    line-height: 1.5;
+    margin: 8px 0;
+}
+
+.audit-controls {
+    display: flex;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.audit-filter {
+    display: flex;
+    flex: 1 1 180px;
+    flex-direction: column;
+    gap: 4px;
+    color: #aaa;
+    font-size: 0.85em;
+}
+
+.audit-filter input {
+    width: 100%;
+    min-width: 0;
+    padding: 8px;
+    border: 1px solid #2a3a5c;
+    border-radius: 4px;
+    background: #0f0f23;
+    color: #eee;
+}
+
+.audit-list {
+    list-style: none;
+    padding: 0;
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+.audit-list li {
+    padding: 10px;
+    margin-bottom: 6px;
+    background: #0f0f23;
+    border: 1px solid #2a2f4a;
+    border-radius: 4px;
+    overflow-wrap: anywhere;
+}
+
+.audit-show {
+    display: flex;
+    align-items: baseline;
+    gap: 9px;
+    color: #eee;
+    cursor: pointer;
+}
+
+.audit-show input {
+    flex-shrink: 0;
+    accent-color: #ffa500;
+}
+
+.audit-seasons {
+    margin: 5px 0 0 24px;
+}
+
+.audit-empty {
+    color: #aaa;
+    font-size: 0.9em;
+}
+
 .unmonitor-exclusions {
     margin-top: 15px;
     padding-top: 15px;

@@ -9,7 +9,7 @@ from unittest.mock import patch
 import app as arr_mgmt
 
 
-class SonarrMonitoringTests(unittest.TestCase):
+class SonarrFixture(unittest.TestCase):
     def setUp(self):
         self.config = {
             "sonarr_url": "http://sonarr.invalid",
@@ -82,6 +82,8 @@ class SonarrMonitoringTests(unittest.TestCase):
     def run_unmonitor(self):
         return arr_mgmt.perform_sonarr_unmonitor(self.config, source="scheduled")
 
+
+class SonarrMonitoringTests(SonarrFixture):
     def test_missing_monitored_episodes_restore_disabled_parent_flags(self):
         for series_monitored, season_monitored in [(False, True), (True, False), (False, False)]:
             with self.subTest(series=series_monitored, season=season_monitored):
@@ -162,6 +164,140 @@ class SonarrMonitoringTests(unittest.TestCase):
         self.assertFalse(self.series["seasons"][0]["monitored"])
         self.assertTrue(all(not ep["monitored"] for ep in self.episodes[:8]))
         self.assertTrue(all(ep["monitored"] for ep in self.episodes[8:]))
+
+    def test_selected_show_recovers_old_season_without_remonitoring_downloads(self):
+        self.config["sonarr_remonitor_ignore_year_series"] = [{"id": 86, "title": "The Gentlemen"}]
+        self.series["seasons"][1]["monitored"] = False
+        for episode in self.episodes[8:]:
+            episode.update(airDate="2015-09-03", monitored=False)
+        self.episodes[8]["hasFile"] = True
+
+        result = self.run_unmonitor()
+
+        self.assertTrue(self.series["monitored"])
+        self.assertTrue(self.series["seasons"][1]["monitored"])
+        self.assertFalse(self.episodes[8]["monitored"])
+        self.assertTrue(all(ep["monitored"] for ep in self.episodes[9:]))
+        self.assertEqual(result["new_season_count"], 7)
+        second = self.run_unmonitor()
+        self.assertEqual(second["new_season_count"], 0)
+        self.assertEqual(second["new_season_series_count"], 0)
+
+    def test_year_override_does_not_bypass_exclusion_or_latest_only(self):
+        self.config["sonarr_remonitor_ignore_year_series"] = [{"id": 86, "title": "The Gentlemen"}]
+        for episode in self.episodes:
+            episode.update(airDate="2015-01-01", hasFile=False, monitored=False)
+        self.config["sonarr_unmonitor_excluded_series"] = [{"id": 86, "mode": "exclude"}]
+        self.run_unmonitor()
+        self.assertFalse(self.series["monitored"])
+        self.assertTrue(all(not ep["monitored"] for ep in self.episodes))
+
+        self.config["sonarr_unmonitor_excluded_series"][0]["mode"] = "latest_only"
+        self.run_unmonitor()
+        self.assertTrue(self.series["monitored"])
+        self.assertTrue(all(not ep["monitored"] for ep in self.episodes[:8]))
+        self.assertTrue(all(ep["monitored"] for ep in self.episodes[8:]))
+
+    def test_selected_show_recovers_undated_season_but_not_completed_series(self):
+        self.config["sonarr_remonitor_ignore_year_series"] = [{"id": 86, "title": "The Gentlemen"}]
+        for episode in self.episodes[8:]:
+            episode.update(airDate=None, monitored=False)
+        self.run_unmonitor()
+        self.assertTrue(self.series["monitored"])
+        self.assertTrue(all(ep["monitored"] for ep in self.episodes[8:]))
+        for episode in self.episodes[8:]:
+            episode["hasFile"] = True
+        self.run_unmonitor()
+        self.assertFalse(self.series["monitored"])
+        self.assertTrue(all(not ep["monitored"] for ep in self.episodes))
+
+
+class SonarrMonitoringAuditTests(SonarrFixture):
+    def setUp(self):
+        super().setUp()
+        temp = TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        config_file = patch.object(arr_mgmt, "CONFIG_FILE", Path(temp.name) / "config.json")
+        config_file.start()
+        self.addCleanup(config_file.stop)
+        arr_mgmt.save_config(self.config)
+        self.client = arr_mgmt.app.test_client()
+
+    def test_audit_finds_old_missing_seasons_without_changing_sonarr(self):
+        for episode in self.episodes[8:]:
+            episode["airDate"] = "2015-09-03"
+        before = deepcopy((self.series, self.episodes))
+        response = self.client.get("/api/sonarr/monitoring-audit?scan=true")
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+        self.assertTrue(data["success"])
+        self.assertEqual(len(data["shows"]), 1)
+        self.assertEqual(data["shows"][0]["id"], 86)
+        self.assertFalse(data["shows"][0]["ignore_year"])
+        self.assertEqual(data["shows"][0]["seasons"], [
+            {"season": 2, "year": 2015, "missing": 8},
+        ])
+        self.assertEqual((self.series, self.episodes), before)
+        self.assertEqual(arr_mgmt.load_unmonitor_log(), [])
+
+    def test_audit_omits_recent_complete_special_and_excluded_seasons(self):
+        url = "/api/sonarr/monitoring-audit?scan=true"
+        self.assertEqual(self.client.get(url).get_json()["shows"], [])
+        for episode in self.episodes[8:]:
+            episode.update(airDate="2015-09-03", seasonNumber=0)
+        self.assertEqual(self.client.get(url).get_json()["shows"], [])
+        for episode in self.episodes[8:]:
+            episode["seasonNumber"] = 2
+        self.config["sonarr_unmonitor_excluded_series"] = [{"id": 86, "mode": "exclude"}]
+        arr_mgmt.save_config(self.config)
+        self.assertEqual(self.client.get(url).get_json()["shows"], [])
+
+    def test_audit_honors_latest_only_and_reports_undated_seasons(self):
+        self.config["sonarr_unmonitor_excluded_series"] = [{"id": 86, "mode": "latest_only"}]
+        arr_mgmt.save_config(self.config)
+        for episode in self.episodes[:8]:
+            episode.update(airDate="2015-01-01", hasFile=False)
+        for episode in self.episodes[8:]:
+            episode["airDate"] = None
+        data = self.client.get("/api/sonarr/monitoring-audit?scan=true").get_json()
+        self.assertEqual(data["shows"][0]["seasons"], [{"season": 2, "year": None, "missing": 8}])
+
+    def test_saving_and_removing_override_preserves_other_config_and_sonarr(self):
+        before = deepcopy((self.series, self.episodes))
+        response = self.client.post("/api/sonarr/monitoring-audit", json={"id": 86, "enabled": True})
+        self.assertEqual(response.status_code, 200)
+        config = arr_mgmt.load_config()
+        self.assertEqual(config["sonarr_remonitor_ignore_year_series"], [{"id": 86, "title": "The Gentlemen"}])
+        self.assertEqual(config["sonarr_url"], "http://sonarr.invalid")
+        self.assertEqual((self.series, self.episodes), before)
+        self.client.post("/api/sonarr/monitoring-audit", json={"id": 86, "enabled": True})
+        saved = self.client.get("/api/sonarr/monitoring-audit").get_json()
+        self.assertEqual(len(saved["shows"]), 1)
+        self.assertTrue(saved["shows"][0]["ignore_year"])
+        self.client.post("/api/sonarr/monitoring-audit", json={"id": 86, "enabled": False})
+        self.assertEqual(arr_mgmt.load_config()["sonarr_remonitor_ignore_year_series"], [])
+
+    def test_override_rejects_invalid_payloads_and_unknown_series(self):
+        for payload in [[], {"id": True, "enabled": True}, {"id": 86, "enabled": "yes"}, {"enabled": True}]:
+            with self.subTest(payload=payload):
+                self.assertEqual(self.client.post("/api/sonarr/monitoring-audit", json=payload).status_code, 400)
+        self.assertEqual(self.client.post("/api/sonarr/monitoring-audit", json={"id": 999, "enabled": True}).status_code, 404)
+        self.assertEqual(arr_mgmt.load_config().get("sonarr_remonitor_ignore_year_series", []), [])
+
+    def test_audit_reports_failed_scans_and_preserves_saved_exceptions(self):
+        self.config["sonarr_remonitor_ignore_year_series"] = [{"id": 86, "title": "The Gentlemen"}]
+        arr_mgmt.save_config(self.config)
+        original_api = self.api_request
+
+        def fail_episode_fetch(base_url, api_key, endpoint, **kwargs):
+            if endpoint.startswith("episode?"):
+                return {"success": False, "error": "Sonarr unavailable"}
+            return original_api(base_url, api_key, endpoint, **kwargs)
+
+        with patch.object(arr_mgmt, "api_request", side_effect=fail_episode_fetch):
+            data = self.client.get("/api/sonarr/monitoring-audit?scan=true").get_json()
+        self.assertEqual(data["failed_series"], ["The Gentlemen"])
+        self.assertTrue(data["shows"][0]["ignore_year"])
 
 
 if __name__ == "__main__":
