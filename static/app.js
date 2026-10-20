@@ -47,6 +47,20 @@
     let auditScanned = false;
     let auditLoading = false;
     const auditSaving = new Map();
+    const specialsDetails = document.getElementById('specials-exceptions');
+    const specialsApplyBtn = document.getElementById('specials-apply');
+    const specialsScanBtn = document.getElementById('specials-scan');
+    const specialsFilter = document.getElementById('specials-filter');
+    const specialsList = document.getElementById('specials-list');
+    const specialsSummary = document.getElementById('specials-summary');
+    const specialsFeedback = document.getElementById('specials-feedback');
+    const specialsExceptionsFeedback = document.getElementById('specials-exceptions-feedback');
+    let specialsShows = [];
+    let specialsLoaded = false;
+    let specialsLoading = false;
+    let specialsScanned = false;
+    let specialsApplying = false;
+    const specialsSaving = new Map();
     let sonarrSeriesCache = null;
 
     const unmonitorLogSonarrBtn = document.getElementById('unmonitor-log-sonarr');
@@ -480,6 +494,7 @@
         const btn = service === 'sonarr' ? unmonitorSonarrBtn : unmonitorRadarrBtn;
         const originalText = btn.textContent;
         btn.disabled = true;
+        renderSpecialsExceptions();
         btn.textContent = 'Working...';
         showFeedback(unmonitorFeedback, `Scanning ${service} for downloaded items...`, 'info');
 
@@ -533,6 +548,125 @@
         } finally {
             btn.disabled = false;
             btn.textContent = originalText;
+            renderSpecialsExceptions();
+        }
+    }
+
+    function renderSpecialsExceptions() {
+        const busy = specialsLoading || specialsApplying;
+        specialsScanBtn.disabled = busy || specialsSaving.size > 0;
+        specialsApplyBtn.disabled = busy || specialsSaving.size > 0 || unmonitorSonarrBtn.disabled;
+        specialsList.replaceChildren();
+        const query = specialsFilter.value.trim().toLowerCase();
+        const matches = specialsShows.filter(show => show.title.toLowerCase().includes(query));
+        const selected = specialsShows.filter(show => show.exception).length;
+        specialsSummary.textContent = `${selected} saved exception${selected === 1 ? '' : 's'}. ` +
+            (specialsScanned ? `${specialsShows.length} shows in this scan.` : 'Load specials to select more shows.');
+        if (!matches.length) {
+            const empty = document.createElement('li');
+            empty.className = 'audit-empty';
+            empty.textContent = query ? 'No shows match your filter.' :
+                (specialsScanned ? 'No shows with specials or saved exceptions found.' : 'No saved specials exceptions yet.');
+            specialsList.appendChild(empty);
+        }
+        matches.forEach(show => {
+            const row = document.createElement('li');
+            const label = document.createElement('label');
+            label.className = 'audit-show';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = specialsSaving.has(show.id) ? specialsSaving.get(show.id) : show.exception;
+            checkbox.disabled = busy || specialsSaving.has(show.id) || (show.stale && !show.exception);
+            checkbox.setAttribute('aria-label', `Monitor specials for ${show.title}`);
+            checkbox.addEventListener('change', () => saveSpecialsException(show, checkbox.checked));
+            const title = document.createElement('span');
+            title.textContent = show.title;
+            label.append(checkbox, title);
+            const detail = document.createElement('div');
+            detail.className = 'audit-seasons';
+            detail.textContent = show.stale ? 'No longer in Sonarr. Uncheck to remove this exception.' :
+                (show.special_count == null ? 'Saved exception. Load specials to review this show.' :
+                    `${show.special_count} specials · ${show.missing_count} missing`);
+            row.append(label, detail);
+            specialsList.appendChild(row);
+        });
+    }
+
+    async function fetchSpecials(scan = false) {
+        if (specialsLoading || specialsApplying || specialsSaving.size) return;
+        specialsLoading = true;
+        specialsScanBtn.textContent = scan ? 'Loading specials...' : 'Loading...';
+        renderSpecialsExceptions();
+        showFeedback(specialsExceptionsFeedback, scan ? 'Reading Sonarr specials. Large libraries may take a while...' : 'Loading saved exceptions...', 'info');
+        try {
+            const response = await fetch('/api/sonarr/specials' + (scan ? '?scan=true' : ''));
+            const data = await response.json();
+            if (!response.ok || !data.success) throw new Error(data.error || 'Could not load specials');
+            specialsShows = data.shows;
+            specialsScanned = data.scanned;
+            specialsLoaded = true;
+            const failures = data.failed_series || [];
+            showFeedback(specialsExceptionsFeedback, failures.length ?
+                `Incomplete scan — could not read: ${failures.join(', ')}. Load Specials again to retry.` :
+                (scan ? 'Select exceptions, then click Apply Specials Rules & Search.' : ''), failures.length ? 'error' : 'info');
+        } catch (error) {
+            showFeedback(specialsExceptionsFeedback, `Could not load specials: ${error.message}`, 'error');
+        } finally {
+            specialsLoading = false;
+            specialsScanBtn.textContent = 'Load Specials';
+            renderSpecialsExceptions();
+        }
+    }
+
+    async function saveSpecialsException(show, enabled) {
+        specialsSaving.set(show.id, enabled);
+        renderSpecialsExceptions();
+        try {
+            const response = await fetch('/api/sonarr/specials', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: show.id, enabled }),
+            });
+            const data = await response.json();
+            if (!response.ok || !data.success) throw new Error(data.error || 'Could not save exception');
+            show.exception = enabled;
+            if (!enabled && (show.stale || show.special_count == null)) {
+                specialsShows = specialsShows.filter(row => row.id !== show.id);
+            }
+            showFeedback(specialsExceptionsFeedback,
+                `${enabled ? 'Saved' : 'Removed'}: ${show.title}. Click Apply Specials Rules & Search to apply.`, 'success');
+        } catch (error) {
+            showFeedback(specialsExceptionsFeedback, `Exception was not saved: ${error.message}`, 'error');
+        } finally {
+            specialsSaving.delete(show.id);
+            renderSpecialsExceptions();
+        }
+    }
+
+    async function applySpecialsRules() {
+        if (specialsApplying || specialsLoading || specialsSaving.size || unmonitorSonarrBtn.disabled) return;
+        specialsApplying = true;
+        unmonitorSonarrBtn.disabled = true;
+        specialsApplyBtn.textContent = 'Working...';
+        renderSpecialsExceptions();
+        showFeedback(specialsFeedback, 'Applying specials rules and queuing searches for exception shows...', 'info');
+        try {
+            const response = await fetch('/api/sonarr/specials/apply', { method: 'POST' });
+            const data = await response.json();
+            if (!response.ok || data.error) throw new Error(data.error || 'Specials action failed');
+            const summary = `Unmonitored ${data.unmonitored_count} specials; monitored ${data.monitored_count} specials; ` +
+                `updated ${data.season_count} specials seasons; enabled ${data.series_count} shows; ` +
+                `queued searches for ${data.search_count} missing specials.`;
+            const errors = data.errors || [];
+            showFeedback(specialsFeedback, summary + (errors.length ? ` Some steps failed: ${errors.join('; ')}` : ''),
+                data.success ? 'success' : 'error');
+            if (document.getElementById('unmonitor-log-details').open) fetchUnmonitorLog();
+        } catch (error) {
+            showFeedback(specialsFeedback, `Specials action failed: ${error.message}`, 'error');
+        } finally {
+            specialsApplying = false;
+            unmonitorSonarrBtn.disabled = false;
+            specialsApplyBtn.textContent = 'Apply Specials Rules & Search';
+            renderSpecialsExceptions();
         }
     }
 
@@ -1044,6 +1178,12 @@
     });
     auditScanBtn.addEventListener('click', () => fetchMonitoringAudit(true));
     auditFilter.addEventListener('input', renderMonitoringAudit);
+    specialsDetails.addEventListener('toggle', () => {
+        if (specialsDetails.open && !specialsLoaded) fetchSpecials();
+    });
+    specialsScanBtn.addEventListener('click', () => fetchSpecials(true));
+    specialsFilter.addEventListener('input', renderSpecialsExceptions);
+    specialsApplyBtn.addEventListener('click', applySpecialsRules);
     exclusionSearchInput.addEventListener('input', handleExclusionSearchInput);
     exclusionSearchInput.addEventListener('focus', handleExclusionSearchInput);
     document.addEventListener('click', (e) => {

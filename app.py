@@ -17,7 +17,7 @@ import requests
 from flask import Flask, jsonify, render_template, request
 
 app = Flask(__name__)
-APP_VERSION = "1.0.0"
+APP_VERSION = "1.1.0"
 
 # Keep runtime state outside the image when running in Docker. The default keeps
 # the existing bare-metal layout unchanged.
@@ -47,6 +47,7 @@ DEFAULT_CONFIG = {
     "auto_unmonitor_radarr_last_run": None,
     "sonarr_unmonitor_excluded_series": [],
     "sonarr_remonitor_ignore_year_series": [],
+    "sonarr_specials_exceptions": [],
 }
 
 SCHEDULE_INTERVALS = [30, 60, 180, 360, 720, 1440, 2880, 10080]
@@ -59,6 +60,7 @@ SONARR_NEW_SEASON_MIN_YEAR = 2020
 
 config_lock = threading.Lock()
 log_lock = threading.Lock()
+sonarr_monitoring_lock = threading.Lock()
 
 
 def load_config():
@@ -399,8 +401,15 @@ def radarr_unmonitor_downloaded():
 
 
 def perform_sonarr_unmonitor(config, source="manual"):
+    """Serialize manual/scheduled monitoring passes with the Specials action."""
+    with sonarr_monitoring_lock:
+        return _perform_sonarr_unmonitor(config, source)
+
+
+def _perform_sonarr_unmonitor(config, source="manual"):
     """Unmonitor downloaded episodes, and:
     - fully unmonitor a series once every known non-special episode is downloaded,
+      unless a saved specials exception keeps its Specials season enabled,
       regardless of Sonarr's series status - "continuing" alone doesn't protect a
       series; only an actually-incomplete season does (see below), so this is safe
       for still-airing shows too
@@ -435,6 +444,7 @@ def perform_sonarr_unmonitor(config, source="manual"):
     ignore_year_ids = {
         e["id"] for e in config.get("sonarr_remonitor_ignore_year_series", [])
     }
+    specials_exception_ids = {e["id"] for e in config.get("sonarr_specials_exceptions", [])}
 
     affected_episodes = []
     affected_series = []
@@ -454,7 +464,13 @@ def perform_sonarr_unmonitor(config, source="manual"):
             continue
 
         episodes = ep_result["data"]
+        keep_specials_monitored = s["id"] in specials_exception_ids and (
+            any(ep.get("seasonNumber") == 0 for ep in episodes)
+            or any(season.get("seasonNumber") == 0 for season in s.get("seasons", []))
+        )
         for ep in episodes:
+            if ep.get("seasonNumber") == 0 and s["id"] in specials_exception_ids:
+                continue
             if ep.get("monitored") and ep.get("hasFile"):
                 episode_ids.append(ep["id"])
                 affected_episodes.append({
@@ -550,7 +566,7 @@ def perform_sonarr_unmonitor(config, source="manual"):
             s["monitored"] = True
             api_request(base_url, api_key, f"series/{s['id']}", method="PUT", data=s)
             new_season_series.append({"id": s["id"], "title": series_title})
-        elif all(ep.get("hasFile") for ep in regular_episodes):
+        elif all(ep.get("hasFile") for ep in regular_episodes) and not keep_specials_monitored:
             # Every known non-special episode is downloaded - unmonitor the whole
             # series regardless of status. Safe even for a still-airing show: the
             # reactivation check above already catches (and takes priority over) any
@@ -561,9 +577,8 @@ def perform_sonarr_unmonitor(config, source="manual"):
                 api_request(base_url, api_key, f"series/{s['id']}", method="PUT", data=s)
                 affected_series.append({"id": s["id"], "title": series_title})
         else:
-            # Some season is incomplete (and wasn't caught by the reactivation check
-            # above, e.g. no air date yet) - retire whichever seasons ARE fully
-            # downloaded and leave the incomplete one alone.
+            # Retire complete regular seasons individually when another is
+            # incomplete, or a specials exception needs the parent show enabled.
             series_changed = False
             for season_num, season_eps in seasons_by_number.items():
                 if not all(ep.get("hasFile") for ep in season_eps):
@@ -724,6 +739,11 @@ def sonarr_monitoring_audit():
 @app.route("/api/sonarr/monitoring-audit", methods=["POST"])
 def update_sonarr_monitoring_audit():
     """Save/remove a per-show year exception without modifying Sonarr."""
+    return update_sonarr_show_selection("sonarr_remonitor_ignore_year_series")
+
+
+def update_sonarr_show_selection(config_key):
+    """Persist a validated show selection; removal also works when Sonarr is offline."""
     data = request.get_json(silent=True)
     if (not isinstance(data, dict) or type(data.get("id")) is not int
             or data["id"] <= 0 or type(data.get("enabled")) is not bool):
@@ -737,16 +757,154 @@ def update_sonarr_monitoring_audit():
             return jsonify({"success": False, "error": result.get("error", "Failed to fetch series")}), 502
         selected = next((s for s in result["data"] if s["id"] == series_id), None)
         if selected is None:
-            return jsonify({"success": False, "error": "Show is no longer in Sonarr; run the audit again"}), 404
+            return jsonify({"success": False, "error": "Show is no longer in Sonarr; refresh the list"}), 404
     with config_lock:
         config = load_config()
-        overrides = [e for e in config.get("sonarr_remonitor_ignore_year_series", [])
+        overrides = [e for e in config.get(config_key, [])
                      if e["id"] != series_id]
         if selected is not None:
             overrides.append({"id": series_id, "title": selected.get("title", "Unknown")})
-        config["sonarr_remonitor_ignore_year_series"] = overrides
+        config[config_key] = overrides
         save_config(config)
     return jsonify({"success": True, "overrides": overrides})
+
+
+@app.route("/api/sonarr/specials")
+def sonarr_specials():
+    """List saved specials exceptions, optionally scanning season zero read-only."""
+    config = load_config()
+    selected = {e["id"]: e for e in config.get("sonarr_specials_exceptions", [])}
+    shows = {
+        sid: {"id": sid, "title": e.get("title", "Unknown"), "exception": True,
+              "special_count": None, "missing_count": None, "stale": False}
+        for sid, e in selected.items()
+    }
+    scan = request.args.get("scan") == "true"
+    failed_series = []
+    if scan:
+        result = api_request(config["sonarr_url"], config["sonarr_api_key"], "series")
+        if not result["success"]:
+            return jsonify({"success": False, "error": result.get("error", "Failed to fetch series")}), 502
+        current_ids = {s["id"] for s in result["data"]}
+        for row in shows.values():
+            row["stale"] = row["id"] not in current_ids
+        for series in result["data"]:
+            sid = series["id"]
+            title = series.get("title", "Unknown")
+            if sid in shows:
+                shows[sid]["title"] = title
+            result = api_request(config["sonarr_url"], config["sonarr_api_key"], f"episode?seriesId={sid}")
+            if not result["success"]:
+                failed_series.append(title)
+                continue
+            specials = [ep for ep in result["data"] if ep.get("seasonNumber") == 0]
+            has_season_zero = any(s.get("seasonNumber") == 0 for s in series.get("seasons", []))
+            if specials or has_season_zero or sid in selected:
+                shows[sid] = {
+                    "id": sid, "title": title, "exception": sid in selected, "stale": False,
+                    "special_count": len(specials),
+                    "missing_count": sum(not ep.get("hasFile") for ep in specials),
+                }
+    return jsonify({"success": True, "scanned": scan, "failed_series": failed_series,
+                    "shows": sorted(shows.values(), key=lambda show: show["title"].lower())})
+
+
+@app.route("/api/sonarr/specials", methods=["POST"])
+def update_sonarr_specials():
+    """Only save exceptions; monitoring and searching require the action button."""
+    return update_sonarr_show_selection("sonarr_specials_exceptions")
+
+
+def perform_sonarr_specials(config):
+    """Keep series updates from racing with regular Sonarr monitoring passes."""
+    with sonarr_monitoring_lock:
+        return _perform_sonarr_specials(config)
+
+
+def _perform_sonarr_specials(config):
+    """Unmonitor season zero everywhere except selected shows, then search their gaps.
+
+    This explicit manual action has its own exceptions, independent of exclusions
+    for the regular unmonitor action. Regular-season flags are never changed here.
+    """
+    base_url, api_key = config["sonarr_url"], config["sonarr_api_key"]
+    result = api_request(base_url, api_key, "series")
+    if not result["success"]:
+        return {"success": False, "error": result.get("error", "Failed to fetch series")}
+    selected = {e["id"] for e in config.get("sonarr_specials_exceptions", [])}
+    changed_episodes = {False: [], True: []}
+    changed_seasons = {False: [], True: []}
+    search_count = 0
+    parent_count = 0
+    errors = []
+
+    def record_error(title, step, response):
+        errors.append(f"{title}: {step}: {response.get('error', 'Sonarr request failed')}")
+
+    for series in result["data"]:
+        sid = series["id"]
+        title = series.get("title", "Unknown")
+        result = api_request(base_url, api_key, f"episode?seriesId={sid}")
+        if not result["success"]:
+            record_error(title, "read specials", result)
+            continue
+        specials = [ep for ep in result["data"] if ep.get("seasonNumber") == 0]
+        season = next((s for s in series.get("seasons", []) if s.get("seasonNumber") == 0), None)
+        if not specials and season is None:
+            continue
+        monitor = sid in selected
+        episodes_to_change = [ep for ep in specials if bool(ep.get("monitored")) != monitor]
+        if episodes_to_change:
+            update = api_request(base_url, api_key, "episode/monitor", method="PUT",
+                                 data={"episodeIds": [ep["id"] for ep in episodes_to_change], "monitored": monitor})
+            if not update["success"]:
+                record_error(title, "update special episodes", update)
+                continue
+            changed_episodes[monitor].extend({
+                "id": ep["id"], "series": title, "season": 0,
+                "episode": ep.get("episodeNumber", 0), "title": ep.get("title", ""),
+            } for ep in episodes_to_change)
+        season_changed = season is None or bool(season.get("monitored")) != monitor
+        parent_changed = monitor and not series.get("monitored")
+        if season_changed or parent_changed:
+            if season is None:
+                season = {"seasonNumber": 0, "monitored": monitor}
+                series.setdefault("seasons", []).append(season)
+            else:
+                season["monitored"] = monitor
+            if parent_changed:
+                series["monitored"] = True
+            update = api_request(base_url, api_key, f"series/{sid}", method="PUT", data=series)
+            if not update["success"]:
+                record_error(title, "update specials season/show", update)
+                continue
+            parent_count += int(parent_changed)
+            changed_seasons[monitor].append({"id": sid, "title": title, "season": 0})
+        missing_ids = [ep["id"] for ep in specials if not ep.get("hasFile")]
+        if monitor and missing_ids:
+            search = api_request(base_url, api_key, "command", method="POST",
+                                 data={"name": "EpisodeSearch", "episodeIds": missing_ids})
+            if search["success"]:
+                search_count += len(missing_ids)
+            else:
+                record_error(title, "search missing specials", search)
+
+    for monitor in (False, True):
+        if changed_episodes[monitor] or changed_seasons[monitor]:
+            log_unmonitor_action("sonarr", "remonitor" if monitor else "unmonitor",
+                                 episodes=changed_episodes[monitor], series=changed_seasons[monitor],
+                                 source="manual_specials")
+    return {
+        "success": not errors, "unmonitored_count": len(changed_episodes[False]),
+        "monitored_count": len(changed_episodes[True]), "search_count": search_count,
+        "season_count": sum(len(rows) for rows in changed_seasons.values()),
+        "series_count": parent_count, "errors": errors,
+    }
+
+
+@app.route("/api/sonarr/specials/apply", methods=["POST"])
+def apply_sonarr_specials():
+    return jsonify(perform_sonarr_specials(load_config()))
 
 
 @app.route("/api/sonarr/exclusions")

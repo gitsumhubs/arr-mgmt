@@ -40,15 +40,18 @@ new image.
 ## Features
 
 - Sonarr/Radarr health and queue views
-- App version badge beside the page title (currently `v1.0.0`)
+- App version badge beside the page title (currently `v1.1.0`)
 - Manual and scheduled missing-content searches
 - Downloaded-item unmonitoring with undo history
 - Restores series and season monitoring for eligible missing seasons, including
   new seasons whose episodes Sonarr already monitors
 - Per-show Sonarr exclusions
-- Season Monitoring Audit under Unmonitor Downloaded: scan older missing seasons
+- Season Monitor Audit Exceptions under Unmonitor Downloaded: scan older missing seasons
   and save per-show exceptions to the 2020 cutoff. Exceptions apply on the next
   manual or scheduled Sonarr unmonitor run; existing show exclusions take priority.
+- Specials section with its own saved show exceptions: unmonitor season 0 by
+  default, monitor all specials on exception shows, and search only their missing
+  specials. The regular unmonitor button and schedule preserve these exceptions.
 - Docker restart and log controls
 
 ## Configuration
@@ -59,6 +62,16 @@ The audit saves `{id, title}` selections in `sonarr_remonitor_ignore_year_series
 (empty by default). A selected show can re-monitor missing episodes in any season,
 including undated ones. Saving a selection does not modify Sonarr immediately;
 removing one restores the cutoff for future runs without undoing past changes.
+
+Specials exceptions are stored as `{id, title}` entries in
+`sonarr_specials_exceptions` (empty by default). Open **Specials Exceptions**, click
+**Load Specials**, select shows, then click **Apply Specials Rules & Search**.
+The button unmonitors missing and downloaded specials on other shows, and enables
+the show, Specials season, and all special episodes for selected shows. Searches
+target only missing specials. This action has its own exceptions, independent of
+Excluded Shows and the 2020 cutoff; it preserves regular-season episode settings.
+Checkbox changes only save settings. Removing an exception takes effect when the
+Specials action is run again. No automatic specials schedule is configured.
 
 The release version is defined by `APP_VERSION` in `app.py`. Bump it when
 publishing a new release; the header and static asset cache keys use this value.

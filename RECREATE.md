@@ -19,7 +19,7 @@ log viewing.
 - Frontend: vanilla HTML/CSS/JS (no build step, no external assets)
 - Layout: centered content and blue panels cap at 1050px wide and shrink to fit
   smaller screens with the existing 20px outer padding.
-- Release version: `APP_VERSION` in `app.py` (currently `1.0.0`), rendered as a
+- Release version: `APP_VERSION` in `app.py` (currently `1.1.0`), rendered as a
   badge beside the page title. Bump this constant for each release; versioned
   stylesheet/script URLs also refresh browser assets when the release changes.
 - External APIs: Sonarr/Radarr API v3; Docker CLI (`docker restart`, `docker logs`)
@@ -38,7 +38,8 @@ log viewing.
   - Background thread checks every 60s and fires searches that are due
   - Last-run timestamp persisted in `config.json`; UI shows "next in Xh Ym"
 - Unmonitor downloaded episodes and completed series (Sonarr) and movies (Radarr)
-  - Unmonitors individual episodes that have files, everywhere, regardless of season
+  - Unmonitors individual episodes that have files, except specials belonging to
+    shows selected in the separate Specials Exceptions section
   - Specials (season 0) are ignored for every completion check below — a show/season
     with all regular episodes downloaded but no specials on disk still counts as done
   - Sonarr's series `status` field (`"continuing"`/`"ended"`/etc.) is **not** used
@@ -47,7 +48,8 @@ log viewing.
     ever pending). Only actual completeness of what Sonarr currently has data for
     is used:
     - Once every known non-special episode is downloaded, the **whole series**
-      gets unmonitored (series-level flag off) — regardless of status. This is
+      gets unmonitored (series-level flag off) — regardless of status, unless it
+      has a saved specials exception and a Specials season to keep enabled. This is
       safe for a still-airing show too, because a genuinely incomplete season
       (see below) takes priority and would have kept it out of this branch.
     - If only some seasons are complete, those are retired individually
@@ -74,9 +76,9 @@ log viewing.
     disjoint sets of episodes, so it's fully idempotent: a second run back-to-back
     makes zero changes. Older missing episodes (season's first episode before
     `SONARR_NEW_SEASON_MIN_YEAR`) that happen to be unmonitored are left alone unless
-    that show has a saved year exception in the Season Monitoring Audit —
+    that show has a saved year exception in the Season Monitor Audit Exceptions —
     this only ever *reactivates* something, never unmonitors a missing episode.
-  - **Season Monitoring Audit:** a collapsible area directly below the unmonitor
+  - **Season Monitor Audit Exceptions:** a collapsible area directly below the unmonitor
     buttons. Open it to load saved exceptions without scanning Sonarr, then click
     **Run Audit** to find shows with missing episodes in seasons starting before
     `SONARR_NEW_SEASON_MIN_YEAR` or without air dates. Shows and per-season missing
@@ -119,6 +121,34 @@ log viewing.
   - Same interval choices and per-service toggles as automated search
   - Runs the identical logic as the manual button, on the same 60s worker
   - Scheduled runs are written to Action History tagged `scheduled` and stay undoable
+- **Specials:** a separate manual action, **Apply Specials Rules & Search**,
+  unmonitors all season-0 episodes (both missing and downloaded) and disables the
+  Specials season, except for shows selected under **Specials Exceptions**.
+  - Open the exceptions area to load saved selections without contacting Sonarr;
+    **Load Specials** performs a read-only scan listing each show's total/missing
+    specials. Filter by show title and check boxes to auto-save exceptions.
+  - Selections are stored by current Sonarr ID in `sonarr_specials_exceptions`
+    as `{id, title}`. Saving/removing a selection does not change Sonarr immediately;
+    run the Specials action to apply it. Stale saved IDs remain removable offline.
+  - Selected shows have their parent series, season 0, and all specials enabled,
+    including already-downloaded specials. Only missing specials are searched,
+    using targeted `EpisodeSearch` commands with explicit episode IDs. See the
+    [upstream Sonarr command](https://github.com/Sonarr/Sonarr/blob/develop/src/NzbDrone.Core/IndexerSearch/EpisodeSearchCommand.cs).
+  - This section's exceptions operate independently of the regular unmonitor
+    action's Excluded Shows and year cutoff. Regular episode/season flags are not
+    changed by the Specials action. Enabling the parent show is necessary for its
+    specials and may also activate already-monitored regular episodes.
+  - The regular Sonarr unmonitor button and schedule skip downloaded specials on
+    exception shows and retire completed regular seasons individually, keeping the
+    parent series monitored for specials. They do not search for specials.
+  - Successful episode/season changes are recorded in Action History with source
+    `manual_specials`; partial failures are returned explicitly with completed
+    counts. Failed episode/parent updates never trigger searches for that show.
+    Clicking again retries failed steps and queues another search for missing
+    specials on exception shows. This action has no automatic schedule.
+  - A shared backend lock serializes Specials actions with manual/scheduled
+    regular Sonarr monitoring passes so their full-series updates cannot restore
+    stale season flags over one another. Requests may wait for the active pass.
 - Action History log (persisted to `unmonitor_log.json`)
   - Collapsible viewer with Sonarr/Radarr toggle
   - Shows exact movie titles, series names, season/episode numbers for each action
@@ -204,6 +234,9 @@ configuration lives in `config.json` and is editable from the Settings panel.
 | GET | `/api/sonarr/series-list` | List all Sonarr series (id/title/year/status) for the exclusion search box |
 | GET | `/api/sonarr/monitoring-audit` | Saved year exceptions; add `?scan=true` for a read-only scan of older/undated incomplete seasons, plus `failed_series` warnings |
 | POST | `/api/sonarr/monitoring-audit` | Save/remove a year exception with `{"id": 86, "enabled": true}`; validates current Sonarr ID on enable, permits offline removal |
+| GET | `/api/sonarr/specials` | Saved specials exceptions; add `?scan=true` for read-only season-0 counts, current shows, stale IDs and partial scan errors |
+| POST | `/api/sonarr/specials` | Save/remove a specials exception with `{"id": 86, "enabled": true}`; no immediate monitoring or search |
+| POST | `/api/sonarr/specials/apply` | Unmonitor specials by default; monitor specials/show/season for exceptions and search their missing episode IDs; returns successful counts and explicit errors |
 | GET | `/api/sonarr/exclusions` | List current exclusions + any stale ones (removed/re-added series) |
 | POST | `/api/sonarr/exclusions` | `{"action":"add","id","title","mode"?}` / `{"action":"remove","id"}` / `{"action":"swap","old_id","new_id","new_title"}` / `{"action":"set_mode","id","mode"}` — `mode` is `"exclude"` (default) or `"latest_only"` |
 | POST | `/api/sonarr/remonitor` | Re-monitor episodes/series (undo) |
@@ -246,6 +279,7 @@ schedule. Created on first save from the Settings panel; missing keys fall back 
 | `auto_unmonitor_radarr_last_run` | UTC ISO timestamp of last auto unmonitor | `null` |
 | `sonarr_unmonitor_excluded_series` | List of `{id, title, mode}` Sonarr series overrides for unmonitor (button + schedule); `mode` is `"exclude"` (fully skipped) or `"latest_only"` (only newest season follows normal rules) | `[]` |
 | `sonarr_remonitor_ignore_year_series` | List of `{id, title}` exceptions selected in the audit; bypasses the season-year cutoff on manual and scheduled Sonarr unmonitor runs, respecting exclusions | `[]` |
+| `sonarr_specials_exceptions` | List of `{id, title}` shows whose specials should be monitored/searched by the Specials action and protected from the regular downloaded unmonitor action | `[]` |
 
 Allowed intervals (minutes): `30, 60, 180, 360, 720, 1440, 2880, 10080`. Any other
 value is rejected by `POST /api/auto-search` and `POST /api/auto-unmonitor`.
@@ -454,6 +488,12 @@ repeat-run idempotence, partially downloaded seasons, completed-series retiremen
 the year floor, fully excluded shows, and latest-season-only exclusions.
 Audit coverage also checks read-only discovery, per-show year exceptions,
 saved-selection persistence/removal, invalid requests, and partial scan failures.
+Specials tests cover default/exception rules, parent/season restoration, searches
+limited to missing specials, regular-season isolation, protection from regular
+unmonitor runs (including an empty Specials season), offline removal, history,
+and read/write/search failures. Tests use temporary config/history and no live API.
+An interleaved action/scheduler regression checks that a Specials update cannot
+restore a regular season retired by the scheduled unmonitor pass.
 
 ## Troubleshooting
 
@@ -464,7 +504,7 @@ saved-selection persistence/removal, invalid requests, and partial scan failures
 - **Automated search or unmonitor never fires:** Confirm the toggle is saved (check `auto_search_*_enabled` / `auto_unmonitor_*_enabled` in `config.json`), and that the app was started via `python app.py` — the scheduler thread does not start under a WSGI server. Check `journalctl -u arr-mgmt -f` and the target service's logs.
 - **"Unsupported interval" when saving the schedule:** Only the intervals listed under [config.json](#configjson) are accepted; the UI dropdown is the source of truth.
 - **Automated unmonitor re-runs on things you deliberately re-monitored:** The scheduled job applies the same rule as the button — anything monitored *and* downloaded gets unmonitored. If you re-monitor an already-downloaded item, the next scheduled run will unmonitor it again. Disable the schedule for that service or use a longer interval.
-- **A previously-unmonitored show unexpectedly gets monitored again:** Sonarr unmonitor also re-monitors incomplete regular seasons that started on/after `SONARR_NEW_SEASON_MIN_YEAR`, or any incomplete regular season on a show selected in the Season Monitoring Audit. Check the audit's saved exceptions for older shows. Unchecking an exception restores the cutoff on future runs without undoing previous changes. To leave a show untouched by this app, use Excluded Shows / Exclude entirely. Recovery never applies to fully downloaded seasons; check Sonarr's `hasFile` values if a season seems complete but is being recovered.
+- **A previously-unmonitored show unexpectedly gets monitored again:** Sonarr unmonitor also re-monitors incomplete regular seasons that started on/after `SONARR_NEW_SEASON_MIN_YEAR`, or any incomplete regular season on a show selected in the Season Monitor Audit Exceptions. Check the audit's saved exceptions for older shows. Unchecking an exception restores the cutoff on future runs without undoing previous changes. Excluded Shows / Exclude entirely protects against the regular unmonitor action; the separate Specials action uses its own exceptions. Specials exceptions also enable the parent series and keep it enabled across regular unmonitor runs. Regular-season recovery never applies to fully downloaded seasons; check Sonarr's `hasFile` values if a season seems complete but is being recovered.
 - **A still-airing show never gets fully unmonitored, only some seasons do:** Expected when it has at least one genuinely incomplete season — the series-level flag only clears once every known non-special episode is downloaded. If it has no incomplete season at all and still isn't fully unmonitored, check for a stray monitored-but-not-downloaded episode Sonarr will never actually get (a permanently missing one) — that alone blocks the whole-series unmonitor and falls back to per-season retirement instead.
 - **A show's already-downloaded episodes keep alternating monitored/unmonitored on every run:** This was a real bug (fixed) where the wake-up rule reactivated every unmonitored episode in a season just because that season also had one genuinely missing episode. Confirm the fix took by running the button twice back-to-back — the second run's `count` in the response should be `0` for a stable library. If it isn't, something else in that show's data is genuinely changing between runs (e.g. Sonarr importing/removing files), not this bug.
 - **A genuinely upcoming season (e.g. only 1 episode announced so far) keeps getting unmonitored:** This should only happen if that season is already fully downloaded relative to what Sonarr currently knows about it (e.g. that 1 known episode has a file) — the app can't tell "this is all there'll ever be" from "more episodes are coming but Sonarr hasn't added them yet." If this happens, exclude the show via the Excluded Shows list until the rest of the season lands in Sonarr.

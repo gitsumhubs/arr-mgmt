@@ -83,7 +83,7 @@
             <div id="unmonitor-feedback" class="feedback"></div>
 
             <details id="monitoring-audit" class="monitoring-audit">
-                <summary>Season Monitoring Audit</summary>
+                <summary>Season Monitor Audit Exceptions</summary>
                 <p class="panel-desc">Review missing episodes in seasons that started before 2020 or have no air date.
                     Select a show to ignore the year cutoff for all its seasons. Selections save automatically
                     and apply on the next Sonarr unmonitor button click or scheduled run.</p>
@@ -144,6 +144,33 @@
                 <div id="unmonitor-log-entries" class="unmonitor-log-entries">
                     <p class="empty">No entries</p>
                 </div>
+            </details>
+        </section>
+
+        <section class="panel" id="specials-panel">
+            <h2>Specials</h2>
+            <p class="panel-desc">Unmonitor all Sonarr specials (season 0), including missing and downloaded episodes,
+                except for the shows selected below.</p>
+            <button id="specials-apply" class="btn btn-unmonitor">Apply Specials Rules &amp; Search</button>
+            <div id="specials-feedback" class="feedback" role="status" aria-live="polite"></div>
+
+            <details id="specials-exceptions" class="monitoring-audit">
+                <summary>Specials Exceptions</summary>
+                <p class="panel-desc">Select shows whose specials should be monitored. Selections save automatically;
+                    click Apply Specials Rules &amp; Search to monitor their specials and search for missing ones.</p>
+                <p class="audit-note">Exceptions enable monitoring for the show and its Specials season, including
+                    downloaded specials. Regular episode settings are preserved. These specials exceptions are separate
+                    from Excluded Shows and the season-year cutoff above. The regular Sonarr unmonitor button and
+                    schedule also preserve selected specials. Removing a selection takes effect on the next Specials action.</p>
+                <div class="audit-controls">
+                    <button id="specials-scan" class="btn btn-sm btn-secondary">Load Specials</button>
+                    <label class="audit-filter">Filter shows
+                        <input id="specials-filter" type="search" placeholder="Search specials shows...">
+                    </label>
+                </div>
+                <p id="specials-summary" class="audit-note">Open to view saved exceptions, then load specials to select shows.</p>
+                <div id="specials-exceptions-feedback" class="feedback" role="status" aria-live="polite"></div>
+                <ul id="specials-list" class="audit-list"></ul>
             </details>
         </section>
 
