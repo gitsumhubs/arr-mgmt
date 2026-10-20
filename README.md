@@ -40,6 +40,7 @@ new image.
 ## Features
 
 - Sonarr/Radarr health and queue views
+- App version badge beside the page title (currently `v1.0.0`)
 - Manual and scheduled missing-content searches
 - Downloaded-item unmonitoring with undo history
 - Restores series and season monitoring for eligible missing seasons, including
@@ -58,6 +59,9 @@ The audit saves `{id, title}` selections in `sonarr_remonitor_ignore_year_series
 (empty by default). A selected show can re-monitor missing episodes in any season,
 including undated ones. Saving a selection does not modify Sonarr immediately;
 removing one restores the cutoff for future runs without undoing past changes.
+
+The release version is defined by `APP_VERSION` in `app.py`. Bump it when
+publishing a new release; the header and static asset cache keys use this value.
 
 ## Tests
 

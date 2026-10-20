@@ -17,6 +17,7 @@ import requests
 from flask import Flask, jsonify, render_template, request
 
 app = Flask(__name__)
+APP_VERSION = "1.0.0"
 
 # Keep runtime state outside the image when running in Docker. The default keeps
 # the existing bare-metal layout unchanged.
@@ -147,7 +148,7 @@ def api_request(base_url, api_key, endpoint, method="GET", data=None):
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", app_version=APP_VERSION)
 
 
 @app.route("/api/status")

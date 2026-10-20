@@ -19,6 +19,9 @@ log viewing.
 - Frontend: vanilla HTML/CSS/JS (no build step, no external assets)
 - Layout: centered content and blue panels cap at 1050px wide and shrink to fit
   smaller screens with the existing 20px outer padding.
+- Release version: `APP_VERSION` in `app.py` (currently `1.0.0`), rendered as a
+  badge beside the page title. Bump this constant for each release; versioned
+  stylesheet/script URLs also refresh browser assets when the release changes.
 - External APIs: Sonarr/Radarr API v3; Docker CLI (`docker restart`, `docker logs`)
 
 ---

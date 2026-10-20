@@ -23,6 +23,29 @@ h1 {
     text-align: center;
 }
 
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.app-header h1 {
+    margin-bottom: 0;
+}
+
+.app-version {
+    padding: 4px 9px;
+    border: 1px solid #2a3a5c;
+    border-radius: 12px;
+    background: #16213e;
+    color: #b9c3d4;
+    font-size: 0.75em;
+    white-space: nowrap;
+}
+
 h2 {
     margin-bottom: 15px;
     font-size: 1.1em;

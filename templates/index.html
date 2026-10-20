@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arr Management</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v=app_version) }}">
 </head>
 <body>
     <div class="container">
-        <h1>Arr Management</h1>
+        <header class="app-header">
+            <h1>Arr Management</h1>
+            <span class="app-version" aria-label="App version {{ app_version }}">v{{ app_version }}</span>
+        </header>
 
         <section class="panel">
             <div class="panel-header">
@@ -252,6 +255,6 @@
         </section>
     </div>
 
-    <script src="/static/app.js"></script>
+    <script src="{{ url_for('static', filename='app.js', v=app_version) }}"></script>
 </body>
 </html>
