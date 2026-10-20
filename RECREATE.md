@@ -17,6 +17,8 @@ log viewing.
 - Database: none — JSON files on disk (`config.json`, `unmonitor_log.json`)
 - Key Dependencies: `flask`, `requests`
 - Frontend: vanilla HTML/CSS/JS (no build step, no external assets)
+- Layout: centered content and blue panels cap at 1050px wide and shrink to fit
+  smaller screens with the existing 20px outer padding.
 - External APIs: Sonarr/Radarr API v3; Docker CLI (`docker restart`, `docker logs`)
 
 ---
